@@ -123,6 +123,16 @@ DEMO_USERS = [
     ("Aline Mukamana", "customer@camelia.rw", "Customer123", "customer"),
 ]
 
+# Photography per dish. Only the photos that exist are referenced; any path that
+# is missing falls back to the generated gradient art in DishArt, so a missing
+# file never breaks the page.
+# Photography per dish. Only photos that actually exist in
+# frontend/public/images/ are listed; everything else falls back to the
+# generated gradient art in DishArt, so a missing file never breaks a card.
+# Add the real photo, add one line here, re-run: python seed.py --reset
+IMAGES = {'Katogo': '/images/hero/dish-katogo.jpg', 'Camelia Big Breakfast': '/images/hero/dish-breakfast.jpg', 'Akabenzi Omelette': '/images/hero/dish-omelette.jpg', 'Granola & Yoghurt Bowl': '/images/hero/dish-granola.jpg', 'Camelia Garden Salad': '/images/hero/dish-salad.jpg', 'Sambaza Platter': '/images/hero/dish-sambaza.jpg', 'Avocado & Tomato Salad': '/images/hero/dish-salad.jpg', 'Mushroom Soup': '/images/hero/dish-soup.jpg', 'Ubugali & Beef Stew': '/images/hero/dish-ugali.jpg', 'Isombe': '/images/hero/dish-isombe.jpg', 'Grilled Tilapia': '/images/hero/dish-tilapia.jpg', 'Chicken Brochette': '/images/hero-dish.jpg', 'Beef Brochette': '/images/hero/dish-brochette.jpg', 'Goat Brochette': '/images/hero/dish-brochette.jpg', 'Creamy Chicken Pasta': '/images/hero/dish-pasta.jpg', 'Beef Burger & Fries': '/images/hero/dish-burger.jpg', 'Chocolate Fondant': '/images/hero/dish-fondant.jpg'}
+
+
 COMMENTS = [
     (5, "Exactly what I wanted — the recommender nailed it."),
     (5, "Great portion, will order again."),
@@ -160,6 +170,7 @@ def seed(reset: bool = False) -> None:
                 cuisine=cuisine, occasions=occasions, is_vegetarian=veg, is_vegan=vegan, is_halal=halal,
                 is_gluten_free=gf, spice_level=spice, ingredients=ingredients, allergens=allergens,
                 prep_minutes=prep, calories=calories, popularity_seed=popularity, art_tone=tone,
+                image_url=IMAGES.get(name),
                 is_available=True, is_signature=bool(rest and rest[0]),
             )
             db.add(dish)
