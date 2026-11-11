@@ -1,0 +1,70 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart - TRUSTER TECHNOLOGY</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header>
+    <nav class="container">
+      <h1>TRUSTER TECHNOLOGY</h1>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Cart Section -->
+  <main class="container">
+    <h2>Your Shopping Cart</h2>
+    <div class="cart-container">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Example product row -->
+          <tr>
+            <td>Apple MacBook Pro 2017</td>
+            <td>$1300</td>
+            <td>
+              <input type="number" value="1" min="1">
+            </td>
+            <td>$1300</td>
+          </tr>
+
+          <tr>
+            <td>Dell XPS 13</td>
+            <td>$999</td>
+            <td>
+              <input type="number" value="2" min="1">
+            </td>
+            <td>$1998</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="cart-summary">
+        <h3>Cart Total: $3198</h3>
+        <a href="checkout.html" class="btn">Proceed to Checkout</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 TRUSTER TECHNOLOGY. All rights reserved.</p>
+  </footer>
+</body>
+</html>
