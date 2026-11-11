@@ -45,9 +45,28 @@ explanation is on the in-app `/how-it-works` page and in `backend/app/recommende
 
 ---
 
-## Run it locally
+> **New here, or hit a terminal error?** Read [`docs/RUN-FIRST.md`](docs/RUN-FIRST.md) first —
+> it covers the virtual environment, the `MP3/camelia-project` path, Node 20 and a
+> symptom → cause → fix table for the common failures.
 
-Requirements: Node.js 20+, Python 3.10+. Docker is optional.
+## Quick start (one command)
+
+```bash
+cd MP3/camelia-project
+./start.sh              # installs what is missing, seeds the database, starts both servers
+./start.sh --reset      # rebuild the demo database from scratch first
+```
+
+On macOS you can also **double-click `start.command`** in Finder. Ctrl-C stops both servers.
+This requires Node 20+ and Python 3.10+; everything else is handled for you.
+
+## Run it locally (manual, two terminals)
+
+Requirements: **Node.js 20 or newer** (required by Tailwind CSS 4), Python 3.10+. Docker is optional.
+Check with `node -v`; if it is older, run `nvm use 20` inside `frontend/` (there is an `.nvmrc`).
+
+The project lives in **`MP3/camelia-project/`** — both commands below assume you are there.
+`backend/` has no `package.json`; the React app is in `frontend/`.
 
 ### Terminal 1 — backend (port **9000**)
 
@@ -65,6 +84,10 @@ uvicorn app.main:app --reload --port 9000
 
 The database is created and seeded automatically on first start, so `python seed.py` is only
 needed if you want a fresh copy (`python seed.py --reset` rebuilds everything).
+
+You must see `(.venv)` at the start of your prompt before running `pip` or `uvicorn` — both
+commands live inside the virtual environment. If `pip` is still not found, use
+`python3 -m pip install -r requirements.txt` and `python3 -m uvicorn app.main:app --port 9000`.
 
 > Port 9000 is used because 8000 is frequently taken by other local services. If you prefer
 > 8000, change `--port` here and `VITE_API_PROXY` in `frontend/vite.config.ts`.
