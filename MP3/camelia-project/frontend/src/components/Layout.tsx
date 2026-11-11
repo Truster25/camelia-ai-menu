@@ -22,7 +22,6 @@ type HeaderProps = {
 
 export function Header({ overlay = false }: HeaderProps) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const { user, logout, isAdmin } = useAuth();
   const { count } = useCart();
   const location = useLocation();
@@ -42,8 +41,6 @@ export function Header({ overlay = false }: HeaderProps) {
     const themed = Array.from(document.querySelectorAll<HTMLElement>('[data-header-theme]'));
 
     const onScroll = () => {
-      setScrolled(window.scrollY > 24);
-
       if (hero) {
         const rect = hero.getBoundingClientRect();
         // Still over the full-bleed hero photograph -> light text, every time.
@@ -81,21 +78,15 @@ export function Header({ overlay = false }: HeaderProps) {
   return (
     <header
       data-theme={theme}
-      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-50 transition-colors duration-300 ${
+      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-50 bg-transparent transition-colors duration-300 ${
         theme === 'dark' ? 'text-ink' : 'text-sage-100'
-      } ${
-        scrolled
-          ? overlay
-            ? 'bg-white/45 backdrop-blur-xl backdrop-saturate-150'
-            : 'bg-forest-950/40 backdrop-blur-xl backdrop-saturate-150'
-          : 'bg-transparent'
-      } ${overlay && theme === 'dark' && scrolled ? 'bg-white/55' : ''}`}
+      }`}
     >
       <div className="mx-auto flex h-[86px] max-w-[1600px] items-center gap-4 px-5 sm:px-8 lg:px-10">
         <Logo variant={theme === 'dark' ? 'orange' : 'white'} className="h-12 shrink-0 sm:h-14" />
 
         {/* centred navigation pill */}
-        <nav className="mx-auto hidden items-center gap-1 rounded-full border border-current/15 bg-current/5 px-2 py-1.5 backdrop-blur-md xl:flex" aria-label="Main">
+        <nav className="mx-auto hidden items-center gap-1 xl:flex" aria-label="Main">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -103,7 +94,11 @@ export function Header({ overlay = false }: HeaderProps) {
               end={item.end}
               className={({ isActive }) =>
                 `relative rounded-full px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition ${
-                  isActive ? 'text-amber-logo' : 'opacity-75 hover:opacity-100'
+                  isActive
+                    ? theme === 'dark'
+                      ? 'font-bold text-ink'
+                      : 'text-amber-logo'
+                    : 'opacity-70 hover:opacity-100'
                 }`
               }
             >
@@ -122,7 +117,11 @@ export function Header({ overlay = false }: HeaderProps) {
               to="/admin"
               className={({ isActive }) =>
                 `rounded-full px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition ${
-                  isActive ? 'text-amber-logo' : 'opacity-75 hover:opacity-100'
+                  isActive
+                    ? theme === 'dark'
+                      ? 'font-bold text-ink'
+                      : 'text-amber-logo'
+                    : 'opacity-70 hover:opacity-100'
                 }`
               }
             >
