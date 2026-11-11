@@ -1,242 +1,185 @@
-# 🚀 RUN THIS FIRST — getting the project running on your Mac
+# 🚀 RUN THIS FIRST — two terminals, backend and frontend
 
-This is the short version, written from your terminal errors on 11 Nov 2026.
-If you follow these four blocks in order it will work.
+The backend and the frontend are **two separate programs**. They run in **two separate
+terminals**, each with its own log output and its own **Ctrl-C**.
 
----
-
-## ⚠️⚠️ The #1 cause of every error below: you are in the OLD folder
-
-There are now **two copies** of `camelia-project` on your Desktop:
-
-| Folder | What it is |
-|---|---|
-| `MP3/camelia-project` | **OLD.** The original prototype. No `seed.py`, no `Dockerfile`, no real backend. |
-| `MP3/camelia-repo/MP3/camelia-project` | **NEW. This is the one to use.** Everything I built. |
-
-Your terminal said `macbook@192 camelia-project %` — that is the **old** folder, which is why
-`python seed.py` said *"can't open file .../camelia-project/backend/seed.py"* and why
-`pip install -r requirements.txt` installed only 4 packages instead of the full set.
-
-**How to tell which folder you are in** (run this):
-
-```bash
-ls backend/seed.py backend/app/recommender.py
-```
-
-- Both files exist → ✅ correct folder, carry on.
-- "No such file or directory" → ❌ old folder. Move to the clone:
-
-```bash
-cd /Users/macbook/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project
-```
-
-Your prompt must read `camelia-project` **and** the path above must contain `camelia-repo`.
-Tip: run `pwd` if you are ever unsure — it prints the full path.
+That is the whole point: when the page misbehaves you look at Terminal 2, and when an API
+call fails you look at Terminal 1. Restarting one never touches the other.
 
 ---
 
-## ⚠️ Read this before anything else
+## Before anything: are you in the right folder?
 
-Your project folder is **`MP3/camelia-project/`** — not `MP3/`.
-
-The `camelia-project` folder is **inside** the `MP3` folder. If you `cd backend` while you
-are in `MP3/` (not `MP3/camelia-project/`), you are in the wrong `backend`.
-
-Proof: your error said it could not find
-`/Users/macbook/Documents/Desktop/MP3/camelia-project/backend/package.json`.
-That is correct — **there is no `package.json` in `backend/`**. The React app is in
-`frontend/`. Never run `npm` inside `backend/`.
-
-Also: `pip` and `uvicorn` are "command not found" because they live **inside the virtual
-environment**, and the virtual environment was not activated.
-
----
-
-## Block 1 — get the latest code (one time, then whenever I push)
+Your clone is **`~/Documents/Desktop/MP3`**. The project inside it is
+`MP3/MP3/camelia-project` on disk (the second `MP3` is a folder in the repo — that is
+normal, the git path is just `MP3/camelia-project`).
 
 ```bash
-cd /Users/macbook/Documents/Desktop/MP3
+cd ~/Documents/Desktop/MP3
+ls MP3/camelia-project/backend/seed.py MP3/camelia-project/backend/app/recommender.py
 ```
 
-If you have **not** cloned my branch yet (you have, so skip this):
+- Both files listed → ✅ correct folder, carry on.
+- `No such file or directory` → ❌ wrong folder or wrong branch. You are probably in
+  `camelia-project-OLD-DO-NOT-USE`. That folder is the old prototype and is not used.
+
+Confirm the branch:
 
 ```bash
-cd /Users/macbook/Documents/Desktop/MP3
-git clone https://github.com/Truster25/camelia-ai-menu.git camelia-repo
-cd camelia-repo
-git checkout arena/cb16c143-camelia-ai-menu
+git branch --show-current     # must print: arena/cb16c143-camelia-ai-menu
 ```
 
-✅ You already did this — your clone is at
-`/Users/macbook/Documents/Desktop/MP3/camelia-repo` and is up to date.
-
-If you already have a clone of the repo:
+If it does not:
 
 ```bash
-cd camelia-repo            # your existing clone
 git fetch origin
 git checkout arena/cb16c143-camelia-ai-menu
 git pull origin arena/cb16c143-camelia-ai-menu
 ```
 
-✅ **Check you got my work:** you should now have these files that did not exist before:
+---
+
+## Terminal 1 — the backend (API + AI, port 9000)
+
+Open VS Code's terminal (**Ctrl-`**) and run:
 
 ```bash
-ls MP3/camelia-project/backend/app/recommender.py     # the AI
-ls MP3/camelia-project/frontend/src/pages/             # Home, Menu, Recommend, Admin…
-ls MP3/camelia-project/docs/SCHEMA.md
+cd ~/Documents/Desktop/MP3/MP3/camelia-project/backend
+./run.sh
 ```
 
-If those are missing, you are on the wrong branch. Run `git branch --show-current` — it must
-print `arena/cb16c143-camelia-ai-menu`.
+`run.sh` does the setup that used to fail by hand:
+
+| It checks | And then |
+|---|---|
+| `.venv` exists and is usable | rebuilds it if it was copied from another machine |
+| `fastapi, sqlalchemy, sklearn, jose, bcrypt` import | runs `pip install -r requirements.txt` if not |
+| `camelia.db` exists | runs `seed.py` to create 26 dishes and the demo users |
+| port 9000 is free | stops a leftover copy from a previous run |
+
+You should see:
+
+```
+API  →  http://localhost:9000
+Docs →  http://localhost:9000/docs
+Press Ctrl-C to stop the backend.
+```
+
+Check in a browser: <http://localhost:9000/api/health> →
+`{"status":"ok","version":"1.0.0","database":"connected"}`
+
+**Leave this terminal running.**
+
+> **Why port 9000 and not 8000?** `frontend/vite.config.ts` proxies `/api` to
+> `127.0.0.1:9000`. On 8000 the site shows "The kitchen is offline".
 
 ---
 
-## Block 2 — backend (Terminal 1)
+## Terminal 2 — the frontend (React, port 5173)
+
+Click the **`+`** at the right of the terminal panel to open a second terminal, then:
 
 ```bash
-cd /Users/macbook/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project/backend
-python3 -m venv .venv              # create the virtual environment (once)
-source .venv/bin/activate          # ← THIS is the step you missed
+cd ~/Documents/Desktop/MP3/MP3/camelia-project/frontend
+./run.sh
 ```
 
-Your prompt must now start with `(.venv)`.
+`run.sh` checks Node ≥ 20, runs `npm install` if `node_modules` is missing, and starts Vite.
 
-```bash
-pip install -r requirements.txt    # takes ~1 minute; ignore pip's version notice
-python seed.py                     # creates camelia.db with 26 dishes + demo users
-uvicorn app.main:app --reload --reload-dir app --port 9000
+You should see:
+
+```
+Website  →  http://localhost:5173
+Backend must be running on port 9000 (Terminal 1).
+Press Ctrl-C to stop the frontend.
 ```
 
-> **Always pass `--reload-dir app`.** Without it uvicorn watches the whole `backend/`
-> folder including `.venv`, so every file pip writes triggers a reload and drowns your
-> terminal in `WatchFiles detected changes in '.venv/...'` warnings. `start.sh` does this
-> for you automatically.
+Open <http://localhost:5173>.
 
-Leave that terminal running. Then open:
-
-- http://localhost:9000/api/health → should say `{"status":"ok",...}`
-- http://localhost:9000/docs → interactive API documentation
-
-### About `install -r requirements.txt`
-
-`install` is a macOS system command for copying files, not pip. You must type **`pip`**:
-
-```bash
-pip install -r requirements.txt     # ✅
-install -r requirements.txt         # ❌ macOS install command
-```
-
-If `pip` is not found, use the interpreter directly — this always works:
-
-```bash
-python3 -m pip install -r requirements.txt
-python3 -m uvicorn app.main:app --reload --port 9000
-```
-
-### Why port 9000 and not 8000?
-
-The frontend is configured to proxy `/api` to `127.0.0.1:9000` (`frontend/vite.config.ts`).
-Use 9000 and everything connects with no configuration. If you prefer 8000, change **both**
-`--port 8000` and `VITE_API_PROXY` in `vite.config.ts` to 8000, otherwise the app will show
-"The kitchen is offline".
-
----
-
-## Block 3 — frontend (Terminal 2, new tab)
-
-```bash
-cd MP3/camelia-project/frontend    # ← frontend, not backend
-npm install
-npm run dev
-```
-
-Open http://localhost:5173.
-
-### ⚠️ Node version
-
-This project needs **Node 20 or newer** (Tailwind CSS 4 and Vite 5 require it). Check:
+### Node version
 
 ```bash
 node -v      # must be v20.x or higher
 ```
 
-If it is older, install Node 20 and use it:
-
-```bash
-nvm install 20
-nvm use 20        # or simply: nvm use   (reads the .nvmrc in frontend/)
-node -v           # now v20.x
-```
-
-Then delete the broken install and retry:
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-npm run dev
-```
+Older: `nvm install 20 && nvm use 20`. The repo has a `.nvmrc` in `frontend/`, so a bare
+`nvm use` reads it.
 
 ---
 
-## Block 4 — log in and check it works
+## In VS Code, without typing
 
-Open http://localhost:5173 and use:
+Open the **repo root** (the folder with `MP3/` in it), then **Terminal → Run Task…**:
+
+| Task | What it does |
+|---|---|
+| **`1️⃣ BACKEND (port 9000)`** | Terminal 1 — the API. Opens its own panel named *backend*. |
+| **`2️⃣ FRONTEND (port 5173)`** | Terminal 2 — the site. Opens its own panel named *frontend*. |
+| `3️⃣ RUN BOTH (one terminal)` | The old combined start — one Ctrl-C stops everything. |
+| `4️⃣ Reset demo database` | Deletes `camelia.db` and re-seeds 26 dishes. |
+| `5️⃣ Run backend tests` | `pytest -q` — 33 tests. |
+| `6️⃣ Build frontend` | TypeScript check + production build. |
+| `7️⃣ Git pull (arena branch)` | Pulls the latest pushed code. |
+
+Run tasks 1 and 2 **once each**; you get two panels side by side.
+If **Run Task…** shows nothing, you opened the inner `camelia-project` folder instead of the
+repo root — tasks only live at the root.
+
+---
+
+## Log in and check that it works
+
+Open <http://localhost:5173>:
 
 | Role | Email | Password |
 |---|---|---|
 | Customer | `customer@camelia.rw` | `Customer123` |
 | Admin | `admin@camelia.rw` | `Admin123` |
 
-The landing page must show the rotating plate photo behind "Good food creates better days"
-and the dark right-hand panel ("Your next favourite meal"). The plate changes every 3 seconds.
+The landing page shows the rotating plate photograph behind "Good food creates better days"
+with the dark right-hand panel. The plate changes every 3 seconds.
 
-If the page loads but the menu is empty, the backend is not running or is on the wrong port —
-look at Terminal 1.
+If the page loads but the menu is empty → the backend is down or on the wrong port.
+Look at Terminal 1.
+
+---
+
+## Two servers, two Ctrl-C
+
+| You want to | Do this |
+|---|---|
+| Change Python code | edit; uvicorn reloads automatically (watch Terminal 1) |
+| Change React code | edit; Vite hot-reloads (watch Terminal 2) |
+| Restart only the API | Ctrl-C in Terminal 1, then `./run.sh` again |
+| Restart only the site | Ctrl-C in Terminal 2, then `./run.sh` again |
+| Stop everything | Ctrl-C in both |
+
+These were tested: stopping the frontend leaves the API answering on 9000, and stopping the
+API leaves the site serving on 5173.
 
 ---
 
 ## Error → cause → fix
 
-| Error you saw | What it really means | Fix |
+| Message | Cause | Fix |
 |---|---|---|
-| `install: illegal option -- r` | macOS `install` command, not pip | type `pip install -r requirements.txt` |
-| `zsh: command not found: pip` | virtual environment not activated | `source .venv/bin/activate` then `pip …` |
-| `zsh: command not found: uvicorn` | same — it is installed inside `.venv` | activate the venv first |
-| `Could not read package.json … /backend/package.json` | ran `npm` inside `backend/` | `cd ../frontend` then `npm install` |
-| `ENOENT … /MP3/camelia-project/backend/…` | you are in `MP3/` not `MP3/camelia-project/` | `cd MP3/camelia-project` first |
-| Port already in use | another server is running | `lsof -ti:9000 \| xargs kill -9` |
-| `The kitchen is offline` in the app | backend not running or on port 8000 | start it on 9000 |
-| `can't open file .../backend/seed.py` | you are in the OLD `camelia-project` folder | `cd .../camelia-repo/MP3/camelia-project/backend` |
-| pip installed only 4 packages | same — old `requirements.txt` has no SQLAlchemy/sklearn | use the clone |
-| Hundreds of `WatchFiles detected changes in '.venv/...'` | uvicorn watching the venv | add `--reload-dir app` |
-| `(venv)` prompt but `uvicorn: command not found` | venv from the old folder | recreate it in the correct folder |
-| Page is unstyled / no Tailwind | Node older than 20 | `nvm use 20`, delete `node_modules`, reinstall |
+| `Wrong folder: app/recommender.py is missing` | `run.sh` was run from the wrong directory | `cd MP3/camelia-project/backend` first |
+| `zsh: permission denied: ./run.sh` | Executable bit lost (copied the file by hand) | `chmod +x run.sh` |
+| `command not found: npm` | Node is not installed | install Node 20+ from nodejs.org |
+| `command not found: uvicorn` | You typed it yourself outside the venv | use `./run.sh`; it calls `.venv/bin/python` |
+| `install: illegal option -- r` | Typed the macOS `install` command, not `pip` | use `./run.sh`, or `.venv/bin/python -m pip install -r requirements.txt` |
+| `can't open file .../backend/package.json` | Ran `npm` inside `backend/` | The React app is in `frontend/`. There is no `package.json` in `backend/`. |
+| `Port 9000 is still in use` | Another API is already running | stop it in its terminal, or `lsof -ti:9000 \| xargs kill -9` |
+| `Port 5173 is still in use` | Another Vite is already running | stop it, or `lsof -ti:5173 \| xargs kill -9` |
+| `WatchFiles detected changes in '.venv/...'` repeatedly | uvicorn started without `--reload-dir app` | `run.sh` always passes it |
+| Page loads, menu says "The kitchen is offline" | Backend not running, or on port 8000 | start Terminal 1, confirm 9000 |
+| `npm error engine Unsupported engine` | Node older than 20 | `nvm install 20 && nvm use 20` |
+| `Port 5173 is in use, trying another one...` | Vite silently moved to 5174 | `run.sh` now refuses instead; stop the other Vite |
 
 ---
 
-## Where new changes go
+## What still works the old way
 
-I push to the branch **`arena/cb16c143-camelia-ai-menu`** only. Your `main` branch still holds
-the old prototype. To keep your local copy current:
-
-```bash
-cd camelia-repo
-git fetch origin
-git checkout arena/cb16c143-camelia-ai-menu
-git pull origin arena/cb16c143-camelia-ai-menu
-```
-
-Never edit the same file on your Mac and in Arena the same day — pull first, then edit, then
-push. That is how you avoid a merge conflict.
-
-## Useful checks
-
-```bash
-# backend tests (from backend/, with the venv active)
-pytest -q                 # expect: 33 passed
-
-# frontend production build (from frontend/)
-npm run build             # expect: ✓ built in ~4s
-```
+`MP3/camelia-project/start.sh` (and `start.command`, which you can double-click in Finder)
+still boots both servers in **one** terminal. It is handy for a quick demo, but for
+development use the two `run.sh` scripts — that is what they are for.
