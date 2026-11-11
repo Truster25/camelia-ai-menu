@@ -19,6 +19,15 @@ red()   { printf '\033[0;31m%s\033[0m\n' "$1"; }
 warn()  { printf '\033[0;33m%s\033[0m\n' "$1"; }
 
 # ---------------------------------------------------------------- pre-flight
+echo "Camelia AI Menu — running from: $ROOT"
+if [ ! -f "$BACKEND/app/recommender.py" ]; then
+  red "This does not look like the right folder."
+  echo "  Expected $BACKEND/app/recommender.py"
+  echo "  You are probably in an OLD copy of the project (the one without seed.py)."
+  echo "  Use the fresh clone:  cd ~/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project"
+  exit 1
+fi
+
 command -v python3 >/dev/null || { red "python3 not found. Install Python 3.10+."; exit 1; }
 command -v node    >/dev/null || { red "node not found. Install Node 20+."; exit 1; }
 
@@ -44,15 +53,15 @@ cd "$BACKEND"
 if [ ! -d .venv ]; then
   green "Creating the Python virtual environment…"
   python3 -m venv .venv
-  ./.venv/bin/python -m pip install --quiet --upgrade pip
+  ./.venv/bin/python -m pip install --quiet --disable-pip-version-check --upgrade pip
 fi
 
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
 if [ ! -f .venv/.installed ] || [ requirements.txt -nt .venv/.installed ]; then
-  green "Installing backend dependencies…"
-  python -m pip install --quiet -r requirements.txt
+  green "Installing backend dependencies… (about a minute the first time)"
+  python -m pip install --quiet --disable-pip-version-check -r requirements.txt
   touch .venv/.installed
 fi
 
@@ -68,14 +77,14 @@ fi
 cd "$FRONTEND"
 
 if [ ! -d node_modules ] || [ package.json -nt node_modules/.package-lock.json ]; then
-  green "Installing frontend dependencies (this takes a minute the first time)…"
-  npm install --no-audit --no-fund
+  green "Installing frontend dependencies… (about a minute the first time)"
+  npm install --no-audit --no-fund --no-progress
 fi
 
 # ---------------------------------------------------------------- run both
 green "Starting the API on http://localhost:$API_PORT (docs at /docs)"
 cd "$BACKEND"
-python -m uvicorn app.main:app --reload --port "$API_PORT" &
+python -m uvicorn app.main:app --reload --reload-dir app --port "$API_PORT" &
 API_PID=$!
 
 green "Starting the site on http://localhost:$WEB_PORT"
