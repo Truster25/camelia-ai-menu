@@ -29,7 +29,8 @@ if [ ! -f "$BACKEND/app/recommender.py" ]; then
 fi
 
 command -v python3 >/dev/null || { red "python3 not found. Install Python 3.10+."; exit 1; }
-command -v node    >/dev/null || { red "node not found. Install Node 20+."; exit 1; }
+command -v node    >/dev/null || { red "node not found. Install Node 20+ from https://nodejs.org"; exit 1; }
+command -v npm     >/dev/null || { red "npm not found. Reinstall Node 20+ from https://nodejs.org"; exit 1; }
 
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 if [ "$NODE_MAJOR" -lt 20 ]; then
@@ -50,6 +51,13 @@ done
 # ---------------------------------------------------------------- backend
 cd "$BACKEND"
 
+# A .venv copied from another machine (or another folder) is broken: its
+# shebangs point at a python that does not exist here. Detect and rebuild it.
+if [ -d .venv ] && ! ./.venv/bin/python -c "import sys" >/dev/null 2>&1; then
+  warn "The existing .venv is not usable here — rebuilding it."
+  rm -rf .venv
+fi
+
 if [ ! -d .venv ]; then
   green "Creating the Python virtual environment…"
   python3 -m venv .venv
@@ -59,7 +67,8 @@ fi
 # shellcheck disable=SC1091
 source .venv/bin/activate
 
-if [ ! -f .venv/.installed ] || [ requirements.txt -nt .venv/.installed ]; then
+if [ ! -f .venv/.installed ] || [ requirements.txt -nt .venv/.installed ] \
+   || ! python -c "import fastapi, sqlalchemy, sklearn, jose, bcrypt" >/dev/null 2>&1; then
   green "Installing backend dependencies… (about a minute the first time)"
   python -m pip install --quiet --disable-pip-version-check -r requirements.txt
   touch .venv/.installed
