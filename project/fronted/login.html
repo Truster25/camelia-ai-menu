@@ -1,0 +1,69 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Truster Technology</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header>
+    <nav class="container">
+      <h1>Truster Technology</h1>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Checkout Section -->
+  <main class="container">
+    <h2>Checkout</h2>
+    <div class="checkout-container">
+      <!-- Shipping Information Form -->
+      <form class="checkout-form">
+        <h3>Shipping Information</h3>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+
+        <label for="address">Address</label>
+        <input type="text" id="address" placeholder="Enter your address" required>
+
+        <label for="city">City</label>
+        <input type="text" id="city" placeholder="Enter your city" required>
+
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" placeholder="Enter your phone number" required>
+
+        <!-- Payment Method -->
+        <h3>Payment Method</h3>
+        <label><input type="radio" name="payment" value="card" required> Card</label>
+        <label><input type="radio" name="payment" value="mobile"> Mobile Money</label>
+        <label><input type="radio" name="payment" value="cod"> Cash on Delivery</label>
+
+        <!-- Order Summary -->
+        <h3>Order Summary</h3>
+        <div class="order-summary">
+          <p>Apple MacBook Pro x1 - $1300</p>
+          <p>Dell XPS 13 x2 - $1998</p>
+          <h4>Total: $3198</h4>
+        </div>
+
+        <button type="submit" class="btn">Place Order</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 TRUSTER TECHNOLOGY. All rights reserved.</p>
+  </footer>
+</body>
+</html>
