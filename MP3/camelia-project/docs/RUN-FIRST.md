@@ -39,6 +39,31 @@ git pull origin arena/cb16c143-camelia-ai-menu
 
 ---
 
+## ⚠️ First: did `git pull` print lines starting with `D`?
+
+If yes, tracked files are **missing from your working copy** (a folder rename or a branch
+switch does this). `git pull` will not bring them back, because nothing about them changed
+upstream.
+
+The dangerous one is `D MP3/camelia-project/frontend/index.html`: Vite still starts and says
+"ready", but the browser shows **`HTTP ERROR 404`** — it looks like a dead server, and it is
+not.
+
+```bash
+git status --short | grep '^ D'      # list what is missing
+git checkout -- MP3/camelia-project  # restore them
+```
+
+Both `run.sh` scripts now check their own folder for missing tracked files and restore them
+automatically before starting, so `./run.sh` alone fixes it. They restore one file at a time
+and never overwrite the running script itself.
+
+> Also: `cd ~/Documents/Desktop/MP3` failed in your terminal because the shell had already
+> expanded `~` and a full path was given. Type the path exactly once:
+> `cd /Users/macbook/Documents/Desktop/MP3`
+
+---
+
 ## Terminal 1 — the backend (API + AI, port 9000)
 
 Open VS Code's terminal (**Ctrl-`**) and run:
@@ -163,7 +188,7 @@ API leaves the site serving on 5173.
 
 | Message | Cause | Fix |
 |---|---|---|
-| `Wrong folder: app/recommender.py is missing` | `run.sh` was run from the wrong directory | `cd MP3/camelia-project/backend` first |
+| `Wrong folder: app/recommender.py is missing` | `run.sh` was run from the wrong directory | `cd MP3/camelia-project/backend` first — note **two** `MP3` levels |
 | `zsh: permission denied: ./run.sh` | Executable bit lost (copied the file by hand) | `chmod +x run.sh` |
 | `command not found: npm` | Node is not installed | install Node 20+ from nodejs.org |
 | `command not found: uvicorn` | You typed it yourself outside the venv | use `./run.sh`; it calls `.venv/bin/python` |
