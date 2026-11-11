@@ -23,6 +23,28 @@ if [ "$NODE_MAJOR" -lt 20 ]; then
   exit 1
 fi
 
+# ---------------------------------------------------------------------------
+# Self-repair: a "D" line in git status means a tracked file is MISSING from
+# this working copy (after a folder rename or a branch switch). Vite then
+# serves a folder with no index.html, and the browser shows a bare 404 that
+# looks like the server is down. git pull will NOT restore these files,
+# because nothing upstream changed them.
+#
+# Files are restored one at a time and run.sh is skipped, so this repair can
+# never overwrite the script that is currently running.
+# ---------------------------------------------------------------------------
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  missing="$(git ls-files --deleted -- "." 2>/dev/null | grep -v 'run\.sh$' || true)"
+  if [ -n "$missing" ]; then
+    warn "Tracked files are missing from this folder — restoring them:"
+    while IFS= read -r f; do
+      [ -z "$f" ] && continue
+      echo "    $f"
+      git checkout -- "$f" 2>/dev/null || red "    could not restore $f"
+    done <<< "$missing"
+  fi
+fi
+
 if [ ! -f package.json ]; then
   red "Wrong folder: package.json is missing. Run this from MP3/camelia-project/frontend."
   exit 1

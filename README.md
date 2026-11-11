@@ -98,6 +98,23 @@ ls MP3/camelia-project/backend/seed.py MP3/camelia-project/backend/app/recommend
 - Both listed → ✅ the project is fine, start it.
 - "No such file" → you are on the wrong branch or in an old copy. Run the `git checkout` above.
 
+### ⚠️ If `git pull` printed `D` lines — read this
+
+A line like `D       MP3/camelia-project/frontend/index.html` means that file is **missing
+from your working copy**. `git pull` only writes files that changed upstream, so those stay
+missing. If `frontend/index.html` is one of them, Vite starts up and prints "ready", but the
+browser shows **`HTTP ERROR 404`** — which looks like the server is down when it is not.
+
+Fix it — this restores the missing files without touching your own edits:
+
+```bash
+git status --short | grep '^ D'     # what is missing
+git checkout -- MP3/camelia-project  # restore just the project
+```
+
+Both `run.sh` scripts now do this check themselves in their own folder, and restore what is
+missing, so running `./run.sh` is enough.
+
 The backend and frontend themselves are healthy. The only thing that ever went wrong was
 running commands in the wrong folder — the task above cannot make that mistake.
 
@@ -130,6 +147,7 @@ Each folder has its own `run.sh` — **run each one in its own terminal**. `back
 | Symptom | Fix |
 |---|---|
 | "Wrong folder: app/recommender.py is missing" | You ran `backend/run.sh` from somewhere else. `cd MP3/camelia-project/backend` first, or use the VS Code task. |
+| **`HTTP ERROR 404` on localhost:5173** | `frontend/index.html` is deleted from your working copy (the `D` lines from a pull). Run `./run.sh` — it restores it. |
 | Page loads but no dishes ("The kitchen is offline") | Backend not running, or running on 8000 instead of 9000. |
 | Hundreds of `.venv` reload messages | Missing `--reload-dir app`. The task adds it for you. |
 | `command not found: npm` | Node is not installed. Install Node 20+ from nodejs.org. |
