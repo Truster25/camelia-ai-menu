@@ -58,8 +58,7 @@
     .hero-copy p {
       display: none;
     }
-    .hero-copy hr,
-    .hero-scroll {
+    .hero-copy hr {
       display: none !important;
     }
   }

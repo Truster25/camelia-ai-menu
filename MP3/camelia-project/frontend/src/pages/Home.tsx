@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowDown, ArrowRight, ArrowUpRight, Coffee, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Coffee, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Dish } from '../lib/types';
 import { DishCard } from '../components/DishCard';
@@ -77,7 +77,7 @@ export function Home() {
         <div className="grid min-h-[100svh] lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px]">
           {/* photo panel: fills the whole first screen; the header floats over it */}
           <div className="relative min-h-[100svh]">
-            <HeroSlideshow slides={heroSlides} interval={3000} className="absolute inset-0" />
+            <HeroSlideshow slides={heroSlides} interval={4000} className="absolute inset-0" />
 
             {/* copy sits on top of the photograph */}
             <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-20 pt-24 sm:px-10 sm:pb-24 sm:pt-28 lg:px-14 lg:pb-24 lg:pt-32">
@@ -108,12 +108,6 @@ export function Home() {
                 </Link>
               </div>
 
-              <a href="#story" className="hero-scroll mt-10 hidden w-fit items-center gap-3 text-[8.5px] uppercase tracking-[0.2em] text-cream/55 sm:mt-12 sm:inline-flex">
-                <span className="grid h-8 w-8 place-items-center rounded-full border border-cream/30">
-                  <ArrowDown size={13} />
-                </span>
-                Scroll to explore
-              </a>
             </div>
           </div>
 
