@@ -9,9 +9,58 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$HERE"
 
+printf '\033[2mRunning from: %s\033[0m\n' "$HERE"
+
 green() { printf '\033[0;32m%s\033[0m\n' "$1"; }
 red()   { printf '\033[0;31m%s\033[0m\n' "$1"; }
 warn()  { printf '\033[0;33m%s\033[0m\n' "$1"; }
+
+# ---------------------------------------------------------------------------
+# Are you in the repo's copy of the project, or a leftover one?
+#
+# Your laptop had two camelia-project folders. Running the wrong one costs real
+# time: it builds its own .venv, installs dependencies, and then serves an old
+# prototype. So check the folder's signature BEFORE doing any setup.
+#
+# Two independent signals, because each file exists:
+#   1. signature files  - work even outside a git repo (a stray copy, a zip)
+#   2. git tracking     - catches a leftover copy that happens to sit inside the
+#                         clone, which the signature alone cannot distinguish
+# ---------------------------------------------------------------------------
+missing_sig=""
+for f in "index.html" "src/main.tsx"; do
+  [ -f "$f" ] || missing_sig="$missing_sig $f"
+done
+
+if [ -n "$missing_sig" ]; then
+  red "STOP — this folder is not the project."
+  echo "  This folder : $HERE"
+  echo "  Missing     :$missing_sig"
+  echo
+  echo "  This looks like a leftover copy (for example Desktop/MP3/camelia-project,"
+  echo "  which is one MP3 too few). The real one is inside the clone:"
+  echo "    /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/frontend"
+  echo
+  echo "  Go there and run it:"
+  echo "    cd /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/frontend && ./run.sh"
+  echo
+  echo "  If that path does not exist, clone the repo first:"
+  echo "    cd /Users/macbook/Documents/Desktop/MP3"
+  echo "    git clone https://github.com/Truster25/camelia-ai-menu.git camelia-repo"
+  exit 1
+fi
+
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  if ! git ls-files --error-unmatch "index.html" >/dev/null 2>&1; then
+    red "STOP — this is a leftover copy, not the repo's project."
+    echo "  This folder : $HERE"
+    echo "  git does not track "index.html" here."
+    echo "  The real folder is .../MP3/MP3/camelia-project/frontend"
+    echo
+    echo "    cd /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/frontend && ./run.sh"
+    exit 1
+  fi
+fi
 
 command -v node >/dev/null || { red "node not found. Install Node 20+ from https://nodejs.org"; exit 1; }
 command -v npm  >/dev/null || { red "npm not found. Reinstall Node 20+."; exit 1; }

@@ -39,6 +39,58 @@ git pull origin arena/cb16c143-camelia-ai-menu
 
 ---
 
+## Stuck inside a shell prompt? (`(.venv)` in front)
+
+If your prompt looks like this, a virtual environment is activated:
+
+```
+(.venv) macbook@192 camelia-project %
+```
+
+`(.venv)` is not a folder you entered — it is a mode. Leave it with:
+
+```bash
+deactivate
+```
+
+You do not need to activate it. **`./run.sh` calls `.venv/bin/python` directly**, so nothing
+has to be activated and the `(.venv)` prefix is never required.
+
+To leave the folder as well:
+
+```bash
+cd /Users/macbook/Documents/Desktop/MP3
+```
+
+> ⚠️ Note the venv path in your prompt:
+> `Desktop/MP3/camelia-project/backend/.venv` — that is **one `MP3` short**. The repo's copy
+> is `Desktop/MP3/MP3/camelia-project/backend`. If you activated the wrong one, you were
+> working in the leftover copy.
+
+---
+
+## Is this folder the real one, or a leftover?
+
+One command, works anywhere:
+
+```bash
+pwd && ls seed.py app/recommender.py      # run inside a backend/ folder
+```
+
+Both files listed → real folder. `No such file` → leftover copy.
+
+`run.sh` now prints its own path as its first line, so it can never be ambiguous:
+
+```
+Running from: /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/backend
+API  →  http://localhost:9000
+```
+
+If the path shown does not contain `MP3/MP3/camelia-project`, it is the wrong folder, and
+`run.sh` stops with `STOP — this folder is not the project` before it builds anything.
+
+---
+
 ## ⚠️ First: did `git pull` print lines starting with `D`?
 
 If yes, tracked files are **missing from your working copy** (a folder rename or a branch
@@ -188,7 +240,8 @@ API leaves the site serving on 5173.
 
 | Message | Cause | Fix |
 |---|---|---|
-| `Wrong folder: app/recommender.py is missing` | `run.sh` was run from the wrong directory | `cd MP3/camelia-project/backend` first — note **two** `MP3` levels |
+| `STOP — this folder is not the project` | You are in the leftover copy (often one `MP3` too few) | `cd /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/backend` |
+| Prompt shows `(.venv)` and you want out | A venv is activated | `deactivate` — `run.sh` never needs it |
 | `zsh: permission denied: ./run.sh` | Executable bit lost (copied the file by hand) | `chmod +x run.sh` |
 | `command not found: npm` | Node is not installed | install Node 20+ from nodejs.org |
 | `command not found: uvicorn` | You typed it yourself outside the venv | use `./run.sh`; it calls `.venv/bin/python` |
