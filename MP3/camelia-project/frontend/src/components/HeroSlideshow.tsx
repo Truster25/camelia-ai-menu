@@ -91,10 +91,6 @@ export function HeroSlideshow({ slides, interval = 4000, pauseOnHover = true, cl
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/80 via-black/5 to-black/60" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/85 to-transparent" aria-hidden="true" />
 
-      {/* dish name only — the label and price were removed on purpose */}
-      <div className="absolute bottom-6 right-5 z-10 max-w-[46%] text-right sm:right-6 sm:max-w-[58%]">
-        <p className="truncate font-display text-base text-sage-100 sm:text-lg">{slides[index].dish}</p>
-      </div>
 
       {!loaded[0] && <div className="absolute inset-0 -z-10 animate-pulse bg-forest-800" aria-hidden="true" />}
     </div>

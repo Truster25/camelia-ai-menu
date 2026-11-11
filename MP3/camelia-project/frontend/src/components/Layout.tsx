@@ -31,9 +31,14 @@ export function Header({ overlay = false }: HeaderProps) {
     setOpen(false);
   }, [location.pathname]);
 
-  // Which band of the page is under the header? Sections carry
-  // data-header-theme="light|dark"; the header flips its logo and text to stay
-  // legible over cream, amber or a dark photograph.
+  // The header must never become invisible.
+  //
+  // Default: light text (works on every dark page in this app).
+  // A section needs to be *marked* as light before the header switches to dark
+  // ink, and if nothing is under the header at all we also fall back to light.
+  // An untagged page therefore gets the safe answer, which is what went wrong
+  // on /login: it had no marker, the header chose dark ink, and dark-on-dark
+  // made the logo and links disappear.
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
@@ -50,7 +55,8 @@ export function Header({ overlay = false }: HeaderProps) {
         }
       }
 
-      let current: 'light' | 'dark' = 'dark';
+      // Only an explicit light band flips the header to dark ink.
+      let current: 'light' | 'dark' = 'light';
       for (const el of themed) {
         const rect = el.getBoundingClientRect();
         if (rect.top <= 86 && rect.bottom > 86) {
@@ -82,6 +88,19 @@ export function Header({ overlay = false }: HeaderProps) {
         theme === 'dark' ? 'text-ink' : 'text-sage-100'
       }`}
     >
+      {/* Reading scrim. Only on pages without a full-bleed hero, and only a
+          soft fade that dies out before the content starts, so the header stays
+          transparent in spirit while never disappearing against the page. */}
+      {!overlay && (
+        <div
+          className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[128px] ${
+            theme === 'dark'
+              ? 'bg-gradient-to-b from-cream via-cream/80 to-transparent'
+              : 'bg-gradient-to-b from-black/70 via-black/35 to-transparent'
+          }`}
+          aria-hidden="true"
+        />
+      )}
       <div className="mx-auto flex h-[86px] max-w-[1600px] items-center gap-4 px-5 sm:px-8 lg:px-10">
         <Logo variant={theme === 'dark' ? 'orange' : 'white'} className="h-12 shrink-0 sm:h-14" />
 
