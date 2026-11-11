@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type HeroSlide = {
   src: string;
@@ -31,7 +31,7 @@ type Props = {
  * `.relative` after `.absolute`, so a hardcoded `relative` here would silently
  * beat the `absolute inset-0` a caller passes in. The wrapper owns positioning.
  */
-export function HeroSlideshow({ slides, interval = 3000, pauseOnHover = true, className = '' }: Props) {
+export function HeroSlideshow({ slides, interval = 4000, pauseOnHover = true, className = '' }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
@@ -41,11 +41,6 @@ export function HeroSlideshow({ slides, interval = 3000, pauseOnHover = true, cl
     reducedMotion.current =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
-
-  const go = useCallback(
-    (next: number) => setIndex(((next % slides.length) + slides.length) % slides.length),
-    [slides.length],
-  );
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -96,36 +91,9 @@ export function HeroSlideshow({ slides, interval = 3000, pauseOnHover = true, cl
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/80 via-black/5 to-black/60" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/85 to-transparent" aria-hidden="true" />
 
-      {/* transition progress + slide controls */}
-      <div className="absolute bottom-6 left-5 z-10 flex items-center gap-2.5 sm:left-1/2 sm:-translate-x-1/2">
-        {slides.map((slide, i) => (
-          <button
-            key={slide.src}
-            onClick={() => go(i)}
-            className="group relative h-1 overflow-hidden rounded-full bg-white/25 transition-all"
-            style={{ width: i === index ? 44 : 18 }}
-            aria-label={`Show ${slide.dish}`}
-            aria-current={i === index}
-          >
-            <span
-              className="absolute inset-y-0 left-0 bg-amber-logo"
-              style={{
-                width: i === index ? '100%' : '0%',
-                transition: i === index ? `width ${interval}ms linear` : 'none',
-                animation: i === index && !paused ? 'none' : undefined,
-              }}
-            />
-          </button>
-        ))}
-      </div>
-
-      {/* current dish caption */}
+      {/* dish name only — the label and price were removed on purpose */}
       <div className="absolute bottom-6 right-5 z-10 max-w-[46%] text-right sm:right-6 sm:max-w-[58%]">
-        <p className="text-[9px] uppercase tracking-[0.22em] text-amber-soft">Now plating</p>
-        <p className="mt-1 truncate font-display text-base text-sage-100 sm:text-lg">{slides[index].dish}</p>
-        <p className="text-[9px] uppercase tracking-[0.12em] text-sage-300/80 sm:text-[10px] sm:tracking-[0.14em]">
-          {slides[index].category} · {slides[index].price}
-        </p>
+        <p className="truncate font-display text-base text-sage-100 sm:text-lg">{slides[index].dish}</p>
       </div>
 
       {!loaded[0] && <div className="absolute inset-0 -z-10 animate-pulse bg-forest-800" aria-hidden="true" />}
