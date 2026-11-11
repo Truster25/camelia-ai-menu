@@ -5,6 +5,37 @@ If you follow these four blocks in order it will work.
 
 ---
 
+## ⚠️⚠️ The #1 cause of every error below: you are in the OLD folder
+
+There are now **two copies** of `camelia-project` on your Desktop:
+
+| Folder | What it is |
+|---|---|
+| `MP3/camelia-project` | **OLD.** The original prototype. No `seed.py`, no `Dockerfile`, no real backend. |
+| `MP3/camelia-repo/MP3/camelia-project` | **NEW. This is the one to use.** Everything I built. |
+
+Your terminal said `macbook@192 camelia-project %` — that is the **old** folder, which is why
+`python seed.py` said *"can't open file .../camelia-project/backend/seed.py"* and why
+`pip install -r requirements.txt` installed only 4 packages instead of the full set.
+
+**How to tell which folder you are in** (run this):
+
+```bash
+ls backend/seed.py backend/app/recommender.py
+```
+
+- Both files exist → ✅ correct folder, carry on.
+- "No such file or directory" → ❌ old folder. Move to the clone:
+
+```bash
+cd /Users/macbook/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project
+```
+
+Your prompt must read `camelia-project` **and** the path above must contain `camelia-repo`.
+Tip: run `pwd` if you are ever unsure — it prints the full path.
+
+---
+
 ## ⚠️ Read this before anything else
 
 Your project folder is **`MP3/camelia-project/`** — not `MP3/`.
@@ -28,13 +59,17 @@ environment**, and the virtual environment was not activated.
 cd /Users/macbook/Documents/Desktop/MP3
 ```
 
-If you have **not** cloned my branch yet:
+If you have **not** cloned my branch yet (you have, so skip this):
 
 ```bash
+cd /Users/macbook/Documents/Desktop/MP3
 git clone https://github.com/Truster25/camelia-ai-menu.git camelia-repo
 cd camelia-repo
 git checkout arena/cb16c143-camelia-ai-menu
 ```
+
+✅ You already did this — your clone is at
+`/Users/macbook/Documents/Desktop/MP3/camelia-repo` and is up to date.
 
 If you already have a clone of the repo:
 
@@ -61,7 +96,7 @@ print `arena/cb16c143-camelia-ai-menu`.
 ## Block 2 — backend (Terminal 1)
 
 ```bash
-cd MP3/camelia-project/backend     # ← note: MP3/camelia-project/backend
+cd /Users/macbook/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project/backend
 python3 -m venv .venv              # create the virtual environment (once)
 source .venv/bin/activate          # ← THIS is the step you missed
 ```
@@ -69,10 +104,15 @@ source .venv/bin/activate          # ← THIS is the step you missed
 Your prompt must now start with `(.venv)`.
 
 ```bash
-pip install -r requirements.txt    # "python -m pip" if plain pip is not found
+pip install -r requirements.txt    # takes ~1 minute; ignore pip's version notice
 python seed.py                     # creates camelia.db with 26 dishes + demo users
-uvicorn app.main:app --reload --port 9000
+uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
+
+> **Always pass `--reload-dir app`.** Without it uvicorn watches the whole `backend/`
+> folder including `.venv`, so every file pip writes triggers a reload and drowns your
+> terminal in `WatchFiles detected changes in '.venv/...'` warnings. `start.sh` does this
+> for you automatically.
 
 Leave that terminal running. Then open:
 
@@ -168,6 +208,10 @@ look at Terminal 1.
 | `ENOENT … /MP3/camelia-project/backend/…` | you are in `MP3/` not `MP3/camelia-project/` | `cd MP3/camelia-project` first |
 | Port already in use | another server is running | `lsof -ti:9000 \| xargs kill -9` |
 | `The kitchen is offline` in the app | backend not running or on port 8000 | start it on 9000 |
+| `can't open file .../backend/seed.py` | you are in the OLD `camelia-project` folder | `cd .../camelia-repo/MP3/camelia-project/backend` |
+| pip installed only 4 packages | same — old `requirements.txt` has no SQLAlchemy/sklearn | use the clone |
+| Hundreds of `WatchFiles detected changes in '.venv/...'` | uvicorn watching the venv | add `--reload-dir app` |
+| `(venv)` prompt but `uvicorn: command not found` | venv from the old folder | recreate it in the correct folder |
 | Page is unstyled / no Tailwind | Node older than 20 | `nvm use 20`, delete `node_modules`, reinstall |
 
 ---

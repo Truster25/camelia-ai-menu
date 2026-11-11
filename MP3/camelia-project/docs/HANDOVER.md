@@ -51,7 +51,7 @@ cd MP3/camelia-project/backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python seed.py                       # optional: tables + demo data are auto-created on boot
-uvicorn app.main:app --reload --port 9000
+uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
 ```bash

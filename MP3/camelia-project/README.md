@@ -76,7 +76,7 @@ python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python seed.py                       # 6 categories, 26 dishes, demo users, sample orders
-uvicorn app.main:app --reload --port 9000
+uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
 - API docs: http://localhost:9000/docs
