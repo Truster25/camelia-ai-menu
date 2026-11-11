@@ -85,7 +85,7 @@ export function Menu() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
+    <div data-header-theme="dark" className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
       <SectionHeading
         kicker="Our menu"
         title={(

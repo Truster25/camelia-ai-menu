@@ -78,7 +78,7 @@ export function Recommend() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
+    <div data-header-theme="dark" className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="kicker"><span className="kicker-line" /> AI recommender</p>
