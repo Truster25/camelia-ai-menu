@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Camelia API (debug, 9000)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--reload-dir", "app", "--port", "9000"],
+      "cwd": "${workspaceFolder}/MP3/camelia-project/backend",
+      "python": "${workspaceFolder}/MP3/camelia-project/backend/.venv/bin/python",
+      "jinja": false,
+      "justMyCode": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Camelia API tests (pytest)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-q"],
+      "cwd": "${workspaceFolder}/MP3/camelia-project/backend",
+      "python": "${workspaceFolder}/MP3/camelia-project/backend/.venv/bin/python",
+      "console": "integratedTerminal"
+    }
+  ]
+}
