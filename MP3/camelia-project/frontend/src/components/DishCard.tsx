@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, Leaf, Plus, Timer } from 'lucide-react';
 import { formatRwf } from '../lib/api';
@@ -13,8 +14,12 @@ type DishCardProps = {
 };
 
 /**
- * Dish "art" is generated from the dish tone because the project has no
- * licensed photography for every plate; it keeps the VELO editorial look.
+ * Dish artwork.
+ *
+ * Uses real photography when the dish has an `image_url`, and falls back to a
+ * generated gradient tile otherwise. The fallback matters: not every dish has a
+ * photograph yet, and a broken <img> would look worse than deliberate art.
+ * If a photo is referenced but fails to load, the gradient stays underneath it.
  */
 export function DishArt({
   dish,
@@ -29,6 +34,9 @@ export function DishArt({
 }) {
   const tone = toneClasses[dish.art_tone] ?? toneClasses.green;
   const glow = toneGlow[dish.art_tone] ?? toneGlow.green;
+  const [failed, setFailed] = useState(false);
+  const photo = dish.image_url && !failed ? dish.image_url : null;
+
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <div className={`absolute inset-0 bg-gradient-to-br ${tone}`} />
@@ -37,7 +45,20 @@ export function DishArt({
         style={{ background: glow }}
         aria-hidden="true"
       />
-      <div className="absolute inset-0 grid place-items-center" aria-hidden="true">
+      {photo && (
+        <img
+          src={photo}
+          alt={dish.name}
+          loading="lazy"
+          decoding="async"
+          onError={() => setFailed(true)}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+        />
+      )}
+      {photo && (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-forest-950/20" aria-hidden="true" />
+      )}
+      {!photo && <div className="absolute inset-0 grid place-items-center" aria-hidden="true">
         <div className="grid h-32 w-32 place-items-center rounded-full border border-white/25">
           <div className="grid h-24 w-24 place-items-center rounded-full border border-white/15">
             {dish.is_vegan || dish.is_vegetarian ? (
@@ -47,7 +68,7 @@ export function DishArt({
             )}
           </div>
         </div>
-      </div>
+      </div>}
       {showLabels && (
         <div className="absolute left-4 top-4 text-[9px] uppercase tracking-[0.16em] text-cream/60">
           0{index + 1} / the menu
