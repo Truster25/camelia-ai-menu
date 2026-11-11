@@ -1,18 +1,49 @@
+# Two ways to run the stack:
+#   docker compose up -d db     -> only PostgreSQL for a local backend
+#   docker compose up --build   -> API + PostgreSQL + frontend dev server
 services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: camellia
-      POSTGRES_USER: camellia
+      POSTGRES_DB: camelia
+      POSTGRES_USER: camelia
       POSTGRES_PASSWORD: local_development_only
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U camellia -d camellia"]
+      test: ["CMD-SHELL", "pg_isready -U camelia -d camelia"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://camelia:local_development_only@db:5432/camelia
+      JWT_SECRET: local-development-secret-change-in-production
+      CORS_ORIGINS: "*"
+      AUTO_SEED: "1"
+    ports:
+      - "9000:9000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      VITE_API_PROXY: http://api:9000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
 volumes:
   postgres_data:

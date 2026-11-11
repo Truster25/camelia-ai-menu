@@ -11,3 +11,12 @@ frontend/dist/
 .pytest_cache/
 .vscode/
 .DS_Store
+# Local database and test artefacts
+backend/*.db
+backend/camelia.db
+*.sqlite3
+coverage/
+htmlcov/
+frontend/.vite/
+frontend/tsconfig.tsbuildinfo
+*.tsbuildinfo

@@ -1,0 +1,18 @@
+# Render blueprint for the Camelia API (free tier).
+# Set DATABASE_URL (Neon) and JWT_SECRET in the Render dashboard after the first deploy.
+services:
+  - type: web
+    name: camelia-api
+    runtime: python
+    plan: free
+    rootDir: MP3/camelia-project/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: AUTO_SEED
+        value: "1"
+      - key: JWT_SECRET
+        generateValue: true

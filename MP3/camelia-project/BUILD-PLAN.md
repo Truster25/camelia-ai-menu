@@ -85,3 +85,40 @@ These inputs refine scope and real data; they do not prevent starting a clearly 
 - React + TypeScript frontend retrieves three sample items from a FastAPI endpoint. Backend health and menu endpoints have basic tests.
 - A proposed entity/relationship design is in `docs/DATABASE-DESIGN.md`. PostgreSQL is not connected, and no database migration has been applied.
 - Authentication, menu management, orders and the recommendation engine are not implemented yet. Next: implement PostgreSQL models/migrations and a real menu API, followed by manager access.
+
+## Build progress — second prototype (v1.0, November 2026)
+
+The vertical slices from the plan above are now implemented end to end.
+
+**Done**
+1. **Foundation** — SQLAlchemy models for the eight tables (`docs/SCHEMA.md`), seeded demo
+   data (6 categories, 26 dishes, demo users, sample orders and ratings), environment-driven
+   configuration (`DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS`), health endpoint, 33 pytest tests.
+2. **Menu and manager access** — menu API with search/filter/sort, dish detail API, JWT login
+   with bcrypt hashing, role-based guards (customers receive 403 on every admin route),
+   React market pages, and admin dish CRUD. Dishes with order history are retired, never
+   deleted, so past orders keep their names and prices.
+3. **Recommendations** — five-question quiz (diet, spice, budget, cuisine, occasion) feeding a
+   hybrid ranker: TF-IDF cosine similarity 40%, preference rules 25%, popularity 20%,
+   occasion 15%. Dietary requirements are hard filters applied before ranking. Each result
+   carries a score breakdown and a plain-English reason. Weights are exposed by
+   `GET /api/recommend/meta` so the interface never hardcodes the model.
+4. **Ratings, favourites and orders** — one rating per customer per dish (updatable), favourites
+   toggle, cart with server-side price calculation, table number and kitchen note, order status
+   flow from `pending` to `completed`, customer tracking view and admin kitchen queue.
+5. **Evaluation groundwork** — every quiz is written to `recommendation_logs` with the answers,
+   ranked results and top score; choosing a recommendation records `chosen_dish_id`. That makes
+   top-1 hit rate and top-5 conversion measurable from real traffic rather than estimated.
+6. **Deployment preparation** — `render.yaml`, `frontend/vercel.json`, `.env.example` files and
+   a deployment section in the README. Deployment itself has not been executed.
+
+**Not done / next**
+- Collaborative filtering: deliberately deferred until enough real ratings exist (the plan's
+  minimum-data threshold), so keep it described as future work.
+- Usability testing with real Camelia customers (5–10 participants) for Chapter 6.
+- Screenshots, test-result tables and the final ERD export for the appendix.
+- Confirm the menu, prices and allergen data with the restaurant before real use.
+
+**Test result so far:** `pytest -q` → 33 passed. `npm run build` → clean TypeScript build.
+Recommendations checked manually: vegan quiz returns only vegan dishes, halal quiz excludes the
+two pork dishes, low-budget quiz is topped by an affordable plate.
