@@ -133,6 +133,18 @@ Each folder has its own `run.sh` — **run each one in its own terminal**. `back
 
 ---
 
+## Leaving a `(.venv)` prompt
+
+If your prompt starts with `(.venv)`, a Python virtual environment is activated. Type:
+
+```bash
+deactivate
+```
+
+You never need it for this project — `backend/run.sh` calls `.venv/bin/python` directly. If
+you activated a venv under `Desktop/MP3/camelia-project/...` (one `MP3` short), you were in a
+leftover copy rather than the repo.
+
 ## Demo accounts
 
 | Role | Email | Password |
