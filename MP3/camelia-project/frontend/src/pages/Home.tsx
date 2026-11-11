@@ -80,7 +80,7 @@ export function Home() {
             <HeroSlideshow slides={heroSlides} interval={4000} className="absolute inset-0" />
 
             {/* copy sits on top of the photograph */}
-            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-20 pt-24 sm:px-10 sm:pb-24 sm:pt-28 lg:max-w-[62%] lg:px-14 lg:pb-24 lg:pt-32 xl:max-w-[58%]">
+            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-16 pt-40 sm:px-10 sm:pb-20 sm:pt-48 lg:max-w-[62%] lg:px-14 lg:pb-16 lg:pt-56 xl:max-w-[58%]">
               <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
                 Good food
                 <br />
@@ -89,14 +89,9 @@ export function Home() {
                 <em className="not-italic text-amber-logo">better days</em>
               </h1>
 
-              <span className="mt-7 block h-px w-10 bg-cream/40" aria-hidden="true" />
+              <span className="mt-8 block h-px w-10 bg-cream/40" aria-hidden="true" />
 
-              <p className="mt-6 max-w-[30ch] text-[13.5px] leading-[1.9] text-cream/85">
-                We blend modern techniques with seasonal ingredients to create dishes that inspire and bring people
-                together.
-              </p>
-
-              <div className="mt-9 flex flex-wrap items-center gap-5">
+              <div className="mt-12 flex flex-wrap items-center gap-5">
                 <Link to="/menu" className="group inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.18em] text-cream">
                   <span className="grid h-12 w-12 place-items-center rounded-full bg-amber-logo text-forest-950 transition group-hover:translate-x-1">
                     <ArrowRight size={18} />
