@@ -156,3 +156,36 @@ that is expected behaviour, not a defect. Absolute scores matter less than the o
   deployed database has not been exercised).
 - Cross-browser testing on iOS Safari and Android Chrome on physical devices.
 - Accessibility audit with a screen reader (keyboard focus styles and semantic landmarks are in place).
+
+---
+
+## 6. Hero redesign — acceptance checks (11 November 2026, evening)
+
+The landing hero was rebuilt to the reference layout: full-bleed photograph, transparent
+overlay header with a centred navigation pill, and a dark right-hand panel. The plate
+rotates between five dishes every three seconds.
+
+| # | Check | Expected | Result |
+|---|---|---|---|
+| 1 | Overlay header on `/` | transparent, nav pill centred, turns solid after 24 px scroll | PASS |
+| 2 | Header on inner pages | solid dark bar, sticky | PASS |
+| 3 | Rotation timing | advances every 3,000 ms | PASS |
+| 4 | Transition | 1,100 ms crossfade + slow 7 s scale | PASS |
+| 5 | All five plates load | `hero-dish.jpg`, tilapia, brochette, salad, fondant | PASS |
+| 6 | Caption updates | "Now plating" matches the active dish and price | PASS |
+| 7 | Dot controls | active dot widens, click jumps to that plate | PASS |
+| 8 | Mobile 390 px | copy readable, caption clears the dots, hamburger works | PASS |
+| 9 | `prefers-reduced-motion` | no slow zoom (crossfade only) | PASS |
+| 10 | Regression: quiz → cart → admin | no console errors | PASS |
+| 11 | Backend suite | 33 passed | PASS |
+
+### Bugs found during this change
+
+| Bug | Cause | Fix |
+|---|---|---|
+| Hero photo invisible (panel height 0) | the slideshow root hardcoded `relative`, and Tailwind emits `.relative` *after* `.absolute`, so the caller's `absolute inset-0` lost the cascade | root no longer sets position; the wrapper owns it, documented in the component |
+| "Book a table" opened the AI quiz | CTA pointed at `/recommend` | now points at `/cart`, the booking flow |
+| Caption overlapped the dot controls on mobile | both anchored bottom-centre/bottom-right | dots left-aligned under `sm`, caption capped at 46 % width |
+
+Image sizes: each hero plate is 1408×768 at 146–206 KB (progressive JPEG), so the first
+paint is fast and the other four are lazy-loaded behind the crossfade.
