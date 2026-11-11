@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, Coffee, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Dish } from '../lib/types';
 import { DishCard } from '../components/DishCard';
 import { HeroSlideshow } from '../components/HeroSlideshow';
+import { StoryCarousel } from '../components/StoryCarousel';
+import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
 import { useCart } from '../context/CartContext';
@@ -51,6 +53,33 @@ const heroSlides: HeroSlide[] = [
     dish: 'Chocolate Fondant',
     category: 'Desserts',
     price: 'RWF 6,000',
+  },
+];
+
+const storySlides: StorySlide[] = [
+  {
+    id: 'grill',
+    image: '/images/story/story-grill.jpg',
+    alt: 'Char-grilled chicken brochettes on a slate plate with chilli sauce and lime',
+    title: 'Charcoal-kissed plates,',
+    accent: 'made to order.',
+    body: 'Skewers go on the grill when you order, not before. Brochette, tilapia and the day’s vegetables come off the fire and straight to your table — the way a Kigali kitchen should work.',
+  },
+  {
+    id: 'salad',
+    image: '/images/story/story-salad.jpg',
+    alt: 'Garden salad with avocado, cherry tomatoes and lemon dressing in a cream bowl',
+    title: 'Fresh from the garden,',
+    accent: 'never from a packet.',
+    body: 'Leaves, tomatoes and avocados are cut the same morning you eat them. Lighter plates that still taste like a proper meal — and the ones our regulars order when it is hot.',
+  },
+  {
+    id: 'fondant',
+    image: '/images/story/story-fondant.jpg',
+    alt: 'Warm chocolate fondant with vanilla ice cream and raspberries on a slate board',
+    title: 'Something sweet,',
+    accent: 'worth staying for.',
+    body: 'Warm chocolate fondant, vanilla ice cream, raspberries. The dessert people order “just to share” and then finish alone. Ask the menu and it will find the one that fits your evening.',
   },
 ];
 
@@ -141,44 +170,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------------- intro */}
-      <section id="story" data-header-theme="light" className="bg-cream text-ink">
-        <div className="mx-auto grid max-w-[1600px] gap-8 px-5 py-20 sm:px-8 lg:px-10 md:grid-cols-[0.7fr_1.6fr_0.5fr] md:py-28">
-          <p className="kicker self-start pt-2 !text-[#956328]">
-            <span className="kicker-line !bg-[#956328]" /> Welcome to Camelia
-          </p>
-          <div>
-            <h2 className="font-display text-[clamp(2rem,4vw,3.4rem)] leading-[1.1] tracking-[-0.035em]">
-              Good food has a way of <em className="not-italic text-[#a86d2b]">bringing us together.</em>
-            </h2>
-            <p className="mt-6 max-w-lg text-sm leading-relaxed text-[#6b7568]">
-              A place for the everyday catch-ups, long lunches and the dishes you can’t stop thinking about. In 2026 the
-              menu learned a new trick: it now suggests the plate that fits <em>you</em> — your diet, your budget, your
-              moment.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/menu" className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-cream transition hover:bg-[#3a4a3e]">
-                Full menu <ArrowRight size={14} />
-              </Link>
-              <Link to="/recommend" className="inline-flex items-center gap-2 rounded-full border border-ink/30 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-ink transition hover:border-ink">
-                Take the quiz
-              </Link>
-            </div>
-          </div>
-          <div className="hidden place-items-center md:grid">
-            <div className="grid h-[120px] w-[120px] place-items-center rounded-full border border-[#b5b6a4] text-center text-[#8c7954]">
-              <div className="flex flex-col items-center gap-2">
-                <Coffee size={30} strokeWidth={1} />
-                <span className="text-[8px] uppercase leading-[1.5] tracking-[0.12em]">
-                  Thoughtfully
-                  <br />
-                  served
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ----------------------------------------------------------------- story */}
+      <StoryCarousel slides={storySlides} />
 
       {/* ------------------------------------------------------------ signatures */}
       <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-10 md:py-24">
