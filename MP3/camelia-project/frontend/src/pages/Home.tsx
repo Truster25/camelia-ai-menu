@@ -73,15 +73,15 @@ export function Home() {
   return (
     <div>
       {/* ------------------------------------------------------------------ hero */}
-      <section className="relative">
-        <div className="grid lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px]">
-          {/* photo panel: the copy sets the height, the photograph fills it */}
-          <div className="relative">
+      <section className="relative min-h-[100svh] w-full">
+        <div className="grid min-h-[100svh] lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px]">
+          {/* photo panel: fills the whole first screen; the header floats over it */}
+          <div className="relative min-h-[100svh]">
             <HeroSlideshow slides={heroSlides} interval={3000} className="absolute inset-0" />
 
             {/* copy sits on top of the photograph */}
-            <div className="relative z-10 flex min-h-[620px] flex-col justify-center px-5 pb-32 pt-32 sm:px-10 lg:min-h-[820px] lg:px-14 lg:pb-28 lg:pt-36">
-              <h1 className="max-w-[13ch] font-display text-[clamp(2.9rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
+            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-20 pt-24 sm:px-10 sm:pb-24 sm:pt-28 lg:px-14 lg:pb-24 lg:pt-32">
+              <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
                 Good food
                 <br />
                 creates
@@ -108,7 +108,7 @@ export function Home() {
                 </Link>
               </div>
 
-              <a href="#story" className="mt-10 hidden w-fit items-center gap-3 text-[8.5px] uppercase tracking-[0.2em] text-cream/55 sm:mt-12 sm:inline-flex">
+              <a href="#story" className="hero-scroll mt-10 hidden w-fit items-center gap-3 text-[8.5px] uppercase tracking-[0.2em] text-cream/55 sm:mt-12 sm:inline-flex">
                 <span className="grid h-8 w-8 place-items-center rounded-full border border-cream/30">
                   <ArrowDown size={13} />
                 </span>
@@ -118,7 +118,7 @@ export function Home() {
           </div>
 
           {/* right-hand panel, exactly like the reference layout */}
-          <aside className="relative hidden flex-col justify-center bg-forest-950 px-10 py-24 lg:flex xl:px-12">
+          <aside className="relative hidden min-h-[100svh] flex-col justify-center bg-forest-950 px-10 py-24 lg:flex xl:px-12">
             <p className="text-[11px] tracking-[0.04em] text-sage-300/80">A seat at our table.</p>
 
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
