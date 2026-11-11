@@ -40,7 +40,7 @@ export function Cart() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
+    <div data-header-theme="dark" className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
       <p className="kicker"><span className="kicker-line" /> Your pre-order</p>
       <h1 className="mt-4 font-display text-[clamp(2rem,4.4vw,3.2rem)] tracking-[-0.03em]">Your table, ready when you are.</h1>
       <p className="mt-3 max-w-xl text-sm text-sage-400">

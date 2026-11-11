@@ -32,33 +32,70 @@ export function Header({ overlay = false }: HeaderProps) {
     setOpen(false);
   }, [location.pathname]);
 
+  // Which band of the page is under the header? Sections carry
+  // data-header-theme="light|dark"; the header flips its logo and text to stay
+  // legible over cream, amber or a dark photograph.
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const hero = document.querySelector('[data-header-hero]');
+    const themed = Array.from(document.querySelectorAll<HTMLElement>('[data-header-theme]'));
+
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+
+      if (hero) {
+        const rect = hero.getBoundingClientRect();
+        // Still over the full-bleed hero photograph -> light text, every time.
+        if (rect.bottom > 86) {
+          setTheme('light');
+          return;
+        }
+      }
+
+      let current: 'light' | 'dark' = 'dark';
+      for (const el of themed) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= 86 && rect.bottom > 86) {
+          current = el.dataset.headerTheme === 'light' ? 'dark' : 'light';
+          break;
+        }
+      }
+      setTheme(current);
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const floating = overlay && !scrolled;
-
   return (
     <header
-      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-50 transition-all duration-300 ${
-        floating
-          ? 'border-b border-transparent bg-transparent'
-          : 'border-b border-white/10 bg-forest-950/90 backdrop-blur-md'
-      }`}
+      data-theme={theme}
+      className={`${overlay ? 'fixed' : 'sticky'} inset-x-0 top-0 z-50 transition-colors duration-300 ${
+        theme === 'dark' ? 'text-ink' : 'text-sage-100'
+      } ${
+        scrolled
+          ? overlay
+            ? 'bg-white/45 backdrop-blur-xl backdrop-saturate-150'
+            : 'bg-forest-950/40 backdrop-blur-xl backdrop-saturate-150'
+          : 'bg-transparent'
+      } ${overlay && theme === 'dark' && scrolled ? 'bg-white/55' : ''}`}
     >
       <div className="mx-auto flex h-[86px] max-w-[1600px] items-center gap-4 px-5 sm:px-8 lg:px-10">
-        <Logo variant="orange" className="h-12 shrink-0 sm:h-14" />
+        <Logo variant={theme === 'dark' ? 'orange' : 'white'} className="h-12 shrink-0 sm:h-14" />
 
         {/* centred navigation pill */}
-        <nav className="mx-auto hidden items-center gap-1 rounded-full border border-white/15 bg-forest-950/40 px-2 py-1.5 backdrop-blur-md xl:flex" aria-label="Main">
+        <nav className="mx-auto hidden items-center gap-1 rounded-full border border-current/15 bg-current/5 px-2 py-1.5 backdrop-blur-md xl:flex" aria-label="Main">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -66,7 +103,7 @@ export function Header({ overlay = false }: HeaderProps) {
               end={item.end}
               className={({ isActive }) =>
                 `relative rounded-full px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition ${
-                  isActive ? 'text-amber-logo' : 'text-sage-200/80 hover:text-white'
+                  isActive ? 'text-amber-logo' : 'opacity-75 hover:opacity-100'
                 }`
               }
             >
@@ -85,7 +122,7 @@ export function Header({ overlay = false }: HeaderProps) {
               to="/admin"
               className={({ isActive }) =>
                 `rounded-full px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] transition ${
-                  isActive ? 'text-amber-logo' : 'text-sage-200/80 hover:text-white'
+                  isActive ? 'text-amber-logo' : 'opacity-75 hover:opacity-100'
                 }`
               }
             >
@@ -95,17 +132,24 @@ export function Header({ overlay = false }: HeaderProps) {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 xl:ml-0">
-          <Link to="/cart" className="relative hidden items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/40 hover:text-white sm:inline-flex" aria-label={`Cart with ${count} item${count === 1 ? '' : 's'}`}>
-            <ShoppingBag size={14} />
-            Cart
+          {/* icon only — the bag is the link, the badge is the count */}
+          <Link
+            to="/cart"
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-current/20 transition hover:border-current/50"
+            aria-label={`Cart, ${count} item${count === 1 ? '' : 's'}`}
+            title="Cart"
+          >
+            <ShoppingBag size={16} />
             {count > 0 && (
-              <span className="grid h-4 min-w-4 place-items-center rounded-full bg-amber-logo px-1 text-[9px] font-bold text-forest-950">{count}</span>
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-logo px-1 text-[9px] font-bold text-forest-950">{count}</span>
             )}
           </Link>
 
           <Link
             to="/cart"
-            className="hidden items-center gap-3 rounded-full border border-amber-logo/70 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-pale transition hover:bg-amber-logo hover:text-forest-950 md:inline-flex"
+            className={`hidden items-center gap-3 rounded-full border px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition hover:bg-amber-logo hover:text-forest-950 md:inline-flex ${
+              theme === 'dark' ? 'border-[#a9742a]/60 text-[#8a5f1f]' : 'border-amber-logo/70 text-amber-pale'
+            }`}
           >
             Book a table
             <ArrowUpRight size={13} />
@@ -113,10 +157,10 @@ export function Header({ overlay = false }: HeaderProps) {
 
           {user ? (
             <div className="hidden items-center gap-2 lg:flex">
-              <span className="max-w-[110px] truncate text-[11px] text-sage-300">{user.name.split(' ')[0]}</span>
+              <span className="max-w-[110px] truncate text-[11px] opacity-70">{user.name.split(' ')[0]}</span>
               <button
                 onClick={handleLogout}
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-sage-200 transition hover:border-white/40 hover:text-white"
+                className="grid h-10 w-10 place-items-center rounded-full border border-current/20 transition hover:border-current/50"
                 aria-label="Sign out"
                 title="Sign out"
               >
@@ -126,14 +170,14 @@ export function Header({ overlay = false }: HeaderProps) {
           ) : (
             <Link
               to="/login"
-              className="hidden items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/40 hover:text-white lg:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-current/20 px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition hover:border-current/50 lg:inline-flex"
             >
               <UserIcon size={13} /> Sign in
             </Link>
           )}
 
           <button
-            className="grid h-10 w-10 place-items-center rounded-full text-sage-100 transition hover:bg-white/10 xl:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-current/10 xl:hidden"
             onClick={() => setOpen((value) => !value)}
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}

@@ -73,14 +73,14 @@ export function Home() {
   return (
     <div>
       {/* ------------------------------------------------------------------ hero */}
-      <section className="relative min-h-[100svh] w-full">
-        <div className="grid min-h-[100svh] lg:grid-cols-[1fr_440px] xl:grid-cols-[1fr_480px]">
-          {/* photo panel: fills the whole first screen; the header floats over it */}
-          <div className="relative min-h-[100svh]">
+      <section data-header-hero className="relative min-h-[100svh] w-full">
+        <div className="relative min-h-[100svh]">
+          {/* the photograph fills the whole first screen; header floats over it */}
+          <div className="relative min-h-[100svh] w-full">
             <HeroSlideshow slides={heroSlides} interval={4000} className="absolute inset-0" />
 
             {/* copy sits on top of the photograph */}
-            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-20 pt-24 sm:px-10 sm:pb-24 sm:pt-28 lg:px-14 lg:pb-24 lg:pt-32">
+            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-20 pt-24 sm:px-10 sm:pb-24 sm:pt-28 lg:max-w-[62%] lg:px-14 lg:pb-24 lg:pt-32 xl:max-w-[58%]">
               <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
                 Good food
                 <br />
@@ -112,7 +112,11 @@ export function Home() {
           </div>
 
           {/* right-hand panel, exactly like the reference layout */}
-          <aside className="relative hidden min-h-[100svh] flex-col justify-center bg-forest-950 px-10 py-24 lg:flex xl:px-12">
+          <aside className="absolute inset-y-0 right-0 z-10 hidden w-[440px] flex-col justify-center px-10 py-24 lg:flex xl:w-[480px] xl:px-12">
+            {/* glass wash: no hard edge, the photograph still reads through it */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/70 via-black/45 to-transparent" aria-hidden="true" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/5" aria-hidden="true" />
+            <div className="relative">
             <p className="text-[11px] tracking-[0.04em] text-sage-300/80">A seat at our table.</p>
 
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
@@ -137,21 +141,13 @@ export function Home() {
             >
               View your taste profile <ArrowRight size={15} />
             </Link>
-
-            <div className="mt-14 flex items-center gap-3 border-t border-white/10 pt-6">
-              <span className="text-2xl text-amber-logo" aria-hidden="true">✳</span>
-              <span className="text-[8.5px] uppercase leading-[1.9] tracking-[0.16em] text-sage-400">
-                Café &amp; restaurant
-                <br />
-                <strong className="text-[9.5px] text-sage-100">Kigali, Rwanda</strong>
-              </span>
             </div>
           </aside>
         </div>
       </section>
 
       {/* ----------------------------------------------------------------- intro */}
-      <section id="story" className="bg-cream text-ink">
+      <section id="story" data-header-theme="light" className="bg-cream text-ink">
         <div className="mx-auto grid max-w-[1600px] gap-8 px-5 py-20 sm:px-8 lg:px-10 md:grid-cols-[0.7fr_1.6fr_0.5fr] md:py-28">
           <p className="kicker self-start pt-2 !text-[#956328]">
             <span className="kicker-line !bg-[#956328]" /> Welcome to Camelia
@@ -190,7 +186,7 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------------ signatures */}
-      <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-10 md:py-24">
+      <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-10 md:py-24">
         <SectionHeading
           kicker="Something for every craving"
           title={(
@@ -227,7 +223,7 @@ export function Home() {
       </section>
 
       {/* --------------------------------------------------------------- AI block */}
-      <section className="relative overflow-hidden bg-forest-800">
+      <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
         <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full border border-amber-soft/15" aria-hidden="true" />
         <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
           <div>
@@ -284,7 +280,7 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------------- testimonial */}
-      <section className="bg-amber-logo text-forest-950">
+      <section data-header-theme="light" className="bg-amber-logo text-forest-950">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
           <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
           <p className="max-w-2xl font-display text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
@@ -302,7 +298,7 @@ export function Home() {
 
       {/* --------------------------------------------------------------- price strip */}
       {status === 'ready' && signatures[0] && (
-        <section className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-10">
+        <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-10">
           <div className="card flex flex-wrap items-center justify-between gap-6 p-6">
             <div>
               <p className="text-[9px] uppercase tracking-[0.18em] text-amber-soft">Today at the counter</p>

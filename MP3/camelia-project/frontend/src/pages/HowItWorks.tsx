@@ -38,7 +38,7 @@ export function HowItWorks() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-14 sm:px-8">
+    <div data-header-theme="dark" className="mx-auto max-w-5xl px-5 py-14 sm:px-8">
       <p className="kicker"><span className="kicker-line" /> Under the hood</p>
       <h1 className="mt-4 max-w-3xl font-display text-[clamp(2rem,4.6vw,3.4rem)] leading-[1.06] tracking-[-0.035em]">
         A recommender you can <em className="not-italic text-amber-soft">explain</em>, not just trust.
