@@ -4,22 +4,24 @@
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
 
-  /* Camelia palette — sampled from the official logo */
-  --color-forest-950: #0b120e;
-  --color-forest-900: #101713;
-  --color-forest-850: #131d17;
-  --color-forest-800: #17211b;
-  --color-forest-700: #1d2b23;
-  --color-forest-600: #27392e;
-  --color-sage-100: #eff0e9;
+  /* Camelia palette — warm near-black, sampled from the reference UI.
+     The previous values were green-cast (#0b120e has g > r); these are warmer
+     (r slightly above g), which is what the reference screenshot shows. */
+  --color-forest-950: #151610;
+  --color-forest-900: #1a1b14;
+  --color-forest-850: #1e1f18;
+  --color-forest-800: #23241c;
+  --color-forest-700: #2b2c22;
+  --color-forest-600: #35362a;
+  --color-sage-100: #eeefe6;
   --color-sage-200: #d9ddd2;
-  --color-sage-300: #b9c0ba;
-  --color-sage-400: #9aa79d;
-  --color-amber-logo: #ed9b36;
-  --color-amber-soft: #e4a75c;
-  --color-amber-pale: #f4d4a1;
-  --color-cream: #f2eee5;
-  --color-ink: #25342a;
+  --color-sage-300: #bcbdb2;
+  --color-sage-400: #a3a496;
+  --color-amber-logo: #dfa14b;
+  --color-amber-soft: #d9a662;
+  --color-amber-pale: #efd3a6;
+  --color-cream: #f1ede3;
+  --color-ink: #26271e;
 }
 
 @layer base {
@@ -30,19 +32,38 @@
     @apply bg-forest-900 text-sage-100 font-sans antialiased;
   }
   ::selection {
-    background: #ed9b36;
+    background: #dfa14b;
     color: #101713;
   }
   h1, h2, h3, h4 {
     @apply font-display font-normal;
   }
   :focus-visible {
-    outline: 2px solid #ed9b36;
+    outline: 2px solid #dfa14b;
     outline-offset: 3px;
   }
 }
 
 @layer components {
+  /* Short screens: the hero must still fit without the next section showing.
+     Targets landscape phones (360-450px tall) and short browser windows. */
+  @media (max-height: 620px) {
+    .hero-copy {
+      padding-top: 5rem !important;
+      padding-bottom: 4.5rem !important;
+    }
+    .hero-copy h1 {
+      font-size: clamp(1.6rem, 4.2vw, 2.3rem) !important;
+    }
+    .hero-copy p {
+      display: none;
+    }
+    .hero-copy hr,
+    .hero-scroll {
+      display: none !important;
+    }
+  }
+
   .kicker {
     @apply flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-amber-soft;
   }

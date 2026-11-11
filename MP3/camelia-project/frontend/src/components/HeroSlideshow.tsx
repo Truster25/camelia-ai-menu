@@ -92,9 +92,9 @@ export function HeroSlideshow({ slides, interval = 3000, pauseOnHover = true, cl
       })}
 
       {/* readability + brand tint so every photo sits in the same dark palette */}
-      <div className="pointer-events-none absolute inset-0 bg-forest-950/15" aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-forest-950/85 via-forest-950/10 to-forest-950/70" aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-forest-950/80 to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-0 bg-black/10" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/80 via-black/5 to-black/60" aria-hidden="true" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/85 to-transparent" aria-hidden="true" />
 
       {/* transition progress + slide controls */}
       <div className="absolute bottom-6 left-5 z-10 flex items-center gap-2.5 sm:left-1/2 sm:-translate-x-1/2">
