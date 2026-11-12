@@ -59,7 +59,9 @@ export function StoryCarousel({ slides, interval = 6500 }: Props) {
     >
       <div className="relative mx-auto max-w-[1400px]">
         {/* the card */}
-        <div className="overflow-hidden rounded-[22px] bg-cream text-ink shadow-[0_30px_80px_-40px_rgba(0,0,0,0.6)]">
+        <div
+            data-header-theme="light"
+            className="overflow-hidden rounded-[22px] bg-cream text-ink shadow-[0_30px_80px_-40px_rgba(0,0,0,0.6)]">
           <div
             key={slides[index].id}
             className="grid items-center gap-2 motion-safe:animate-[storyIn_650ms_ease-out] md:grid-cols-[1.15fr_0.85fr] lg:gap-6"
@@ -97,12 +99,6 @@ export function StoryCarousel({ slides, interval = 6500 }: Props) {
                 loading="lazy"
                 decoding="async"
                 className="h-auto w-full max-w-[460px] md:max-w-none"
-                style={{
-                  maskImage:
-                    'radial-gradient(ellipse 78% 78% at 50% 50%, #000 55%, transparent 100%)',
-                  WebkitMaskImage:
-                    'radial-gradient(ellipse 78% 78% at 50% 50%, #000 55%, transparent 100%)',
-                }}
               />
             </div>
           </div>

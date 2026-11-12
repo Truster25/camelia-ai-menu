@@ -40,6 +40,9 @@ export function Header({ overlay = false }: HeaderProps) {
   // on /login: it had no marker, the header chose dark ink, and dark-on-dark
   // made the logo and links disappear.
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // True while the header sits on top of the landing page's full-bleed hero,
+  // where a scrim would be visible and is not wanted.
+  const [overHero, setOverHero] = useState(true);
 
   useEffect(() => {
     const hero = document.querySelector('[data-header-hero]');
@@ -50,18 +53,22 @@ export function Header({ overlay = false }: HeaderProps) {
         const rect = hero.getBoundingClientRect();
         // Still over the full-bleed hero photograph -> light text, every time.
         if (rect.bottom > 86) {
+          setOverHero(true);
           setTheme('light');
           return;
         }
       }
+      setOverHero(false);
 
       // Only an explicit light band flips the header to dark ink.
       let current: 'light' | 'dark' = 'light';
       for (const el of themed) {
         const rect = el.getBoundingClientRect();
         if (rect.top <= 86 && rect.bottom > 86) {
+          // Keep scanning: a card nested inside an outer band is later in
+          // document order, and the card is what is actually behind the
+          // header. Last match = innermost band.
           current = el.dataset.headerTheme === 'light' ? 'dark' : 'light';
-          break;
         }
       }
       setTheme(current);
@@ -88,19 +95,22 @@ export function Header({ overlay = false }: HeaderProps) {
         theme === 'dark' ? 'text-ink' : 'text-sage-100'
       }`}
     >
-      {/* Reading scrim. Only on pages without a full-bleed hero, and only a
-          soft fade that dies out before the content starts, so the header stays
-          transparent in spirit while never disappearing against the page. */}
-      {!overlay && (
-        <div
-          className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[128px] ${
-            theme === 'dark'
-              ? 'bg-gradient-to-b from-cream via-cream/80 to-transparent'
-              : 'bg-gradient-to-b from-black/70 via-black/35 to-transparent'
-          }`}
-          aria-hidden="true"
-        />
-      )}
+      {/* Reading scrim. Never over the hero photograph; everywhere else (on
+          every page, and on the landing page once the hero has scrolled away)
+          it is a soft fade that dies out before the content starts, so the
+          header stays transparent in spirit while never disappearing against
+          the page. Opacity is transitioned so crossing the hero edge does not
+          pop. */}
+      <div
+        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[128px] transition-opacity duration-300 ${
+          !overlay || !overHero ? 'opacity-100' : 'opacity-0'
+        } ${
+          theme === 'dark'
+            ? 'bg-gradient-to-b from-cream via-cream/80 to-transparent'
+            : 'bg-gradient-to-b from-black/70 via-black/35 to-transparent'
+        }`}
+        aria-hidden="true"
+      />
       <div className="mx-auto flex h-[86px] max-w-[1600px] items-center gap-4 px-5 sm:px-8 lg:px-10">
         <Logo variant={theme === 'dark' ? 'orange' : 'white'} className="h-12 shrink-0 sm:h-14" />
 

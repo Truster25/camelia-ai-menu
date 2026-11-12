@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Dish } from '../lib/types';
-import { DishCard } from '../components/DishCard';
+import { DishTile } from '../components/DishTile';
 import { HeroSlideshow } from '../components/HeroSlideshow';
 import { StoryCarousel } from '../components/StoryCarousel';
+import { FeatureCard } from '../components/FeatureCard';
 import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
@@ -56,6 +57,46 @@ const heroSlides: HeroSlide[] = [
   },
 ];
 
+const PILLS = [
+  { key: 'all', label: 'All' },
+  { key: 'coffee-tea', label: 'Coffee' },
+  { key: 'starters-salads', label: 'Snacks' },
+  { key: 'desserts', label: 'Desserts' },
+  { key: 'fresh-juices', label: 'Beverages' },
+  { key: 'breakfast', label: 'Combos' },
+] as const;
+
+function DishCategoryPills({
+  active,
+  onChange,
+}: {
+  active: string;
+  onChange: (key: string) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {PILLS.map((pill) => {
+        const on = pill.key === active;
+        return (
+          <button
+            key={pill.key}
+            type="button"
+            onClick={() => onChange(pill.key)}
+            aria-pressed={on}
+            className={`rounded-full border px-4 py-2 text-[11px] font-medium transition ${
+              on
+                ? 'border-[#8a5a2b] bg-[#8a5a2b] text-cream'
+                : 'border-white/20 text-sage-300 hover:border-white/45 hover:text-white'
+            }`}
+          >
+            {pill.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 const storySlides: StorySlide[] = [
   {
     id: 'grill',
@@ -85,15 +126,27 @@ const storySlides: StorySlide[] = [
 
 export function Home() {
   const [signatures, setSignatures] = useState<Dish[]>([]);
+  const [pill, setPill] = useState<string>('all');
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const { add } = useCart();
+  const { add: _add } = useCart();
+
+  const visibleDishes = useMemo(() => {
+    const byPill =
+      pill === 'all' ? signatures : signatures.filter((dish) => dish.category_slug === pill);
+    const source = byPill.length ? byPill : signatures;
+    // Signature plates first, then whatever else the category holds.
+    const ordered = [...source].sort(
+      (a, b) => Number(b.is_signature) - Number(a.is_signature) || b.popularity_seed - a.popularity_seed,
+    );
+    return ordered.slice(0, pill === 'all' ? 5 : 10);
+  }, [signatures, pill]);
 
   useEffect(() => {
     api
       .get<Dish[]>('/dishes?sort=popularity')
       .then((dishes) => {
-        setSignatures(dishes.filter((dish) => dish.is_signature).slice(0, 3));
-        if (dishes.length) setSignatures((current) => (current.length ? current : dishes.slice(0, 3)));
+        // Keep the whole list: the pill row filters it in the browser.
+        setSignatures(dishes);
         setStatus('ready');
       })
       .catch(() => setStatus('error'));
@@ -183,11 +236,7 @@ export function Home() {
             </>
           )}
           description="Six sections, twenty-six dishes, and one AI that reads the whole menu before making a suggestion. These are the plates guests keep coming back for."
-          action={
-            <Link to="/menu" className="btn-quiet">
-              All dishes <ArrowUpRight size={14} />
-            </Link>
-          }
+          action={<DishCategoryPills active={pill} onChange={setPill} />}
         />
 
         {status === 'loading' && <Spinner label="Setting the table…" />}
@@ -202,13 +251,37 @@ export function Home() {
           </div>
         )}
         {status === 'ready' && (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {signatures.map((dish, index) => (
-              <DishCard key={dish.id} dish={dish} index={index} onAdd={add} />
+          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 lg:grid-cols-5">
+            {visibleDishes.map((dish) => (
+              <DishTile key={dish.id} dish={dish} category={dish.category_name} />
             ))}
           </div>
         )}
+
+        {status === 'ready' && (
+          <div className="mt-12 flex justify-center">
+            <Link
+              to="/menu"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/45 hover:text-white"
+            >
+              All dishes <ArrowUpRight size={14} />
+            </Link>
+          </div>
+        )}
       </section>
+
+      {/* ------------------------------------------------------------ second card */}
+      <FeatureCard
+        image="/images/story/story-drinks.jpg"
+        alt="Two iced coffee drinks on a cream linen table"
+        title="Refreshing drinks,"
+        accent="brewed to order."
+        body="Single-origin pour over, iced mocha, spiced tea and cold juice pressed the same day. Whether you are working through the afternoon or cooling down after a long walk, there is a glass with your name on it."
+        ctaLabel="See the drinks"
+        ctaTo="/menu"
+        ctaLabel2="Ask the AI"
+        ctaTo2="/recommend"
+      />
 
       {/* --------------------------------------------------------------- AI block */}
       <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
