@@ -70,7 +70,7 @@ export function Orders() {
       <p className="mt-3 text-sm text-sage-400">Track your pre-orders, reorder a favourite, or check what the kitchen is doing.</p>
 
       {status === 'loading' && <Spinner label="Fetching your orders…" />}
-      {status === 'error' && <div className="mt-6"><ErrorNote message="Could not load your orders. Is the API running?" /></div>}
+      {status === 'error' && <div className="mt-6"><ErrorNote message="We could not load your orders just now. Please refresh in a moment." /></div>}
       {error && <div className="mt-6"><ErrorNote message={error} /></div>}
 
       {status === 'ready' && orders.length === 0 && (

@@ -185,7 +185,7 @@ export function Menu() {
         <div className="mt-8">
           <EmptyState
             title="The menu could not load"
-            body="The API is not responding. Make sure the FastAPI backend is running on port 9000, then refresh."
+            body="We could not load the menu just now. Please refresh the page in a moment."
           />
         </div>
       )}

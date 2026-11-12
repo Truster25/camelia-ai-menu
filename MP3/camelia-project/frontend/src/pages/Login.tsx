@@ -27,7 +27,7 @@ export function Login() {
       const user = mode === 'login' ? await login(email, password) : await register(name, email, password);
       navigate(user.role === 'admin' ? '/admin' : from, { replace: true });
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : 'Could not sign in. Is the API running?');
+      setError(caught instanceof ApiError ? caught.message : 'We could not sign you in just now. Please try again.');
     } finally {
       setBusy(false);
     }

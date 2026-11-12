@@ -98,7 +98,7 @@ export function DishDetail() {
   if (status === 'error' || !dish)
     return (
       <div className="mx-auto max-w-3xl px-5 py-24">
-        <ErrorNote message="We could not load this dish. Is the API running?" />
+        <ErrorNote message="We could not load this dish just now. Please refresh in a moment." />
       </div>
     );
 

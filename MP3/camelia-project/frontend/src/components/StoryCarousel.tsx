@@ -58,6 +58,18 @@ export function StoryCarousel({ slides, interval = 6500 }: Props) {
       aria-label="Welcome to Camelia"
     >
       <div className="relative mx-auto max-w-[1400px]">
+        {/* Reference detail: the arrow sits in a notch cut out of the card, so
+            the cream circle and the cream card read as one shape. Bumps are
+            painted in the section's own colour on top of the card. */}
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 z-[15] hidden h-[92px] w-[46px] -translate-y-1/2 rounded-r-full bg-forest-900 md:-left-px md:block"
+        />
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 z-[15] hidden h-[92px] w-[46px] -translate-y-1/2 rounded-l-full bg-forest-900 md:-right-px md:block"
+        />
+
         {/* the card */}
         <div
             data-header-theme="light"
@@ -109,7 +121,7 @@ export function StoryCarousel({ slides, interval = 6500 }: Props) {
           type="button"
           onClick={() => go(-1)}
           aria-label="Previous"
-          className="absolute bottom-4 left-3 z-20 grid h-11 w-11 place-items-center rounded-full bg-[#e8e4d8] text-ink shadow-[0_6px_20px_-6px_rgba(0,0,0,0.45)] transition hover:bg-white sm:h-12 sm:w-12 md:-left-6 md:bottom-auto md:top-1/2 md:-translate-y-1/2"
+          className="absolute bottom-4 left-3 z-20 grid h-11 w-11 place-items-center rounded-full bg-[#f6f3ec] text-[#4a4b42] transition hover:bg-white sm:h-12 sm:w-12 md:bottom-auto md:left-[26px] md:top-1/2 md:h-11 md:w-11 md:-translate-y-1/2"
         >
           <ArrowLeft size={18} strokeWidth={1.6} />
         </button>
@@ -117,7 +129,7 @@ export function StoryCarousel({ slides, interval = 6500 }: Props) {
           type="button"
           onClick={() => go(1)}
           aria-label="Next"
-          className="absolute bottom-4 right-3 z-20 grid h-11 w-11 place-items-center rounded-full bg-[#e8e4d8] text-ink shadow-[0_6px_20px_-6px_rgba(0,0,0,0.45)] transition hover:bg-white sm:h-12 sm:w-12 md:-right-6 md:bottom-auto md:top-1/2 md:-translate-y-1/2"
+          className="absolute bottom-4 right-3 z-20 grid h-11 w-11 place-items-center rounded-full bg-[#f6f3ec] text-[#4a4b42] transition hover:bg-white sm:h-12 sm:w-12 md:bottom-auto md:right-[26px] md:top-1/2 md:h-11 md:w-11 md:-translate-y-1/2"
         >
           <ArrowRight size={18} strokeWidth={1.6} />
         </button>

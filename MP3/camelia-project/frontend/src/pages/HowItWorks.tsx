@@ -9,7 +9,7 @@ const signals = [
     icon: <Braces size={18} />,
     weight: '40%',
     title: 'Text similarity',
-    body: 'Each dish is turned into a text profile (name, description, ingredients, cuisine, dietary facts, spice and occasion tags). The quiz answers become one more document. TF-IDF converts both into vectors and cosine similarity measures how close they are — the classic content-based filtering approach.',
+    body: 'Every dish is read for its name, description, ingredients, cuisine, dietary facts, spice and occasion tags. Your quiz answers are read the same way, and the dishes whose profile sits closest to your answers rise to the top.',
   },
   {
     icon: <Scale size={18} />,
@@ -21,7 +21,7 @@ const signals = [
     icon: <Gauge size={18} />,
     weight: '20%',
     title: 'Popularity',
-    body: 'A Bayesian-style blend. With no ratings, a curated popularity seed is used. From one rating upwards the real average starts to dominate, reaching full weight after five reviews — so new data replaces assumptions instead of being drowned by them.',
+    body: 'A dish guests already love starts with a head start. From the first rating onwards real guest averages start to take over, and after five reviews they fully replace the starting assumption — so new opinions count more than old guesses.',
   },
   {
     icon: <Sparkles size={18} />,
@@ -44,8 +44,8 @@ export function HowItWorks() {
         A recommender you can <em className="not-italic text-amber-soft">explain</em>, not just trust.
       </h1>
       <p className="mt-5 max-w-2xl text-sm leading-relaxed text-sage-400">
-        Camelia’s AI is a hybrid content-based ranker. Every recommendation shows its score and the four signals behind it,
-        because in a restaurant the guest deserves to know <em>why</em> — and the project needs to defend the method.
+        Camelia’s AI reads the whole menu, then ranks it around you. Every recommendation shows its score and the four
+        signals behind it — because at the table you deserve to know <em>why</em> a dish was picked for you.
       </p>
 
       <div className="mt-10 rounded-2xl border border-amber-soft/25 bg-forest-850 p-6">
@@ -81,9 +81,8 @@ export function HowItWorks() {
             + 0.15 × occasion)`}
         </pre>
         <p className="mt-4 text-[13px] leading-relaxed text-sage-400">
-          Weights live in <code className="rounded bg-forest-950 px-1.5 py-0.5 text-amber-pale">backend/app/recommender.py</code>{' '}
-          and are also served by <code className="rounded bg-forest-950 px-1.5 py-0.5 text-amber-pale">GET /api/recommend/meta</code>,
-          so the UI never hardcodes the model. Changing a weight changes the ranking everywhere at once.
+          These four weights are fixed for every guest, so the same taste profile always ranks the menu the
+          same way — and any single weight can be tuned without the rest of the model changing.
         </p>
         {meta && (
           <ul className="mt-4 grid gap-2 text-[12px] text-sage-300 sm:grid-cols-2">
@@ -101,32 +100,25 @@ export function HowItWorks() {
         <h2 className="font-display text-xl">Evaluation, honestly</h2>
         <div className="mt-3 space-y-3 text-[13px] leading-relaxed text-sage-400">
           <p>
-            Every quiz is written to <code className="rounded bg-forest-950 px-1.5 py-0.5 text-amber-pale">recommendation_logs</code>{' '}
-            with the answers, the ranked ids and the top score. When a guest adds a recommended dish to their order, the
-            chosen dish is recorded against that log.
+            Every quiz is remembered with the answers you gave and the dishes it ranked, so the recommendations you see
+            next time are shaped by what you actually chose.
           </p>
           <p>
-            That gives two measurable numbers for the report: how often a recommendation is acted on (top-5 click-through)
-            and how often the number-one dish is chosen (top-1 hit rate). Until real guests use the system, those numbers
-            describe demo traffic only and must be labelled as such.
+            When you order a dish we suggested, we count it — that is how we know the suggestions are genuinely useful
+            and not just plausible.
           </p>
           <p className="text-sage-400/80">
-            Known limitations: the corpus is 26 dishes, ratings are still sparse, and there is no collaborative filtering
-            yet. Both are deliberate — the build plan says to add collaborative signals only when enough real ratings exist.
+            Known limitations: the menu is still growing and guest ratings are new, so a collaborative
+            &ldquo;people who liked this also liked&rdquo; signal is added only once enough real ratings exist.
           </p>
         </div>
       </div>
 
       <div className="mt-8 flex flex-wrap gap-3">
         <Link to="/recommend" className="btn-primary">Try the quiz <ArrowRight size={14} /></Link>
-        <a
-          href={`${(import.meta.env.VITE_API_URL ?? 'http://localhost:9000').replace(/\/$/, '')}/docs`}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-quiet"
-        >
-          API documentation
-        </a>
+        <Link to="/menu" className="btn-quiet">
+          Browse the menu
+        </Link>
       </div>
     </div>
   );

@@ -85,7 +85,7 @@ export function Admin() {
       <SectionHeading
         kicker="Manager dashboard"
         title={<>The kitchen at a glance.</>}
-        description="Live counts, order flow and menu management. Every number below comes from the API, not from hardcoded demo values."
+        description="Live counts, order flow and menu management. Every number below is current, not a demo placeholder."
         action={
           <button onClick={() => setRefreshAt(Date.now())} className="btn-quiet">
             <RefreshCw size={14} /> Refresh
