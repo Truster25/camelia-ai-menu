@@ -26,7 +26,7 @@ export function Recommend() {
   const [addedId, setAddedId] = useState<number | null>(null);
 
   useEffect(() => {
-    api.get<RecommendMeta>('/recommend/meta').then(setMeta).catch(() => setError('Could not load the quiz options. Is the API running?'));
+    api.get<RecommendMeta>('/recommend/meta').then(setMeta).catch(() => setError('We could not load the quiz just now. Please refresh in a moment.'));
   }, []);
 
   const current = steps[step];
@@ -69,7 +69,7 @@ export function Recommend() {
   const weights = meta?.weights ?? {};
   const weightList = useMemo(
     () => [
-      { key: 'similarity', label: 'Text similarity (TF-IDF)' },
+      { key: 'similarity', label: 'How closely it matches your answers' },
       { key: 'preference', label: 'Preference rules' },
       { key: 'popularity', label: 'Popularity' },
       { key: 'occasion', label: 'Occasion match' },
@@ -88,7 +88,7 @@ export function Recommend() {
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-sage-400">
             {result
               ? `${result.considered} dishes were eligible after filters. Each score below is the weighted blend of four signals.`
-              : 'The same hybrid model the project documents: TF-IDF cosine similarity, preference rules, popularity and occasion.'}
+              : 'The same method on every screen: how closely a dish matches your answers, your stated preferences, what other guests love, and the occasion.'}
           </p>
         </div>
         {result && (

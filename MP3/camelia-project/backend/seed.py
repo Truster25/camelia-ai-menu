@@ -130,7 +130,7 @@ DEMO_USERS = [
 # frontend/public/images/ are listed; everything else falls back to the
 # generated gradient art in DishArt, so a missing file never breaks a card.
 # Add the real photo, add one line here, re-run: python seed.py --reset
-IMAGES = {'Katogo': '/images/hero/dish-katogo.jpg', 'Camelia Big Breakfast': '/images/hero/dish-breakfast.jpg', 'Akabenzi Omelette': '/images/hero/dish-omelette.jpg', 'Granola & Yoghurt Bowl': '/images/hero/dish-granola.jpg', 'Camelia Garden Salad': '/images/hero/dish-salad.jpg', 'Sambaza Platter': '/images/hero/dish-sambaza.jpg', 'Avocado & Tomato Salad': '/images/hero/dish-salad.jpg', 'Mushroom Soup': '/images/hero/dish-soup.jpg', 'Ubugali & Beef Stew': '/images/hero/dish-ugali.jpg', 'Isombe': '/images/hero/dish-isombe.jpg', 'Grilled Tilapia': '/images/hero/dish-tilapia.jpg', 'Chicken Brochette': '/images/hero-dish.jpg', 'Beef Brochette': '/images/hero/dish-brochette.jpg', 'Goat Brochette': '/images/hero/dish-brochette.jpg', 'Creamy Chicken Pasta': '/images/hero/dish-pasta.jpg', 'Beef Burger & Fries': '/images/hero/dish-burger.jpg', 'Chocolate Fondant': '/images/hero/dish-fondant.jpg',
+IMAGES = {'Katogo': '/images/hero/dish-katogo.jpg', 'Camelia Big Breakfast': '/images/hero/dish-breakfast.jpg', 'Akabenzi Omelette': '/images/hero/dish-omelette.jpg', 'Granola & Yoghurt Bowl': '/images/hero/dish-granola.jpg', 'Camelia Garden Salad': '/images/hero/dish-salad.jpg', 'Sambaza Platter': '/images/hero/dish-sambaza.jpg', 'Avocado & Tomato Salad': '/images/hero/dish-avocado-salad.jpg', 'Mushroom Soup': '/images/hero/dish-soup.jpg', 'Ubugali & Beef Stew': '/images/hero/dish-ugali.jpg', 'Isombe': '/images/hero/dish-isombe.jpg', 'Grilled Tilapia': '/images/hero/dish-tilapia.jpg', 'Chicken Brochette': '/images/hero-dish.jpg', 'Beef Brochette': '/images/hero/dish-brochette.jpg', 'Goat Brochette': '/images/hero/dish-goat-brochette.jpg', 'Creamy Chicken Pasta': '/images/hero/dish-pasta.jpg', 'Beef Burger & Fries': '/images/hero/dish-burger.jpg', 'Chocolate Fondant': '/images/hero/dish-fondant.jpg',
     "Camellia Signature Latte": "/images/hero/dish-latte.jpg",
     "Rwandan Single-Origin Pour Over": "/images/hero/dish-pourover.jpg",
     "Iced Mocha": "/images/hero/dish-icedmocha.jpg",
@@ -165,7 +165,9 @@ def seed(reset: bool = False) -> None:
             filled = 0
             for dish in db.scalars(select(Dish)).all():
                 wanted = IMAGES.get(dish.name)
-                if wanted and not dish.image_url:
+                # Backfill a missing photo, and also correct one that had to
+                # share another dish's photo before its own existed.
+                if wanted and dish.image_url != wanted:
                     dish.image_url = wanted
                     filled += 1
             if filled:

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
-import { api, formatRwf } from '../lib/api';
+import { api } from '../lib/api';
 import type { Dish } from '../lib/types';
 import { DishTile } from '../components/DishTile';
 import { HeroSlideshow } from '../components/HeroSlideshow';
@@ -14,7 +14,7 @@ import { useCart } from '../context/CartContext';
 
 const quizSteps = [
   { n: '01', title: 'Tell us your taste', body: 'Diet, spice, budget, cuisine and the occasion — five quick questions.' },
-  { n: '02', title: 'The AI ranks the menu', body: 'TF-IDF similarity, preference rules, popularity and occasion are blended into one score.' },
+  { n: '02', title: 'The AI ranks the menu', body: 'Your taste, diet, budget, popularity and the occasion are blended into one score.' },
   { n: '03', title: 'Your top 5, explained', body: 'Every dish comes with a score and a plain-English reason you can trust.' },
 ];
 
@@ -42,9 +42,9 @@ const heroSlides: HeroSlide[] = [
     price: 'RWF 8,500',
   },
   {
-    src: '/images/hero/dish-salad.jpg',
-    alt: 'Avocado and tomato garden salad with groundnuts',
-    dish: 'Camelia Garden Salad',
+    src: '/images/hero/dish-avocado-salad.jpg',
+    alt: 'Avocado and tomato salad with groundnuts',
+    dish: 'Avocado & Tomato Salad',
     category: 'Starters & salads',
     price: 'RWF 4,500',
   },
@@ -83,10 +83,10 @@ function DishCategoryPills({
             type="button"
             onClick={() => onChange(pill.key)}
             aria-pressed={on}
-            className={`rounded-full border px-4 py-2 text-[11px] font-medium transition ${
+            className={`rounded-full border px-4 py-2 text-[11.5px] transition ${
               on
-                ? 'border-[#8a5a2b] bg-[#8a5a2b] text-cream'
-                : 'border-white/20 text-sage-300 hover:border-white/45 hover:text-white'
+                ? 'border-[#8a5a2b] bg-[#8a5a2b] font-semibold text-cream'
+                : 'border-white/25 font-medium text-sage-300 hover:border-white/50 hover:text-white'
             }`}
           >
             {pill.label}
@@ -227,7 +227,7 @@ export function Home() {
       <StoryCarousel slides={storySlides} />
 
       {/* ------------------------------------------------------------ signatures */}
-      <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 lg:px-10 md:py-24">
+      <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
         <SectionHeading
           kicker="Something for every craving"
           title={(
@@ -236,17 +236,25 @@ export function Home() {
             </>
           )}
           description="Six sections, twenty-six dishes, and one AI that reads the whole menu before making a suggestion. These are the plates guests keep coming back for."
-          action={<DishCategoryPills active={pill} onChange={setPill} />}
+          action={
+            <Link
+              to="/menu"
+              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/50 hover:text-white"
+            >
+              All dishes <ArrowUpRight size={14} />
+            </Link>
+          }
         />
+        <div className="mt-7 flex flex-wrap items-center gap-2">
+          <DishCategoryPills active={pill} onChange={setPill} />
+        </div>
 
         {status === 'loading' && <Spinner label="Setting the table…" />}
         {status === 'error' && (
           <div className="card mt-10 p-8">
             <p className="font-display text-xl text-sage-100">The kitchen is offline</p>
             <p className="mt-2 text-sm text-sage-400">
-              The menu API could not be reached. Start the backend with{' '}
-              <code className="rounded bg-forest-950 px-1.5 py-0.5 text-xs text-amber-pale">uvicorn app.main:app --port 9000</code>{' '}
-              and refresh.
+              We could not load the menu just now. Please refresh the page in a moment.
             </p>
           </div>
         )}
@@ -258,16 +266,6 @@ export function Home() {
           </div>
         )}
 
-        {status === 'ready' && (
-          <div className="mt-12 flex justify-center">
-            <Link
-              to="/menu"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/45 hover:text-white"
-            >
-              All dishes <ArrowUpRight size={14} />
-            </Link>
-          </div>
-        )}
       </section>
 
       {/* ------------------------------------------------------------ second card */}
@@ -357,22 +355,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* --------------------------------------------------------------- price strip */}
-      {status === 'ready' && signatures[0] && (
-        <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="card flex flex-wrap items-center justify-between gap-6 p-6">
-            <div>
-              <p className="text-[9px] uppercase tracking-[0.18em] text-amber-soft">Today at the counter</p>
-              <p className="mt-2 font-display text-xl text-sage-100">
-                {signatures[0].name} · <span className="text-amber-pale">{formatRwf(signatures[0].price_rwf)}</span>
-              </p>
-            </div>
-            <Link to={`/menu/${signatures[0].id}`} className="btn-ghost">
-              See the dish <ArrowRight size={14} />
-            </Link>
-          </div>
-        </section>
-      )}
     </div>
   );
 }
