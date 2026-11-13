@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programming Languages and Development Tools — Camelia</title>
+<style>
+  :root {
+    --ink:#1f221b; --muted:#5a5f54; --accent:#8a5a2b;
+    --cream:#f6f3ec; --card:#fffdf8; --rule:#ddd7c8;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--cream); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page { max-width:860px; margin:0 auto; padding:56px 28px 96px; }
+  .masthead { border-bottom:2px solid var(--accent); padding-bottom:22px; margin-bottom:38px; }
+  .eyebrow {
+    font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 10px;
+  }
+  h1.title {
+    font-family:Georgia,"Times New Roman",serif; font-size:clamp(28px,4.4vw,40px);
+    line-height:1.15; margin:0 0 14px; font-weight:700; letter-spacing:-.01em;
+  }
+  .lede { color:var(--muted); font-size:16px; margin:0 0 18px; max-width:62ch; }
+  .meta { font-size:13px; color:var(--muted); display:flex; gap:28px; flex-wrap:wrap; }
+  .meta strong { color:var(--ink); font-weight:600; }
+
+  section.block { margin:0 0 34px; }
+  h2.h1 {
+    font-size:13px; letter-spacing:.10em; text-transform:uppercase; font-weight:800;
+    color:var(--ink); margin:44px 0 14px; padding-bottom:7px;
+    border-bottom:1px solid var(--accent);
+  }
+  h2.h1:first-child { margin-top:0; }
+  h3.h2 { font-size:16px; color:var(--accent); margin:26px 0 8px; font-weight:700; }
+  p { margin:0 0 12px; max-width:70ch; }
+  ul { margin:0 0 14px; padding-left:22px; }
+  li { margin-bottom:7px; max-width:68ch; }
+  li b, li strong { color:var(--ink); }
+
+  .callout {
+    background:#f1ede3; border-left:3px solid var(--accent);
+    padding:16px 20px; border-radius:6px; margin:18px 0 22px;
+  }
+  .callout-title {
+    font-size:11px; font-weight:800; letter-spacing:.10em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:7px;
+  }
+  .callout-body { font-size:15px; }
+
+  .tw { overflow-x:auto; margin:16px 0 24px; border:1px solid var(--rule); border-radius:8px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; background:var(--card); min-width:520px; }
+  th {
+    text-align:left; background:#f1ede3; font-size:12px; text-transform:uppercase;
+    letter-spacing:.06em; padding:11px 13px; border-bottom:1px solid var(--rule); font-weight:700;
+  }
+  td { padding:11px 13px; border-bottom:1px solid #efeae0; vertical-align:top; }
+  tr:last-child td { border-bottom:none; }
+  tr:nth-child(even) td { background:#faf8f3; }
+  td.lead { font-weight:600; white-space:nowrap; }
+  .note { font-size:13px; color:var(--muted); font-style:italic; }
+  @media print {
+    body { background:#fff; }
+    .page { max-width:none; padding:0; }
+    .tw { overflow:visible; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="masthead">
+    <p class="eyebrow">Camelia Restaurant · AI-Based Menu Recommendation System</p>
+    <h1 class="title">Programming Languages and Development Tools Used</h1>
+    <p class="lede">A technical note prepared for the supervisor, stating the languages used to build the
+      system, the role of each one, and the chapters of the project paper in which they should be described.</p>
+    <div class="meta">
+      <span><strong>Prepared by:</strong> the student (author of the project paper)</span>
+      <span><strong>Date:</strong> 13 November 2026</span>
+    </div>
+  </header>
+  <section class="block"><h2 class="h1">1.  THE SHORT ANSWER</h2>
+<p>The system is written in two programming languages. The part the customer and the manager see is written in TypeScript, which is JavaScript with type-checking added. The part that holds the data, serves the request and runs the recommendation is written in Python. Everything else is a supporting tool rather than a programming language: a database, a styling framework and libraries.</p>
+<div class="callout"><div class="callout-title">In one sentence, for the paper</div><div class="callout-body">The system was implemented in TypeScript (JavaScript) on the client side and Python on the server side, with PostgreSQL as the database, giving a clear separation between the presentation layer and the application and intelligence layer.</div></div>
+<p>Both languages were chosen deliberately. TypeScript is the language the React framework is written for, and it catches mistakes while the screens are being built. Python is the language of the machine-learning libraries, so the recommender and the web server can live in one program and be tested with the same tools.</p>
+</section>
+<section class="block"><h2 class="h1">2.  LANGUAGES USED, AND WHAT EACH ONE DOES</h2>
+<div class="tw"><table>
+<thead><tr><th>Language</th><th>Where it is used</th><th>What it is responsible for</th></tr></thead><tbody>
+<tr><td class="lead">TypeScript<br>(JavaScript with types)</td><td>Client side — every screen in the browser</td><td>All nine pages of the website, the preference quiz, the shopping basket, the manager dashboard and the sign-in screens. Compiled to JavaScript, which is the only language a browser can run.</td></tr>
+<tr><td class="lead">Python</td><td>Server side — the application and the recommender</td><td>Receives requests from the browser, applies the business rules, computes the recommendation score, reads and writes the database, and checks passwords and permissions.</td></tr>
+<tr><td class="lead">SQL</td><td>Database</td><td>The table definitions and the queries behind them. Written through SQLAlchemy rather than by hand, so the same code runs on SQLite during development and PostgreSQL in production.</td></tr>
+<tr><td class="lead">CSS</td><td>Client side — appearance</td><td>Layout, colour, typography and animation. Written through Tailwind CSS utility classes rather than as separate stylesheets.</td></tr>
+</tbody></table></div>
+<p>CSS is included for completeness. It is a style-sheet language rather than a programming language, and the paper should say so if it is mentioned, since markers sometimes ask.</p>
+</section>
+<section class="block"><h2 class="h1">3.  WHY THESE LANGUAGES WERE CHOSEN</h2>
+<h3 class="h2">3.1  Why TypeScript on the client side</h3>
+<ul><li>Fit with the framework.  It is the language React is designed for, so the screens use the framework the way it is meant to be used.</li>
+<li>Fewer faults reach the user.  A misspelt field or a wrong data type is reported while the code is being written, instead of appearing as a blank screen during the demonstration.</li>
+<li>Nothing to install.  It compiles to plain JavaScript, so it runs in every modern browser with no installer for the customer.</li>
+<li>One code base, every screen size.  The same code base serves a phone, a tablet and a laptop screen, which matters for a restaurant where customers are seated.</li>
+</ul><h3 class="h2">3.2  Why Python on the server side</h3>
+<ul><li>The intelligence and the server share one language.  The recommender needs a text-similarity model and a ranking formula. Those live in Python libraries, so the model and the web server run in the same language and the same process.</li>
+<li>The method stays explainable.  The whole recommendation method can be read, changed and tested in one file, which is what makes it defensible in Chapter 5 of the paper.</li>
+<li>It can be explained.  Python is the language taught for data handling and machine learning, so the code can be explained to a marker who does not specialise in web development.</li>
+</ul><h3 class="h2">3.3  Why two languages rather than one</h3>
+<p>A single language was possible, but a poor fit. Writing the browser interface in Python would have meant a slower, less responsive page. Writing the recommender in JavaScript would have meant re-implementing numerical libraries by hand. Splitting the system also gives the architecture diagram in Chapter 5 a genuine reason to exist: the two halves talk to each other over a defined web interface, so each can be replaced without rewriting the other.</p>
+</section>
+<section class="block"><h2 class="h1">4.  WHERE EACH LANGUAGE BELONGS IN THE PAPER</h2>
+<p>The languages are not described all in one place. They appear three times, and each appearance has a different purpose. This is the part to agree with the supervisor before writing.</p>
+<div class="tw"><table>
+<thead><tr><th>Chapter</th><th>Section of the guidelines</th><th>What is said about the languages there</th></tr></thead><tbody>
+<tr><td class="lead">Chapter 1 — Introduction</td><td>1.9 Justification of the study / scope</td><td>One or two sentences only: the system is a web application built with TypeScript and Python. No detail; the chapter is about the problem, not the tools.</td></tr>
+<tr><td class="lead">Chapter 3 — Methodology</td><td>3.6 / 3.7 Development tools</td><td>The list of languages and tools in a table with a reason for each choice — this is where the table in section 2 of this note is placed. Written in the past tense, as a decision already taken.</td></tr>
+<tr><td class="lead">Chapter 5 — System design</td><td>5.x Architecture design</td><td>The languages shown on the architecture diagram as the two tiers of the system, with the separation between client and server explained.</td></tr>
+<tr><td class="lead">Chapter 6 — System implementation</td><td>6.2 Tools used for coding and testing</td><td>The authoritative statement: exact language versions, the editor used, the libraries with version numbers, and code extracts. This is the chapter the supervisor is asking about.</td></tr>
+<tr><td class="lead">Appendix</td><td>5.16 / appendix</td><td>The full list of libraries with version numbers, as a reference table. Keeps Chapter 6 readable.</td></tr>
+</tbody></table></div>
+<div class="callout"><div class="callout-title">If only one chapter can be changed now</div><div class="callout-body">Put it in Chapter 6, section 6.2, &quot;Tools used for coding and testing&quot;. The guidelines expect that section to name the languages and tools with version numbers, and it is the section a marker turns to when checking that the system was really built. A short cross-reference in Chapter 3 then points back to it, so the same paragraph is not written twice.</div></div>
+</section>
+<section class="block"><h2 class="h1">5.  READY-TO-USE WORDING FOR THE PAPER</h2>
+<p>The paragraphs below are written in the past tense and in plain academic English, matching the department&#x27;s requirement. They are a starting point to be edited into the student&#x27;s own voice — the guidelines require the words to be her own, so they should not be pasted unchanged.</p>
+<h3 class="h2">5.1  For Chapter 3 (Methodology) — development tools</h3>
+<p>The system was developed as a two-tier web application. The client side was implemented in TypeScript 5.6, a superset of JavaScript that adds static typing, and was built with React 18 and Vite 5. Styling was written with Tailwind CSS. The server side was implemented in Python 3.11 using the FastAPI framework, with SQLAlchemy for database access and scikit-learn for the recommendation model. PostgreSQL was used as the database management system in production, with SQLite used for local development. The choice of TypeScript on the client and Python on the server allowed the user interface and the recommendation logic to be developed, tested and modified independently of each other.</p>
+<h3 class="h2">5.2  For Chapter 6 (Implementation) — languages and versions</h3>
+<p>The implementation used two programming languages. TypeScript was used for all client-side code, compiled to JavaScript by Vite before being served to the browser. Python was used for all server-side code, including the recommendation engine. The version of each language and library is given in Table 6.x. TypeScript was selected because its type-checking identifies inconsistencies between the data returned by the server and the data displayed on screen before the application is run. Python was selected because the machine-learning libraries required by the recommendation algorithm are written in Python, allowing the web server and the recommendation model to run within a single application.</p>
+<h3 class="h2">5.3  For Chapter 5 (Design) — architecture sentence</h3>
+<p>The system follows a client–server architecture. The presentation tier is implemented in TypeScript and runs in the user&#x27;s browser; the application tier is implemented in Python and runs on the server, exposing a documented web interface that the presentation tier calls. The data tier is a PostgreSQL relational database. This separation means the recommendation model can be changed without altering any screen, and a screen can be redesigned without touching the model.</p>
+</section>
+<section class="block"><h2 class="h1">6.  EXACT VERSIONS, FOR THE TOOLS TABLE IN CHAPTER 6</h2>
+<p>These are the versions the system actually runs on, read from the project&#x27;s dependency files. They can be copied into the table the guidelines require in Chapter 6.</p>
+<h3 class="h2">6.1  Languages and runtimes</h3>
+<div class="tw"><table>
+<thead><tr><th>Item</th><th>Version</th><th>Note</th></tr></thead><tbody>
+<tr><td class="lead">TypeScript</td><td>5.6.3</td><td>Client-side language</td></tr>
+<tr><td class="lead">JavaScript (ECMAScript)</td><td>ES2022</td><td>Target the TypeScript is compiled to</td></tr>
+<tr><td class="lead">Python</td><td>3.11.2</td><td>Server-side language</td></tr>
+<tr><td class="lead">SQL</td><td>PostgreSQL 16 / SQLite 3</td><td>Written through SQLAlchemy, not by hand</td></tr>
+<tr><td class="lead">Node.js</td><td>22.x</td><td>Runtime that builds the client (development only)</td></tr>
+</tbody></table></div>
+<h3 class="h2">6.2  Client-side libraries</h3>
+<div class="tw"><table>
+<thead><tr><th>Library</th><th>Version</th><th>Purpose</th></tr></thead><tbody>
+<tr><td class="lead">React</td><td>18.3.1</td><td>User-interface framework</td></tr>
+<tr><td class="lead">React Router</td><td>6.30.6</td><td>Navigation between the nine pages</td></tr>
+<tr><td class="lead">Vite</td><td>5.4.11</td><td>Build tool and development server</td></tr>
+<tr><td class="lead">Tailwind CSS</td><td>4.3.5</td><td>Styling, layout and responsive design</td></tr>
+<tr><td class="lead">Lucide React</td><td>0.468.0</td><td>Icon set</td></tr>
+<tr><td class="lead">Playfair Display / Inter</td><td>5.3.0</td><td>Typefaces, self-hosted</td></tr>
+</tbody></table></div>
+<h3 class="h2">6.3  Server-side libraries</h3>
+<div class="tw"><table>
+<thead><tr><th>Library</th><th>Version</th><th>Purpose</th></tr></thead><tbody>
+<tr><td class="lead">FastAPI</td><td>0.115.12</td><td>Web framework that exposes the server interface</td></tr>
+<tr><td class="lead">Uvicorn</td><td>0.34.2</td><td>Application server that runs FastAPI</td></tr>
+<tr><td class="lead">SQLAlchemy</td><td>2.0.57</td><td>Database toolkit and object-relational mapping</td></tr>
+<tr><td class="lead">scikit-learn</td><td>1.9.1</td><td>Text similarity and the recommendation model</td></tr>
+<tr><td class="lead">NumPy</td><td>2.4.6</td><td>Numerical operations behind the model</td></tr>
+<tr><td class="lead">Pydantic</td><td>2.14.3</td><td>Validation of data entering and leaving the server</td></tr>
+<tr><td class="lead">python-jose</td><td>3.5.0</td><td>JSON Web Tokens for sign-in sessions</td></tr>
+<tr><td class="lead">bcrypt</td><td>4.0.1</td><td>Password hashing</td></tr>
+<tr><td class="lead">psycopg2</td><td>2.9.x</td><td>PostgreSQL driver used in production</td></tr>
+<tr><td class="lead">pytest</td><td>8.3.5</td><td>Automated testing of the server</td></tr>
+<tr><td class="lead">HTTPX</td><td>0.28.1</td><td>Test client for the server</td></tr>
+</tbody></table></div>
+<h3 class="h2">6.4  Size of the implementation</h3>
+<div class="tw"><table>
+<thead><tr><th>Measure</th><th>Value</th></tr></thead><tbody>
+<tr><td class="lead">Pages / screens implemented</td><td>9 (home, menu, dish detail, quiz, how it works, basket, orders, sign-in, manager dashboard)</td></tr>
+<tr><td class="lead">Client-side source files</td><td>TypeScript and TSX, approximately 4,000 lines</td></tr>
+<tr><td class="lead">Server-side source files</td><td>18 Python modules, approximately 2,250 lines</td></tr>
+<tr><td class="lead">Server interface groups</td><td>6 (authentication, menu, orders, ratings, recommendations, administration)</td></tr>
+<tr><td class="lead">Dishes in the seeded menu</td><td>26 across 6 categories</td></tr>
+<tr><td class="lead">Automated server tests</td><td>33</td></tr>
+<tr><td class="lead">Database tables</td><td>8</td></tr>
+</tbody></table></div>
+</section>
+<section class="block"><h2 class="h1">7.  POINTS TO CONFIRM WITH THE SUPERVISOR</h2>
+<p>Four questions are worth settling before the chapter is written.</p>
+<ul><li class="num">Which chapter should carry the full description — Chapter 3, section 3.7 (development tools), or Chapter 6, section 6.2 (tools used for coding and testing)? The recommendation in this note is Chapter 6, with a one-line cross-reference in Chapter 3.</li>
+<li class="num">Should CSS and SQL be listed as programming languages, or named separately as a style-sheet language and a query language? Listing them without comment is the usual cause of a lost mark.</li>
+<li class="num">Does the department want version numbers in the body text or only in a table? The guidelines mention version numbers for Chapter 6, but not the format.</li>
+<li class="num">Should the libraries be listed in full in Chapter 6, or moved to an appendix with only the main ones named in the chapter? A table of eleven libraries can take most of a page that the chapter limit does not allow.</li>
+</ul></section>
+<section class="block"><h2 class="h1">8.  ONE-LINE DESCRIPTION FOR THE ABSTRACT</h2>
+<p>If the abstract needs to name the technology in a single clause, this is accurate and short enough to fit:</p>
+<div class="callout"><div class="callout-title">Suggested clause</div><div class="callout-body">“…implemented as a web application using TypeScript and React on the client side and Python with FastAPI on the server side, with a hybrid content-based recommendation model built with scikit-learn and a PostgreSQL database.”</div></div>
+<p>Prepared from the system as built. Versions were read from the project&#x27;s dependency files (package.json and requirements.txt) on 11 November 2026 and will not change unless a library is updated, in which case this table should be refreshed before submission.</p>
+</section>
+</div>
+</body>
+</html>
