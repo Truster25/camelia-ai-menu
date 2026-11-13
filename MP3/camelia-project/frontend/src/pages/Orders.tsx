@@ -54,7 +54,7 @@ export function Orders() {
         <EmptyState
           icon={<ClipboardList size={22} />}
           title="Sign in to see your orders"
-          body="Your pre-orders, ratings and favourites live with your account. The demo customer account is ready if you just want to look around."
+          body="Your pre-orders, ratings and favourites live with your account. Sign in and everything you have ordered is waiting here."
           action={<Link to="/login" state={{ from: '/orders' }} className="btn-primary">Sign in</Link>}
         />
       </div>

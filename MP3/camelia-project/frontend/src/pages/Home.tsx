@@ -6,16 +6,16 @@ import type { Dish } from '../lib/types';
 import { DishTile } from '../components/DishTile';
 import { HeroSlideshow } from '../components/HeroSlideshow';
 import { StoryCarousel } from '../components/StoryCarousel';
-import { FeatureCard } from '../components/FeatureCard';
 import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
 import { useCart } from '../context/CartContext';
+import { useLang } from '../context/LanguageContext';
 
 const quizSteps = [
-  { n: '01', title: 'Tell us your taste', body: 'Diet, spice, budget, cuisine and the occasion — five quick questions.' },
-  { n: '02', title: 'The AI ranks the menu', body: 'Your taste, diet, budget, popularity and the occasion are blended into one score.' },
-  { n: '03', title: 'Your top 5, explained', body: 'Every dish comes with a score and a plain-English reason you can trust.' },
+  { n: '01', title: 'quiz.step1.title', body: 'quiz.step1.body' },
+  { n: '02', title: 'quiz.step2.title', body: 'quiz.step2.body' },
+  { n: '03', title: 'quiz.step3.title', body: 'quiz.step3.body' },
 ];
 
 /** Five clean plates that rotate every three seconds behind the landing hero. */
@@ -57,46 +57,6 @@ const heroSlides: HeroSlide[] = [
   },
 ];
 
-const PILLS = [
-  { key: 'all', label: 'All' },
-  { key: 'coffee-tea', label: 'Coffee' },
-  { key: 'starters-salads', label: 'Snacks' },
-  { key: 'desserts', label: 'Desserts' },
-  { key: 'fresh-juices', label: 'Beverages' },
-  { key: 'breakfast', label: 'Combos' },
-] as const;
-
-function DishCategoryPills({
-  active,
-  onChange,
-}: {
-  active: string;
-  onChange: (key: string) => void;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {PILLS.map((pill) => {
-        const on = pill.key === active;
-        return (
-          <button
-            key={pill.key}
-            type="button"
-            onClick={() => onChange(pill.key)}
-            aria-pressed={on}
-            className={`rounded-full border px-4 py-2 text-[11.5px] transition ${
-              on
-                ? 'border-[#8a5a2b] bg-[#8a5a2b] font-semibold text-cream'
-                : 'border-white/25 font-medium text-sage-300 hover:border-white/50 hover:text-white'
-            }`}
-          >
-            {pill.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 const storySlides: StorySlide[] = [
   {
     id: 'grill',
@@ -124,22 +84,36 @@ const storySlides: StorySlide[] = [
   },
 ];
 
+const drinkSlides: StorySlide[] = [
+  {
+    id: 'drinks',
+    image: '/images/story/story-drinks.jpg',
+    alt: 'Two iced coffee drinks on a cream linen table with scattered coffee beans',
+    title: 'Refreshing drinks,',
+    accent: 'brewed to order.',
+    body: 'Single-origin pour over, iced mocha, spiced tea and cold juice pressed the same day. Whether you are working through the afternoon or cooling down after a long walk, there is a glass with your name on it.',
+    cta: { label: 'See the drinks', to: '/menu' },
+    cta2: { label: 'Ask the AI', to: '/recommend' },
+  },
+];
+
 export function Home() {
   const [signatures, setSignatures] = useState<Dish[]>([]);
-  const [pill, setPill] = useState<string>('all');
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const { add: _add } = useCart();
+  const { t } = useLang();
 
   const visibleDishes = useMemo(() => {
-    const byPill =
-      pill === 'all' ? signatures : signatures.filter((dish) => dish.category_slug === pill);
-    const source = byPill.length ? byPill : signatures;
-    // Signature plates first, then whatever else the category holds.
-    const ordered = [...source].sort(
-      (a, b) => Number(b.is_signature) - Number(a.is_signature) || b.popularity_seed - a.popularity_seed,
-    );
-    return ordered.slice(0, pill === 'all' ? 5 : 10);
-  }, [signatures, pill]);
+    // Signature plates first, then whatever else the menu holds. No pills any
+    // more: the landing row is a taster, and /menu is where the full filter
+    // lives. Five plates, always.
+    return [...signatures]
+      .sort(
+        (a, b) =>
+          Number(b.is_signature) - Number(a.is_signature) || b.popularity_seed - a.popularity_seed,
+      )
+      .slice(0, 5);
+  }, [signatures]);
 
   useEffect(() => {
     api
@@ -164,11 +138,11 @@ export function Home() {
             {/* copy sits on top of the photograph */}
             <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-16 pt-40 sm:px-10 sm:pb-20 sm:pt-48 lg:max-w-[62%] lg:px-14 lg:pb-16 lg:pt-56 xl:max-w-[58%]">
               <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
-                Good food
+                {t('home.hero.line1')}
                 <br />
-                creates
+                {t('home.hero.line2')}
                 <br />
-                <em className="not-italic text-amber-logo">better days</em>
+                <em className="not-italic text-amber-logo">{t('home.hero.line3')}</em>
               </h1>
 
               <span className="mt-8 block h-px w-10 bg-cream/40" aria-hidden="true" />
@@ -178,10 +152,10 @@ export function Home() {
                   <span className="grid h-12 w-12 place-items-center rounded-full bg-amber-logo text-forest-950 transition group-hover:translate-x-1">
                     <ArrowRight size={18} />
                   </span>
-                  Explore our menu
+                  {t('home.hero.explore')}
                 </Link>
                 <Link to="/recommend" className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cream/70 transition hover:text-cream sm:inline-flex">
-                  <Sparkles size={13} /> Ask the AI
+                  <Sparkles size={13} /> {t('home.hero.ask')}
                 </Link>
               </div>
 
@@ -194,29 +168,27 @@ export function Home() {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/70 via-black/45 to-transparent" aria-hidden="true" />
             <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/5" aria-hidden="true" />
             <div className="relative">
-            <p className="text-[11px] tracking-[0.04em] text-sage-300/80">A seat at our table.</p>
+            <p className="text-[11px] tracking-[0.04em] text-sage-300/80">{t('home.aside.kicker')}</p>
 
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
-              Your next
+              {t('home.aside.title1')}
               <br />
-              favourite <em className="not-italic text-amber-logo">meal.</em>
+              {t('home.aside.title2')} <em className="not-italic text-amber-logo">.</em>
             </h2>
 
             <p className="mt-7 max-w-[30ch] text-[13.5px] leading-[1.85] text-sage-300">
-              A little about your taste.
-              <br />
-              A little more delight on your plate.
+              {t('home.aside.lead')}
             </p>
 
             <p className="mt-5 max-w-[34ch] text-[12px] leading-[1.85] text-sage-400">
-              Tell us what you enjoy. We’ll save your preferences and show you dishes that answer them.
+              {t('home.aside.body')}
             </p>
 
             <Link
               to="/recommend"
               className="mt-9 inline-flex w-fit items-center gap-4 rounded-full bg-amber-logo px-6 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-forest-950 transition hover:bg-amber-pale"
             >
-              View your taste profile <ArrowRight size={15} />
+              {t('home.aside.cta')} <ArrowRight size={15} />
             </Link>
             </div>
           </aside>
@@ -229,37 +201,33 @@ export function Home() {
       {/* ------------------------------------------------------------ signatures */}
       <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
         <SectionHeading
-          kicker="Something for every craving"
+          kicker={t('dishes.kicker')}
           title={(
             <>
-              A taste of <em className="not-italic text-amber-soft">Camelia.</em>
+              {t('dishes.title')} <em className="not-italic text-amber-soft">{t('dishes.title.accent')}</em>
             </>
           )}
-          description="Six sections, twenty-six dishes, and one AI that reads the whole menu before making a suggestion. These are the plates guests keep coming back for."
+          description={t('dishes.body')}
           action={
             <Link
               to="/menu"
               className="inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/50 hover:text-white"
             >
-              All dishes <ArrowUpRight size={14} />
+              {t('dishes.all')} <ArrowUpRight size={14} />
             </Link>
           }
         />
-        <div className="mt-7 flex flex-wrap items-center gap-2">
-          <DishCategoryPills active={pill} onChange={setPill} />
-        </div>
-
-        {status === 'loading' && <Spinner label="Setting the table…" />}
+        {status === 'loading' && <Spinner label={t('dishes.loading')} />}
         {status === 'error' && (
           <div className="card mt-10 p-8">
-            <p className="font-display text-xl text-sage-100">The kitchen is offline</p>
+            <p className="font-display text-xl text-sage-100">{t('dishes.empty.title')}</p>
             <p className="mt-2 text-sm text-sage-400">
-              We could not load the menu just now. Please refresh the page in a moment.
+              {t('dishes.empty.body')}
             </p>
           </div>
         )}
         {status === 'ready' && (
-          <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:mt-16 lg:grid-cols-5">
             {visibleDishes.map((dish) => (
               <DishTile key={dish.id} dish={dish} category={dish.category_name} />
             ))}
@@ -269,16 +237,14 @@ export function Home() {
       </section>
 
       {/* ------------------------------------------------------------ second card */}
-      <FeatureCard
-        image="/images/story/story-drinks.jpg"
-        alt="Two iced coffee drinks on a cream linen table"
-        title="Refreshing drinks,"
-        accent="brewed to order."
-        body="Single-origin pour over, iced mocha, spiced tea and cold juice pressed the same day. Whether you are working through the afternoon or cooling down after a long walk, there is a glass with your name on it."
-        ctaLabel="See the drinks"
-        ctaTo="/menu"
-        ctaLabel2="Ask the AI"
-        ctaTo2="/recommend"
+      {/* The drinks card is the same band as the story card, mirrored, so the
+          two read as one set and both get the same arrows and slide timing. */}
+      <StoryCarousel
+        slides={drinkSlides}
+        interval={7000}
+        mirrored
+        anchor="drinks"
+        label="Drinks at Camelia"
       />
 
       {/* --------------------------------------------------------------- AI block */}
@@ -287,34 +253,32 @@ export function Home() {
         <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <p className="kicker">
-              <span className="kicker-line" /> Made a little more personal
+              <span className="kicker-line" /> {t('ai.kicker')}
             </p>
             <h2 className="mt-5 font-display text-[clamp(2rem,4vw,3.2rem)] leading-[1.08] tracking-[-0.03em]">
-              Not sure what to order?
+              {t('ai.title1')}
               <br />
-              <em className="not-italic text-amber-soft">Let the menu ask.</em>
+              <em className="not-italic text-amber-soft">{t('ai.title2')}</em>
             </h2>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-sage-300">
-              Answer five short questions and Camelia’s recommender scores every available dish against your answers —
-              diet, spice, budget, cuisine and occasion. Dietary needs are hard filters: if it is not halal, it will never
-              appear in a halal result.
+              {t('ai.body')}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Link to="/recommend" className="btn-primary">
-                <Sparkles size={15} /> Start the 60-second quiz
+                <Sparkles size={15} /> {t('ai.cta')}
               </Link>
               <Link to="/how-it-works" className="btn-quiet">
-                How it works
+                {t('ai.how')}
               </Link>
             </div>
 
             <dl className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
-                ['26', 'Dishes ranked'],
-                ['40%', 'Text similarity'],
-                ['25%', 'Preference rules'],
-                ['15%', 'Occasion match'],
+                ['26', t('ai.stat1')],
+                ['40%', t('ai.stat2')],
+                ['25%', t('ai.stat3')],
+                ['15%', t('ai.stat4')],
               ].map(([value, label]) => (
                 <div key={label}>
                   <dt className="font-display text-2xl text-amber-pale">{value}</dt>
@@ -329,8 +293,8 @@ export function Home() {
               <li key={step.n} className="card flex items-start gap-5 p-6">
                 <span className="font-display text-3xl text-amber-soft/70">{step.n}</span>
                 <div>
-                  <h3 className="font-display text-xl text-sage-100">{step.title}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-sage-400">{step.body}</p>
+                  <h3 className="font-display text-xl text-sage-100">{t(step.title)}</h3>
+                  <p className="mt-2 text-[13px] leading-relaxed text-sage-400">{t(step.body)}</p>
                 </div>
               </li>
             ))}
@@ -346,11 +310,8 @@ export function Home() {
             “I typed vegetarian, medium spice, mid budget, date night. It gave me the mushroom soup and the chocolate
             fondant — exactly what I would have ordered after ten minutes of arguing with my friends.”
           </p>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em]">
-            Demo feedback · Aline M. · Kigali
-          </p>
           <Link to="/recommend" className="inline-flex items-center gap-2 rounded-full border border-forest-950/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] transition hover:bg-forest-950 hover:text-cream">
-            <UtensilsCrossed size={14} /> Find your dish
+            <UtensilsCrossed size={14} /> {t('quote.cta')}
           </Link>
         </div>
       </section>
