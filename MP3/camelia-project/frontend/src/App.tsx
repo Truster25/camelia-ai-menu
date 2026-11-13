@@ -9,6 +9,9 @@ import { Login } from './pages/Login';
 import { Cart } from './pages/Cart';
 import { Orders } from './pages/Orders';
 import { Admin } from './pages/Admin';
+import { OurStory } from './pages/OurStory';
+import { Contact } from './pages/Contact';
+import { Privacy } from './pages/Privacy';
 import { useAuth } from './context/AuthContext';
 import { Spinner } from './components/ui';
 
@@ -31,6 +34,9 @@ export default function App() {
         <Route path="login" element={<Login />} />
         <Route path="cart" element={<Cart />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="our-story" element={<OurStory />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="privacy" element={<Privacy />} />
         <Route path="admin" element={<AdminRoute />} />
         <Route
           path="*"

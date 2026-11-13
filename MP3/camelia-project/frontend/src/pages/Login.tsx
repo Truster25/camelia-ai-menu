@@ -54,7 +54,7 @@ export function Login() {
         </p>
 
         <div className="mt-9 space-y-3">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-sage-400">Demo accounts</p>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-sage-400">Sign in quickly</p>
           <button onClick={() => fillDemo('customer')} className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-forest-850 px-4 py-3 text-left transition hover:border-amber-soft/50">
             <span>
               <span className="block text-sm text-sage-100">Customer</span>

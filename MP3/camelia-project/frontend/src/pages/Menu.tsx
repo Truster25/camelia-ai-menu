@@ -6,6 +6,7 @@ import type { Category, Dish } from '../lib/types';
 import { DishCard } from '../components/DishCard';
 import { EmptyState, SectionHeading, Spinner } from '../components/ui';
 import { useCart } from '../context/CartContext';
+import { useLang } from '../context/LanguageContext';
 
 type DietFilter = '' | 'vegetarian' | 'vegan' | 'halal' | 'gluten-free';
 
@@ -34,6 +35,7 @@ export function Menu() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<'menu' | 'price' | 'rating' | 'popularity'>('menu');
   const { add, count } = useCart();
+  const { t } = useLang();
   const [added, setAdded] = useState<string | null>(null);
 
   useEffect(() => {
@@ -87,13 +89,14 @@ export function Menu() {
   return (
     <div data-header-theme="dark" className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
       <SectionHeading
-        kicker="Our menu"
+        level={1}
+        kicker={t('menu.kicker')}
         title={(
           <>
-            A taste of <em className="not-italic text-amber-soft">Camellia.</em>
+            {t('menu.title')} <em className="not-italic text-amber-soft">{t('menu.title.accent')}</em>
           </>
         )}
-        description="Everything the kitchen is serving today — filtered by category, diet, price or a word you remember. Prices in Rwandan francs."
+        description={t('menu.body')}
         action={
           <Link to="/recommend" className="btn-ghost">
             <Sparkles size={14} /> Not sure? Ask the AI

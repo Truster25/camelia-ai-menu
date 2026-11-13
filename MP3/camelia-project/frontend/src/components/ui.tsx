@@ -46,19 +46,23 @@ export function SectionHeading({
   title,
   action,
   description,
+  level = 2,
 }: {
   kicker: string;
   title: ReactNode;
   action?: ReactNode;
   description?: string;
+  /** 1 when this heading is the page's main title, 2 for a section within a page. */
+  level?: 1 | 2;
 }) {
+  const Title = level === 1 ? 'h1' : 'h2';
   return (
     <div className="flex flex-wrap items-end justify-between gap-6">
       <div>
         <p className="kicker">
           <span className="kicker-line" /> {kicker}
         </p>
-        <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,2.9rem)] leading-tight tracking-[-0.02em]">{title}</h2>
+        <Title className="mt-4 font-display text-[clamp(1.9rem,4vw,2.9rem)] leading-tight tracking-[-0.02em]">{title}</Title>
         {description && <p className="mt-3 max-w-xl text-sm leading-relaxed text-sage-400">{description}</p>}
       </div>
       {action}
