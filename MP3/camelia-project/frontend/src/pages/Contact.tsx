@@ -105,12 +105,30 @@ export function Contact() {
             </div>
           </div>
 
-          {/* map */}
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-forest-900">
+          {/* Map. The address panel sits underneath the frame, so if the
+              map service is blocked or slow the block still says where we are
+              rather than showing an empty rectangle. */}
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-forest-900">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
+              <MapPin size={22} className="text-amber-soft" aria-hidden="true" />
+              <p className="text-[13px] leading-relaxed text-sage-300">
+                KG 7 Avenue, Kiyovu
+                <br />
+                Kigali, Rwanda
+              </p>
+              <a
+                href={ADDRESS.mapsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-logo underline-offset-4 hover:underline"
+              >
+                Open the map
+              </a>
+            </div>
             <iframe
               title="Map showing Camelia on KG 7 Avenue, Kiyovu, Kigali"
               src="https://www.openstreetmap.org/export/embed.html?bbox=30.050%2C-1.960%2C30.080%2C-1.935&layer=mapnik&marker=-1.9475%2C30.0655"
-              className="h-[320px] w-full border-0 sm:h-[440px] lg:h-full lg:min-h-[440px]"
+              className="relative h-[320px] w-full border-0 sm:h-[440px] lg:h-full lg:min-h-[440px]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
