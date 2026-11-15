@@ -21,7 +21,7 @@ const signals = [
     icon: <Gauge size={18} />,
     weight: '20%',
     title: 'Popularity',
-    body: 'A dish guests already love starts with a head start. From the first rating onwards real guest averages start to take over, and after five reviews they fully replace the starting assumption — so new opinions count more than old guesses.',
+    body: 'A dish guests already love starts with a head start. From the first rating onwards real guest averages start to take over, and after five reviews they fully replace the starting assumption, so new opinions count more than old guesses.',
   },
   {
     icon: <Sparkles size={18} />,
@@ -45,7 +45,7 @@ export function HowItWorks() {
       </h1>
       <p className="mt-5 max-w-2xl text-sm leading-relaxed text-sage-400">
         Camelia’s AI reads the whole menu, then ranks it around you. Every recommendation shows its score and the four
-        signals behind it — because at the table you deserve to know <em>why</em> a dish was picked for you.
+        signals behind it, because at the table you deserve to know <em>why</em> a dish was picked for you.
       </p>
 
       <div className="mt-10 rounded-2xl border border-amber-soft/25 bg-forest-850 p-6">
@@ -82,7 +82,7 @@ export function HowItWorks() {
         </pre>
         <p className="mt-4 text-[13px] leading-relaxed text-sage-400">
           These four weights are fixed for every guest, so the same taste profile always ranks the menu the
-          same way — and any single weight can be tuned without the rest of the model changing.
+          same way, and any single weight can be tuned without the rest of the model changing.
         </p>
         {meta && (
           <ul className="mt-4 grid gap-2 text-[12px] text-sage-300 sm:grid-cols-2">
@@ -104,7 +104,7 @@ export function HowItWorks() {
             next time are shaped by what you actually chose.
           </p>
           <p>
-            When you order a dish we suggested, we count it — that is how we know the suggestions are genuinely useful
+            When you order a dish we suggested, we count it. That is how we know the suggestions are genuinely useful
             and not just plausible.
           </p>
           <p className="text-sage-400/80">

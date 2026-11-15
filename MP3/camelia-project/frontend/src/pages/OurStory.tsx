@@ -22,7 +22,7 @@ const team: Person[] = [
     role: 'Coffee lead',
     image: '/images/team/barista-eric.jpg',
     alt: 'Eric pouring latte art at the Camelia coffee bar',
-    line: 'Roasts and pours. If your latte arrives with a fern on it, that is Eric — and he will remember how you take it next time.',
+    line: 'Roasts and pours. If your latte arrives with a fern on it, that is Eric, and he will remember how you take it next time.',
   },
   {
     name: 'Chantal Uwase',
@@ -33,7 +33,7 @@ const team: Person[] = [
   },
   {
     name: 'Jean-Paul Habimana',
-    role: 'Kitchen — brochettes',
+    role: 'Kitchen, brochettes',
     image: '/images/team/grill-jeanpaul.jpg',
     alt: 'Jean-Paul turning brochettes over the charcoal grill',
     line: 'Tends the charcoal from six in the morning. The reason the brochettes taste of smoke rather than of gas.',
@@ -59,7 +59,7 @@ const milestones = [
   {
     year: '2026',
     title: 'The menu that asks',
-    body: 'Camelia adds an AI assistant that reads the whole menu against your taste, diet, budget and occasion — so nobody has to guess.',
+    body: 'Camelia adds an AI assistant that reads the whole menu against your taste, diet, budget and occasion, so nobody has to guess.',
   },
 ];
 

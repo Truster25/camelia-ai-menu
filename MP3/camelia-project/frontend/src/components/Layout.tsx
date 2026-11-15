@@ -256,12 +256,11 @@ export function Footer() {
   const { t } = useLang();
 
   return (
-    <footer className="bg-forest-950 px-4 pb-6 pt-16 sm:px-6 sm:pb-8 lg:px-10">
-      {/* The card floats: it does not touch the edge of the screen on any side,
-          and it has no wordmark bleeding off the bottom any more. The food
-          photograph sits behind the cream panel, so the card reads as a table
-          with a paper menu lying on it. */}
-      <div className="relative mx-auto max-w-[1560px] overflow-hidden rounded-[4px] bg-forest-900">
+    <footer className="bg-forest-950">
+      {/* The photograph now fills the whole band edge to edge. There is no dark
+          strip above it and no inset around it, so nothing stops the image at
+          a hard line. A single wash over the top keeps the lower text legible. */}
+      <div className="relative overflow-hidden">
         <img
           src="/images/footer/footer-table.jpg"
           alt=""
@@ -270,122 +269,125 @@ export function Footer() {
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        {/* dark wash so the photograph stays a backdrop, not a subject */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-forest-950/25"
+          className="pointer-events-none absolute inset-0 bg-forest-950/[0.82]"
         />
 
-        <div className="relative p-4 sm:p-6 lg:p-9">
-          <div
-            data-header-theme="light"
-            className="rounded-[4px] bg-cream px-6 py-10 text-ink sm:px-9 sm:py-12 lg:px-12"
-          >
-            <div className="grid gap-10 md:grid-cols-[1.25fr_0.75fr_0.85fr_1.15fr] md:gap-8">
-              {/* brand */}
-              <div>
-                <Logo variant="orange" className="h-11" />
-                <p className="mt-5 max-w-[30ch] text-[13px] leading-[1.8] text-[#6b6f63]">
-                  {t('footer.brand.body')}
-                </p>
-                <div className="mt-6 flex items-center gap-2.5">
-                  {[
-                    { label: 'Instagram', href: 'https://www.instagram.com/', d: 'M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 5.3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm0 7.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Zm4.7-7.6a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0Z' },
-                    { label: 'Facebook', href: 'https://www.facebook.com/', d: 'M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.3H7.6V13h2.3v8h3.6Z' },
-                    { label: 'X', href: 'https://x.com/', d: 'M17.5 3h2.9l-6.3 7.2L21.5 21h-5.8l-4.5-5.9L5.9 21H3l6.8-7.8L2.9 3h5.9l4.1 5.4L17.5 3Zm-1 16.2h1.6L7.6 4.7H5.9l10.6 14.5Z' },
-                    { label: 'WhatsApp', href: 'https://wa.me/250788000000', d: 'M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A9.9 9.9 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.2-.3.3-.4v-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.1 1.6 2.5 3.9 3.5 1.5.6 2 .7 2.8.6.4-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.4-.2Z' },
-                  ].map((icon) => (
-                    <a
-                      key={icon.label}
-                      href={icon.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={icon.label}
-                      className="grid h-8 w-8 place-items-center rounded-full border border-ink/15 text-ink/70 transition hover:border-[#8a5a2b] hover:bg-[#8a5a2b] hover:text-cream"
-                    >
-                      <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true"><path d={icon.d} /></svg>
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* explore — every item is a real route */}
-              <nav aria-label="Explore">
-                <p className="font-display text-[13.5px] font-semibold text-ink">{t('footer.explore')}</p>
-                <ul className="mt-4 space-y-2.5 text-[12.5px] text-[#6b6f63]">
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/menu">{t('footer.menu')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/recommend">{t('footer.find')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/how-it-works">{t('footer.how')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/orders">{t('footer.orders')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/cart">{t('footer.basket')}</Link></li>
-                </ul>
-              </nav>
-
-              {/* about — story, team, location, contact */}
-              <nav aria-label="About Camelia">
-                <p className="font-display text-[13.5px] font-semibold text-ink">{t('footer.about')}</p>
-                <ul className="mt-4 space-y-2.5 text-[12.5px] text-[#6b6f63]">
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/our-story">{t('footer.story')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/our-story#team">{t('footer.team')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/contact">{t('footer.location')}</Link></li>
-                  <li><Link className="transition hover:text-[#8a5a2b]" to="/contact#hours">{t('footer.hours')}</Link></li>
-                  <li>
-                    <a className="transition hover:text-[#8a5a2b]" href="mailto:hello@camelia.rw">
-                      {t('footer.contact')}
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-
-              {/* visit + newsletter */}
-              <div>
-                <p className="font-display text-[13.5px] font-semibold text-ink">{t('footer.visit')}</p>
-                <p className="mt-4 text-[12.5px] leading-relaxed text-[#6b6f63]">
+        <div className="relative mx-auto max-w-[1560px] px-5 pb-10 pt-14 sm:px-8 lg:px-10 lg:pb-12">
+          {/* Dribbble-style link columns: no card, no panel, the page itself
+              is the footer. Type sits straight on the photograph. */}
+          <div className="grid gap-10 md:grid-cols-[1.3fr_0.7fr_0.8fr_1.1fr] md:gap-8">
+            <div>
+              <Logo variant="white" className="h-11" />
+              <p className="mt-5 max-w-[30ch] text-[12.5px] leading-[1.85] text-sage-300">
+                {t('footer.brand.body')}
+              </p>
+              <div className="mt-6 flex items-center gap-2.5">
+                {[
+                  { label: 'Instagram', href: 'https://www.instagram.com/', d: 'M12 2.2c3.2 0 3.6 0 4.9.07 1.2.06 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 5.3a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9Zm0 7.4a2.9 2.9 0 1 1 0-5.8 2.9 2.9 0 0 1 0 5.8Zm4.7-7.6a1.05 1.05 0 1 1-2.1 0 1.05 1.05 0 0 1 2.1 0Z' },
+                  { label: 'Facebook', href: 'https://www.facebook.com/', d: 'M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.6c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.3H7.6V13h2.3v8h3.6Z' },
+                  { label: 'X', href: 'https://x.com/', d: 'M17.5 3h2.9l-6.3 7.2L21.5 21h-5.8l-4.5-5.9L5.9 21H3l6.8-7.8L2.9 3h5.9l4.1 5.4L17.5 3Zm-1 16.2h1.6L7.6 4.7H5.9l10.6 14.5Z' },
+                  { label: 'WhatsApp', href: 'https://wa.me/250788000000', d: 'M12 2a9.9 9.9 0 0 0-8.5 15L2 22l5.2-1.4A9.9 9.9 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1a6.5 6.5 0 0 1-3.2-2.8c-.1-.2 0-.4.1-.5l.4-.5c.1-.1.2-.3.3-.4v-.4l-.7-1.7c-.2-.4-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.4c.1.1 1.6 2.5 3.9 3.5 1.5.6 2 .7 2.8.6.4-.1 1.4-.6 1.6-1.1.2-.6.2-1 .1-1.1l-.4-.2Z' },
+                ].map((icon) => (
                   <a
-                    href="https://www.google.com/maps/search/?api=1&query=KG+7+Ave,+Kiyovu,+Kigali,+Rwanda"
+                    key={icon.label}
+                    href={icon.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="transition hover:text-[#8a5a2b]"
+                    aria-label={icon.label}
+                    className="grid h-8 w-8 place-items-center rounded-full border border-cream/25 text-cream/75 transition hover:border-amber-logo hover:bg-amber-logo hover:text-forest-950"
                   >
-                    KG 7 Ave, Kiyovu, Kigali
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5" aria-hidden="true"><path d={icon.d} /></svg>
                   </a>
-                  <br />
-                  {t('footer.hours.line')}
-                  <br />
-                  <a href="tel:+250788000000" className="transition hover:text-[#8a5a2b]">
-                    +250 788 000 000
-                  </a>
-                </p>
-                <form
-                  className="mt-5 flex items-center overflow-hidden rounded-[4px] border border-[#8a5a2b]/40 bg-white/70 p-1 pl-3.5"
-                  onSubmit={(event) => event.preventDefault()}
-                >
-                  <input
-                    type="email"
-                    required
-                    placeholder={t('footer.email')}
-                    aria-label="Email address for the newsletter"
-                    className="min-w-0 flex-1 bg-transparent text-[12px] text-ink outline-none placeholder:text-[#8f9488]"
-                  />
-                  <button
-                    type="submit"
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-[3px] bg-[#8a5a2b] px-3 py-2 text-[10px] font-bold uppercase tracking-[0.1em] text-cream transition hover:bg-[#a06a33]"
-                  >
-                    {t('footer.submit')} <ArrowRight size={11} />
-                  </button>
-                </form>
+                ))}
               </div>
             </div>
 
-            <div className="mt-10 flex flex-col gap-3 border-t border-ink/12 pt-6 text-[11.5px] text-[#6b6f63] sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} Camelia Café &amp; Restaurant. {t('footer.rights')}</p>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <LanguageSwitcher tone="dark" />
-                <Link to="/privacy" className="transition hover:text-[#8a5a2b]">{t('footer.privacy')}</Link>
-                <a href="mailto:hello@camelia.rw" className="transition hover:text-[#8a5a2b]">
-                  hello@camelia.rw
+            <nav aria-label="Explore">
+              <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-amber-soft">
+                {t('footer.explore')}
+              </p>
+              <ul className="mt-4 space-y-2.5 text-[12.5px] text-sage-300">
+                <li><Link className="transition hover:text-cream" to="/menu">{t('footer.menu')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/recommend">{t('footer.find')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/how-it-works">{t('footer.how')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/orders">{t('footer.orders')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/cart">{t('footer.basket')}</Link></li>
+              </ul>
+            </nav>
+
+            <nav aria-label="About Camelia">
+              <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-amber-soft">
+                {t('footer.about')}
+              </p>
+              <ul className="mt-4 space-y-2.5 text-[12.5px] text-sage-300">
+                <li><Link className="transition hover:text-cream" to="/our-story">{t('footer.story')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/our-story#team">{t('footer.team')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/contact">{t('footer.location')}</Link></li>
+                <li><Link className="transition hover:text-cream" to="/contact#hours">{t('footer.hours')}</Link></li>
+                <li>
+                  <a className="transition hover:text-cream" href="mailto:hello@camelia.rw">
+                    {t('footer.contact')}
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+            <div>
+              <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-amber-soft">
+                {t('footer.visit')}
+              </p>
+              <p className="mt-4 text-[12.5px] leading-[1.9] text-sage-300">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=KG+7+Ave,+Kiyovu,+Kigali,+Rwanda"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition hover:text-cream"
+                >
+                  KG 7 Ave, Kiyovu, Kigali
                 </a>
-              </div>
+                <br />
+                {t('footer.hours.line')}
+                <br />
+                <a href="tel:+250788000000" className="transition hover:text-cream">
+                  +250 788 000 000
+                </a>
+              </p>
+              <p className="mt-5 text-[12px] leading-relaxed text-sage-400">{t('footer.news')}</p>
+              <form
+                className="mt-3 flex items-center gap-2 border-b border-cream/25 pb-1.5 focus-within:border-amber-logo"
+                onSubmit={(event) => event.preventDefault()}
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder={t('footer.email')}
+                  aria-label="Email address for the newsletter"
+                  className="min-w-0 flex-1 bg-transparent text-[12.5px] text-cream outline-none placeholder:text-sage-400"
+                />
+                <button
+                  type="submit"
+                  className="inline-flex shrink-0 items-center gap-1 text-[9.5px] font-bold uppercase tracking-[0.14em] text-amber-soft transition hover:text-cream"
+                >
+                  {t('footer.submit')} <ArrowRight size={12} />
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Dribbble's footer closes on one rule and one quiet line of small
+              links. Everything that is not a link has been taken out. */}
+          <div className="mt-12 flex flex-col gap-4 border-t border-cream/15 pt-6 text-[11.5px] text-sage-400 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <Link to="/our-story" className="transition hover:text-cream">{t('footer.story')}</Link>
+              <Link to="/contact" className="transition hover:text-cream">{t('footer.location')}</Link>
+              <Link to="/privacy" className="transition hover:text-cream">{t('footer.privacy')}</Link>
+              <a href="mailto:hello@camelia.rw" className="transition hover:text-cream">hello@camelia.rw</a>
+            </div>
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher tone="light" />
+              <p>© {new Date().getFullYear()} Camelia Café &amp; Restaurant</p>
             </div>
           </div>
         </div>

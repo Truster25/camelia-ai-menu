@@ -63,7 +63,7 @@ const en: Dict = {
   'ai.title1': 'Not sure what to order?',
   'ai.title2': 'Let the menu ask.',
   'ai.body':
-    'Answer five short questions and Camelia’s recommender scores every available dish against your answers — diet, spice, budget, cuisine and occasion. Dietary needs are hard filters: if it is not halal, it will never appear in a halal result.',
+    'Answer five short questions and Camelia’s recommender scores every available dish against your answers: diet, spice, budget, cuisine and occasion. Dietary needs are hard filters. If it is not halal, it will never appear in a halal result.',
   'ai.cta': 'Start the 60-second quiz',
   'ai.how': 'How it works',
   'ai.stat1': 'Dishes ranked',
@@ -72,7 +72,7 @@ const en: Dict = {
   'ai.stat4': 'Occasion match',
 
   'quiz.step1.title': 'Tell us your taste',
-  'quiz.step1.body': 'Diet, spice, budget, cuisine and the occasion — five quick questions.',
+  'quiz.step1.body': 'Diet, spice, budget, cuisine and the occasion. Five quick questions.',
   'quiz.step2.title': 'The AI ranks the menu',
   'quiz.step2.body': 'Your taste, diet, budget, popularity and the occasion are blended into one score.',
   'quiz.step3.title': 'Your top 5, explained',
@@ -100,7 +100,7 @@ const en: Dict = {
   'footer.submit': 'Submit',
   'footer.rights': 'All rights reserved.',
   'footer.privacy': 'Privacy',
-  'footer.hours.line': 'Mon – Sun · 07:00 – 22:00',
+  'footer.hours.line': 'Mon to Sun · 07:00 to 22:00',
 
   'common.language': 'Language',
   'common.close': 'Close',
@@ -115,7 +115,7 @@ const en: Dict = {
   'menu.title': 'A taste of',
   'menu.title.accent': 'Camellia.',
   'menu.body':
-    'Everything the kitchen is serving today — filtered by category, diet, price or a word you remember. Prices in Rwandan francs.',
+    'Everything the kitchen is serving today, filtered by category, diet, price or a word you remember. Prices in Rwandan francs.',
   'menu.search': 'Search dishes',
   'menu.all': 'All',
   'menu.sort.popular': 'Most popular',
@@ -198,7 +198,7 @@ const rw: Dict = {
   'ai.title1': 'Ntuzi icyo kurya?',
   'ai.title2': 'Reka menu ikubaze.',
   'ai.body':
-    'Subiza ibibazo bitanu kandi sisitemu ya Camelia itanga amanota ku biryo byose ukurikije ibyo wasubije — indyo, urugero rw’ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe. Indyo zisabwa nta gukebwa zigomba: niba atari halal, ntizizigera ziboneka mu bisubizo bya halal.',
+    'Subiza ibibazo bitanu kandi sisitemu ya Camelia itanga amanota ku biryo byose ukurikije ibyo wasubije: indyo, urugero rw’ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe. Indyo zisabwa nta gukebwa zigomba. Niba atari halal, ntizizigera ziboneka mu bisubizo bya halal.',
   'ai.cta': 'Tangira ibibazo by’amasegonda 60',
   'ai.how': 'Bikora gute',
   'ai.stat1': 'Ibiryo bipimwa',
@@ -207,7 +207,7 @@ const rw: Dict = {
   'ai.stat4': 'Guhura n’igihe',
 
   'quiz.step1.title': 'Tubwire uko urya',
-  'quiz.step1.body': 'Indyo, ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe — ibibazo bitanu byihuse.',
+  'quiz.step1.body': 'Indyo, ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe. Ibibazo bitanu byihuse.',
   'quiz.step2.title': 'AI ipima menu',
   'quiz.step2.body': 'Ibyo ukunda, indyo, ingengo y’imari, icyamamare n’igihe bihurizwa hamwe mu manota amwe.',
   'quiz.step3.title': 'Ibiryo byawe bitanu, bisobanuye',
@@ -250,7 +250,7 @@ const rw: Dict = {
   'menu.title': 'Uburyohe bwa',
   'menu.title.accent': 'Camellia.',
   'menu.body':
-    'Ibiryo byose gikoni itanga uyu munsi — bishunguwe ku byiciro, indyo, igiciro cyangwa ijambo wibuka. Ibiciro mu mafaranga y’u Rwanda.',
+    'Ibiryo byose gikoni itanga uyu munsi, bishunguwe ku byiciro, indyo, igiciro cyangwa ijambo wibuka. Ibiciro mu mafaranga y’u Rwanda.',
   'menu.search': 'Shakisha ibiryo',
   'menu.all': 'Byose',
   'menu.sort.popular': 'Ibyamamare',
@@ -333,7 +333,7 @@ const fr: Dict = {
   'ai.title1': 'Vous hésitez ?',
   'ai.title2': 'Laissez la carte vous demander.',
   'ai.body':
-    'Répondez à cinq questions : Camelia note chaque plat selon vos réponses — régime, épices, budget, cuisine et occasion. Les régimes sont des filtres stricts : un plat non halal n’apparaîtra jamais dans un résultat halal.',
+    'Répondez à cinq questions : Camelia note chaque plat selon vos réponses (régime, épices, budget, cuisine et occasion). Les régimes sont des filtres stricts : un plat non halal n’apparaîtra jamais dans un résultat halal.',
   'ai.cta': 'Commencer le test de 60 secondes',
   'ai.how': 'Comment ça marche',
   'ai.stat1': 'Plats classés',
@@ -342,7 +342,7 @@ const fr: Dict = {
   'ai.stat4': 'Correspondance d’occasion',
 
   'quiz.step1.title': 'Dites-nous vos goûts',
-  'quiz.step1.body': 'Régime, épices, budget, cuisine et occasion — cinq questions rapides.',
+  'quiz.step1.body': 'Régime, épices, budget, cuisine et occasion. Cinq questions rapides.',
   'quiz.step2.title': 'L’IA classe la carte',
   'quiz.step2.body': 'Vos goûts, votre régime, votre budget, la popularité et l’occasion sont réunis en une seule note.',
   'quiz.step3.title': 'Vos cinq plats, expliqués',
@@ -385,7 +385,7 @@ const fr: Dict = {
   'menu.title': 'Un avant-goût de',
   'menu.title.accent': 'Camellia.',
   'menu.body':
-    'Tout ce que la cuisine sert aujourd’hui — filtré par catégorie, régime, prix ou un mot dont vous vous souvenez. Prix en francs rwandais.',
+    'Tout ce que la cuisine sert aujourd’hui, filtré par catégorie, régime, prix ou un mot dont vous vous souvenez. Prix en francs rwandais.',
   'menu.search': 'Rechercher un plat',
   'menu.all': 'Tout',
   'menu.sort.popular': 'Les plus populaires',

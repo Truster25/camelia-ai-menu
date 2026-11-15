@@ -149,7 +149,7 @@ export function Cart() {
               )}
             </button>
             <p className="mt-3 text-center text-[11px] text-sage-400">
-              No online payment — you pay at the table like a normal order.
+              No online payment. You pay at the table like a normal order.
             </p>
           </div>
         </div>

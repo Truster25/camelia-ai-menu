@@ -64,7 +64,7 @@ const storySlides: StorySlide[] = [
     alt: 'Char-grilled chicken brochettes on a slate plate with chilli sauce and lime',
     title: 'Charcoal-kissed plates,',
     accent: 'made to order.',
-    body: 'Skewers go on the grill when you order, not before. Brochette, tilapia and the day’s vegetables come off the fire and straight to your table — the way a Kigali kitchen should work.',
+    body: 'Skewers go on the grill when you order, not before. Brochette, tilapia and the day’s vegetables come off the fire and straight to your table. That is how a Kigali kitchen should work.',
   },
   {
     id: 'salad',
@@ -72,7 +72,7 @@ const storySlides: StorySlide[] = [
     alt: 'Garden salad with avocado, cherry tomatoes and lemon dressing in a cream bowl',
     title: 'Fresh from the garden,',
     accent: 'never from a packet.',
-    body: 'Leaves, tomatoes and avocados are cut the same morning you eat them. Lighter plates that still taste like a proper meal — and the ones our regulars order when it is hot.',
+    body: 'Leaves, tomatoes and avocados are cut the same morning you eat them. Lighter plates that still taste like a proper meal, and the ones our regulars order when it is hot.',
   },
   {
     id: 'fondant',
@@ -173,7 +173,7 @@ export function Home() {
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
               {t('home.aside.title1')}
               <br />
-              {t('home.aside.title2')} <em className="not-italic text-amber-logo">.</em>
+              {t('home.aside.title2')}
             </h2>
 
             <p className="mt-7 max-w-[30ch] text-[13.5px] leading-[1.85] text-sage-300">
@@ -308,7 +308,7 @@ export function Home() {
           <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
           <p className="max-w-2xl font-display text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
             “I typed vegetarian, medium spice, mid budget, date night. It gave me the mushroom soup and the chocolate
-            fondant — exactly what I would have ordered after ten minutes of arguing with my friends.”
+            fondant, exactly what I would have ordered after ten minutes of arguing with my friends.”
           </p>
           <Link to="/recommend" className="inline-flex items-center gap-2 rounded-full border border-forest-950/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] transition hover:bg-forest-950 hover:text-cream">
             <UtensilsCrossed size={14} /> {t('quote.cta')}

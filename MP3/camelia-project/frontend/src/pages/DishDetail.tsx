@@ -153,7 +153,7 @@ export function DishDetail() {
                     dish.allergens.split(',').join(', ')
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-sage-400">
-                      <Info size={12} /> None declared — ask staff about cross-contact
+                      <Info size={12} /> None declared. Ask staff about cross-contact
                     </span>
                   )}
                 </p>
@@ -232,7 +232,7 @@ export function DishDetail() {
                 />
                 {ratingError && <div className="mt-3"><ErrorNote message={ratingError} /></div>}
                 <button onClick={submitRating} className="btn-ghost mt-3 w-full">
-                  {saved ? 'Saved — thank you!' : 'Submit rating'}
+                  {saved ? 'Saved. Thank you!' : 'Submit rating'}
                 </button>
               </>
             ) : (

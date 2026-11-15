@@ -37,7 +37,7 @@ export function Privacy() {
             },
             {
               q: 'Your password',
-              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camelia can read your password, and it cannot be recovered if you forget it — only reset.',
+              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camelia can read your password, and it cannot be recovered if you forget it, only reset.',
             },
             {
               q: 'How your taste answers are used',

@@ -8,7 +8,7 @@ import { useCart } from '../context/CartContext';
 import type { QuizAnswers, RecommendMeta, RecommendResponse, Recommendation } from '../lib/types';
 
 const steps: { key: keyof QuizAnswers; title: string; question: string; help: string }[] = [
-  { key: 'diet', title: 'Dietary needs', question: 'Anything we should leave off the plate?', help: 'This is a hard filter — dishes that do not qualify never appear in your results.' },
+  { key: 'diet', title: 'Dietary needs', question: 'Anything we should leave off the plate?', help: 'This is a hard filter. Dishes that do not qualify never appear in your results.' },
   { key: 'spice', title: 'Spice', question: 'How much heat do you like?', help: 'We score dishes by how close their chilli level is to yours.' },
   { key: 'budget', title: 'Budget', question: 'What are you spending per plate?', help: 'Prices are in Rwandan francs; anything above your ceiling is heavily penalised.' },
   { key: 'cuisine', title: 'Cuisine', question: 'What kind of food sounds good?', help: 'Local Rwandan classics, regional African plates, or something international.' },
@@ -326,7 +326,7 @@ export function Recommend() {
             <p className="font-display text-xl">Was this useful?</p>
             <p className="mt-1 text-sm text-sage-400">
               Your quiz answers are logged (anonymously for guests) so the project can report how often the top
-              recommendation is actually ordered — the evaluation metric in the write-up.
+              recommendation is actually ordered. That is the evaluation metric in the write-up.
             </p>
           </div>
         </div>
