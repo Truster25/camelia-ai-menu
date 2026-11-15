@@ -269,9 +269,14 @@ export function Footer() {
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
         />
+        {/* Two washes, not one. A flat wash dark enough to read small type over
+            the skewers also hides the photograph entirely. Instead the base is
+            light and a scrim sits behind the type, so the food still reads as
+            texture while the links stay crisp. */}
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 bg-forest-950/30" />
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-forest-950/[0.82]"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-forest-950/90 via-forest-950/78 to-forest-950/85"
         />
 
         <div className="relative mx-auto max-w-[1560px] px-5 pb-10 pt-14 sm:px-8 lg:px-10 lg:pb-12">

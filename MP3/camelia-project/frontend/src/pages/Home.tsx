@@ -163,11 +163,11 @@ export function Home() {
           </div>
 
           {/* right-hand panel, exactly like the reference layout */}
-          <aside className="absolute inset-y-0 right-0 z-10 hidden w-[440px] flex-col justify-center px-10 py-24 lg:flex xl:w-[480px] xl:px-12">
-            {/* glass wash: no hard edge, the photograph still reads through it */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/70 via-black/45 to-transparent" aria-hidden="true" />
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-white/5" aria-hidden="true" />
-            <div className="relative">
+          <aside className="absolute inset-y-0 right-0 z-10 hidden w-[440px] justify-center px-10 pb-28 pt-[220px] lg:flex xl:w-[480px] xl:px-12">
+            {/* The wash has to fade all the way out on its left edge, or the
+                rectangle shows as a seam across the plate. */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/75 via-black/40 to-transparent" aria-hidden="true" />
+            <div className="relative w-full">
             <p className="text-[11px] tracking-[0.04em] text-sage-300/80">{t('home.aside.kicker')}</p>
 
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
