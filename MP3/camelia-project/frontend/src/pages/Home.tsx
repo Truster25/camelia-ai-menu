@@ -10,6 +10,7 @@ import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
 import { Reveal } from '../components/Reveal';
+import { ScrollScene } from '../components/ScrollScene';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
 
@@ -204,6 +205,7 @@ export function Home() {
       <StoryCarousel slides={storySlides} />
 
       {/* ------------------------------------------------------------ signatures */}
+      <ScrollScene kind="rise" strength={1}>
       <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
         <Reveal>
         <SectionHeading
@@ -244,6 +246,7 @@ export function Home() {
         )}
 
       </section>
+      </ScrollScene>
 
       {/* ------------------------------------------------------------ second card */}
       {/* The drinks card is the same band as the story card, mirrored, so the
@@ -257,6 +260,7 @@ export function Home() {
       />
 
       {/* --------------------------------------------------------------- AI block */}
+      <ScrollScene kind="zoom" strength={0.9}>
       <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
         <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full border border-amber-soft/15" aria-hidden="true" />
         <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
@@ -312,8 +316,10 @@ export function Home() {
           </ol>
         </div>
       </section>
+      </ScrollScene>
 
       {/* ------------------------------------------------------------- testimonial */}
+      <ScrollScene kind="rise" strength={1.2}>
       <section data-header-theme="light" className="bg-amber-logo text-forest-950">
         <Reveal className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
           <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
@@ -326,6 +332,7 @@ export function Home() {
           </Link>
         </Reveal>
       </section>
+      </ScrollScene>
 
     </div>
   );
