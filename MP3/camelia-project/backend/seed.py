@@ -1,6 +1,6 @@
 """Seed the database with the Camelia menu (6 categories, 24 dishes) and demo users.
 
-Run:  python seed.py          (idempotent — safe to run again)
+Run:  python seed.py          (idempotent, safe to run again)
       python seed.py --reset  (drops and recreates every table first)
 """
 from __future__ import annotations
@@ -30,7 +30,7 @@ DISHES = [
     # ---------------------------------------------------------------- Breakfast
     ("Katogo", "Breakfast", 4500, "Rwandan", "quick-bite,casual,family", True, False, True, True, 1,
      "matooke,beans,tomato,onion,ginger,spring onion", "", 15, 420, 88, "amber",
-     "Green matooke simmered with beans, tomato and ginger — the Kigali morning classic.", True),
+     "Green matooke simmered with beans, tomato and ginger, the Kigali morning classic.", True),
     ("Camelia Big Breakfast", "Breakfast", 9500, "International", "casual,family,celebration", False, False, False, False, 1,
      "eggs,bacon,sausage,baked beans,mushroom,grilled tomato,toast", "egg,gluten,milk", 20, 780, 74, "brown",
      "Two eggs your way, Rwandan sausage, bacon, beans, grilled tomato and toast.", True),
@@ -84,7 +84,7 @@ DISHES = [
     # ----------------------------------------------------------- Coffee & Tea
     ("Camellia Signature Latte", "Coffee & Tea", 4000, "Rwandan", "quick-bite,date,casual", True, False, True, True, 0,
      "espresso,milk,vanilla,powdered sugar", "milk", 5, 170, 91, "brown",
-     "Double espresso, steamed milk and a whisper of vanilla — our house latte.", True),
+     "Double espresso, steamed milk and a whisper of vanilla. Our house latte.", True),
     ("Rwandan Single-Origin Pour Over", "Coffee & Tea", 4500, "Rwandan", "quick-bite,date,casual", True, True, True, True, 0,
      "rwandan coffee,arabica,huye,water", "", 7, 5, 82, "brown",
      "Huye highlands arabica, hand-poured and served black. Bright and floral."),
@@ -115,7 +115,7 @@ DISHES = [
      "Ripe mango blended with ginger and thick yoghurt."),
     ("Ginger Lemonade", "Fresh Juices", 2800, "International", "quick-bite,casual", True, True, True, True, 1,
      "ginger,lemon,honey,soda,ice", "", 4, 90, 61, "green",
-     "House ginger syrup, lemon and sparkling water — bright and refreshing."),
+     "House ginger syrup, lemon and sparkling water. Bright and refreshing."),
 ]
 
 DEMO_USERS = [
@@ -143,7 +143,7 @@ IMAGES = {'Katogo': '/images/hero/dish-katogo.jpg', 'Camelia Big Breakfast': '/i
 
 
 COMMENTS = [
-    (5, "Exactly what I wanted — the recommender nailed it."),
+    (5, "Exactly what I wanted. The recommender nailed it."),
     (5, "Great portion, will order again."),
     (4, "Lovely flavour, a touch slow to arrive on a busy Friday."),
     (4, "Very good value for Kigali."),
@@ -172,9 +172,9 @@ def seed(reset: bool = False) -> None:
                     filled += 1
             if filled:
                 db.commit()
-                print(f"Database already seeded — backfilled {filled} missing dish image(s).")
+                print(f"Database already seeded, backfilled {filled} missing dish image(s).")
             else:
-                print("Database already seeded — nothing to do. Use --reset to rebuild.")
+                print("Database already seeded, nothing to do. Use --reset to rebuild.")
             return
 
         categories: dict[str, Category] = {}

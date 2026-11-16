@@ -9,6 +9,7 @@ import { StoryCarousel } from '../components/StoryCarousel';
 import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
+import { Reveal } from '../components/Reveal';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
 
@@ -137,7 +138,7 @@ export function Home() {
 
             {/* copy sits on top of the photograph */}
             <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-16 pt-40 sm:px-10 sm:pb-20 sm:pt-48 lg:max-w-[62%] lg:px-14 lg:pb-16 lg:pt-56 xl:max-w-[58%]">
-              <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
+              <h1 className="hero-in max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
                 {t('home.hero.line1')}
                 <br />
                 {t('home.hero.line2')}
@@ -145,9 +146,13 @@ export function Home() {
                 <em className="not-italic text-amber-logo">{t('home.hero.line3')}</em>
               </h1>
 
-              <span className="mt-8 block h-px w-10 bg-cream/40" aria-hidden="true" />
+              <span
+                className="hero-in mt-8 block h-px w-10 bg-cream/40"
+                style={{ animationDelay: '160ms' }}
+                aria-hidden="true"
+              />
 
-              <div className="mt-12 flex flex-wrap items-center gap-5">
+              <div className="hero-in mt-12 flex flex-wrap items-center gap-5" style={{ animationDelay: '300ms' }}>
                 <Link to="/menu" className="group inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.18em] text-cream">
                   <span className="grid h-12 w-12 place-items-center rounded-full bg-amber-logo text-forest-950 transition group-hover:translate-x-1">
                     <ArrowRight size={18} />
@@ -167,7 +172,7 @@ export function Home() {
             {/* The wash has to fade all the way out on its left edge, or the
                 rectangle shows as a seam across the plate. */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/75 via-black/40 to-transparent" aria-hidden="true" />
-            <div className="relative w-full">
+            <div className="hero-in relative w-full" style={{ animationDelay: '420ms' }}>
             <p className="text-[11px] tracking-[0.04em] text-sage-300/80">{t('home.aside.kicker')}</p>
 
             <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
@@ -200,6 +205,7 @@ export function Home() {
 
       {/* ------------------------------------------------------------ signatures */}
       <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
+        <Reveal>
         <SectionHeading
           kicker={t('dishes.kicker')}
           title={(
@@ -217,6 +223,7 @@ export function Home() {
             </Link>
           }
         />
+        </Reveal>
         {status === 'loading' && <Spinner label={t('dishes.loading')} />}
         {status === 'error' && (
           <div className="card mt-10 p-8">
@@ -228,8 +235,10 @@ export function Home() {
         )}
         {status === 'ready' && (
           <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:mt-16 lg:grid-cols-5">
-            {visibleDishes.map((dish) => (
-              <DishTile key={dish.id} dish={dish} category={dish.category_name} />
+            {visibleDishes.map((dish, i) => (
+              <Reveal key={dish.id} delay={(i % 5) * 80}>
+                <DishTile dish={dish} category={dish.category_name} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -251,7 +260,7 @@ export function Home() {
       <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
         <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full border border-amber-soft/15" aria-hidden="true" />
         <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
-          <div>
+          <Reveal>
             <p className="kicker">
               <span className="kicker-line" /> {t('ai.kicker')}
             </p>
@@ -286,17 +295,19 @@ export function Home() {
                 </div>
               ))}
             </dl>
-          </div>
+          </Reveal>
 
           <ol className="space-y-4">
-            {quizSteps.map((step) => (
-              <li key={step.n} className="card flex items-start gap-5 p-6">
-                <span className="font-display text-3xl text-amber-soft/70">{step.n}</span>
-                <div>
-                  <h3 className="font-display text-xl text-sage-100">{t(step.title)}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-sage-400">{t(step.body)}</p>
+            {quizSteps.map((step, i) => (
+              <Reveal key={step.n} as="li" delay={120 + i * 110}>
+                <div className="card flex items-start gap-5 p-6">
+                  <span className="font-display text-3xl text-amber-soft/70">{step.n}</span>
+                  <div>
+                    <h3 className="font-display text-xl text-sage-100">{t(step.title)}</h3>
+                    <p className="mt-2 text-[13px] leading-relaxed text-sage-400">{t(step.body)}</p>
+                  </div>
                 </div>
-              </li>
+              </Reveal>
             ))}
           </ol>
         </div>
@@ -304,7 +315,7 @@ export function Home() {
 
       {/* ------------------------------------------------------------- testimonial */}
       <section data-header-theme="light" className="bg-amber-logo text-forest-950">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
+        <Reveal className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
           <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
           <p className="max-w-2xl font-display text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
             “I typed vegetarian, medium spice, mid budget, date night. It gave me the mushroom soup and the chocolate
@@ -313,7 +324,7 @@ export function Home() {
           <Link to="/recommend" className="inline-flex items-center gap-2 rounded-full border border-forest-950/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] transition hover:bg-forest-950 hover:text-cream">
             <UtensilsCrossed size={14} /> {t('quote.cta')}
           </Link>
-        </div>
+        </Reveal>
       </section>
 
     </div>
