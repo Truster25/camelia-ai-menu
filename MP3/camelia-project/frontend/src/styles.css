@@ -172,7 +172,30 @@
 }
 
 .hero-in {
-  animation: heroIn 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: heroIn 1100ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* The photograph arrives already larger than the screen and settles back to
+   size. That is the "fills the screen then shrinks" move: it reads as the page
+   opening rather than a picture being placed. The overshoot is kept small
+   enough that the edges never show a hard crop line during the settle. */
+@keyframes heroPhotoIn {
+  from {
+    transform: scale(1.07);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.hero-photo-in {
+  animation: heroPhotoIn 2200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-photo-in {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -133,9 +133,11 @@ export function Home() {
       {/* ------------------------------------------------------------------ hero */}
       <section data-header-hero className="relative min-h-[100svh] w-full">
         <div className="relative min-h-[100svh]">
-          {/* the photograph fills the whole first screen; header floats over it */}
-          <div className="relative min-h-[100svh] w-full">
-            <HeroSlideshow slides={heroSlides} interval={4000} className="absolute inset-0" />
+          {/* the photograph fills the whole first screen; header floats over it.
+              `overflow-hidden` is required: the photo arrives at 1.07 scale and
+              would otherwise widen the page during the settle. */}
+          <div className="relative min-h-[100svh] w-full overflow-hidden">
+            <HeroSlideshow slides={heroSlides} interval={4000} className="hero-photo-in absolute inset-0" />
 
             {/* copy sits on top of the photograph */}
             <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-16 pt-40 sm:px-10 sm:pb-20 sm:pt-48 lg:max-w-[62%] lg:px-14 lg:pb-16 lg:pt-56 xl:max-w-[58%]">
@@ -205,9 +207,10 @@ export function Home() {
       <StoryCarousel slides={storySlides} />
 
       {/* ------------------------------------------------------------ signatures */}
-      <ScrollScene kind="rise" strength={1}>
+      <ScrollScene kind="pan" dir="right" strength={1.15} parallax={0.7}>
       <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
         <Reveal>
+        <div data-parallax={-0.55}>
         <SectionHeading
           kicker={t('dishes.kicker')}
           title={(
@@ -225,6 +228,7 @@ export function Home() {
             </Link>
           }
         />
+        </div>
         </Reveal>
         {status === 'loading' && <Spinner label={t('dishes.loading')} />}
         {status === 'error' && (
@@ -239,7 +243,11 @@ export function Home() {
           <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:mt-16 lg:grid-cols-5">
             {visibleDishes.map((dish, i) => (
               <Reveal key={dish.id} delay={(i % 5) * 80}>
-                <DishTile dish={dish} category={dish.category_name} />
+                <div data-parallax={1}>{/* same depth for every card: the row
+                  moves as one object against the heading, which is the
+                  effect. Giving each card its own value made the row ragged. */}
+                  <DishTile dish={dish} category={dish.category_name} />
+                </div>
               </Reveal>
             ))}
           </div>
@@ -260,11 +268,12 @@ export function Home() {
       />
 
       {/* --------------------------------------------------------------- AI block */}
-      <ScrollScene kind="zoom" strength={0.9}>
+      <ScrollScene kind="zoom" dir="up" strength={1.1} parallax={0.55}>
       <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
         <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full border border-amber-soft/15" aria-hidden="true" />
         <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
           <Reveal>
+            <div data-parallax={-0.5}>
             <p className="kicker">
               <span className="kicker-line" /> {t('ai.kicker')}
             </p>
@@ -299,12 +308,13 @@ export function Home() {
                 </div>
               ))}
             </dl>
+            </div>
           </Reveal>
 
           <ol className="space-y-4">
             {quizSteps.map((step, i) => (
               <Reveal key={step.n} as="li" delay={120 + i * 110}>
-                <div className="card flex items-start gap-5 p-6">
+                <div className="card flex items-start gap-5 p-6" data-parallax={1}>
                   <span className="font-display text-3xl text-amber-soft/70">{step.n}</span>
                   <div>
                     <h3 className="font-display text-xl text-sage-100">{t(step.title)}</h3>
@@ -319,7 +329,7 @@ export function Home() {
       </ScrollScene>
 
       {/* ------------------------------------------------------------- testimonial */}
-      <ScrollScene kind="rise" strength={1.2}>
+      <ScrollScene kind="pan" dir="left" strength={1.2}>
       <section data-header-theme="light" className="bg-amber-logo text-forest-950">
         <Reveal className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
           <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
