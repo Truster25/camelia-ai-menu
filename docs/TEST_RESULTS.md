@@ -5,8 +5,8 @@
 **Commands:**
 
 ```bash
-cd MP3/camelia-project/backend && pytest -q
-cd MP3/camelia-project/frontend && npm run build
+cd backend && pytest -q
+cd frontend && npm run build
 ```
 
 ---

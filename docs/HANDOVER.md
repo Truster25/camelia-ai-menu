@@ -10,10 +10,10 @@ Last updated: **2026-11-11** · Version **1.0.0**
 ## Repo & links
 
 - **GitHub:** https://github.com/Truster25/camelia-ai-menu (branch `main`)
-- **Code lives in:** `MP3/camelia-project/` (the repo root also holds unrelated earlier folders —
+- **Code lives in:** `/` (the repo root also holds unrelated earlier folders —
   `project/`, `sabba/`, `truster-technology` — ignore them for this project)
-- **Backend:** `MP3/camelia-project/backend` — FastAPI on port **9000**
-- **Frontend:** `MP3/camelia-project/frontend` — Vite dev server on port **5173**
+- **Backend:** `backend` — FastAPI on port **9000**
+- **Frontend:** `frontend` — Vite dev server on port **5173**
 - Live previews do not persist between chats: restart both servers (see below).
 
 ## Project in one paragraph
@@ -47,7 +47,7 @@ Camelia logos.
 ## Run it
 
 ```bash
-cd MP3/camelia-project/backend
+cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python seed.py                       # optional: tables + demo data are auto-created on boot
@@ -55,7 +55,7 @@ uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
 ```bash
-cd MP3/camelia-project/frontend
+cd frontend
 npm install
 npm run dev                          # http://localhost:5173
 ```

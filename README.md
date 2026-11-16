@@ -1,183 +1,202 @@
-# Camelia AI Menu — open this in VS Code
+# Camelia AI Menu
 
-**You are at the repo root.** The real project is one folder down, in
-`MP3/camelia-project`. This page exists so you never have to guess which folder is which.
+**AI-based menu recommendation system · Case study: Camelia Café & Restaurant, Kigali.**
+
+A customer answers five quick questions — diet, spice, budget, cuisine, occasion — and a
+hybrid AI ranker scores every available dish, returning the top five with a match score and
+a plain-English reason. The restaurant manages the menu, orders and analytics from an admin
+dashboard.
+
+Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlchemy + scikit-learn**
+· **SQLite locally / PostgreSQL in production**.
+
+> Demo accounts — Admin: `admin@camelia.rw` / `Admin123` · Customer: `customer@camelia.rw` / `Customer123`.
+> The dish names and prices are a realistic demo menu, not the restaurant's confirmed prices.
 
 ---
 
-## Two terminals — one for the backend, one for the frontend
+## What is built
 
-Each server gets **its own terminal**, its own log output and its own **Ctrl-C**.
-Started this way you can restart the frontend without touching the backend, and read
-Python errors and React errors in different windows.
-
-### Option A — two VS Code tasks (no typing)
-
-1. **Open this folder in VS Code** (the repo root — the one with `MP3/`, `project/`, `sabba/`).
-2. **Terminal → Run Task…** → **`1️⃣ BACKEND (port 9000)`**.
-3. **Terminal → Run Task…** again → **`2️⃣ FRONTEND (port 5173)`**.
-
-VS Code opens a separate panel for each, named *backend* and *frontend*, sitting side by side.
-
-| Task | What it does |
+| Area | Status |
 |---|---|
-| **`1️⃣ BACKEND (port 9000)`** | Terminal 1 — the API. Own panel, own Ctrl-C. |
-| **`2️⃣ FRONTEND (port 5173)`** | Terminal 2 — the site. Own panel, own Ctrl-C. |
-| `3️⃣ RUN BOTH (one terminal)` | The old combined start — one Ctrl-C stops everything. |
-| `4️⃣ Reset demo database` | Deletes `camelia.db`, re-seeds 26 dishes. |
-| `5️⃣ Run backend tests` | `pytest -q` — 33 tests. |
-| `6️⃣ Build frontend` | TypeScript check + production build. |
-| `7️⃣ Git pull (arena branch)` | Pulls the latest pushed code. |
+| VELO-style landing page with the official Camelia logos | ✅ |
+| Menu of 26 dishes in 6 categories, search + diet/price/category filters | ✅ |
+| Dish detail: ingredients, allergens, allergens warning, spice, prep time | ✅ |
+| **Hybrid AI recommender** (TF-IDF 40% · preferences 25% · popularity 20% · occasion 15%) | ✅ |
+| Dietary requirements enforced as **hard filters** before ranking | ✅ |
+| Ratings (1–5 + comment, one per customer per dish) and favourites | ✅ |
+| Cart, pre-order with table number, server-side pricing | ✅ |
+| Customer order tracking with kitchen status | ✅ |
+| Admin: analytics dashboard, menu CRUD, order status management, customer list | ✅ |
+| JWT auth with roles (customer / admin), bcrypt password hashing | ✅ |
+| Quiz logging for evaluation (top-1 hit rate, top-5 conversion) | ✅ |
+| 33 backend tests (`pytest`) | ✅ |
+| Deployment to Vercel + Render + Neon | ⏳ documented, not executed |
 
-If **Run Task…** shows nothing, you opened the inner `camelia-project` folder instead of the
-repo root. Tasks only exist at the root.
+### The recommender in one paragraph
 
-### Option B — two terminals by hand
+Dishes are turned into text profiles (name, description, ingredients, cuisine, dietary
+labels, spice words, occasion tags). The quiz answers become one more document. TF-IDF +
+cosine similarity measures the content match (40%); rule checks score diet, spice distance,
+budget and cuisine (25%); a Bayesian-ish blend of ratings and the curated popularity seed
+scores demand (20%); occasion tags score the moment (15%). **Diet is a filter, not a score** —
+a halal request can never surface a pork dish no matter how popular it is. The full
+explanation is on the in-app `/how-it-works` page and in `backend/app/recommender.py`.
 
-**Terminal 1 — backend** (Ctrl-` to open the first one):
+---
+
+> **New here, or hit a terminal error?** Read [`docs/RUN-FIRST.md`](docs/RUN-FIRST.md) first —
+> it covers the virtual environment, the repo layout, Node 20 and a
+> symptom → cause → fix table for the common failures.
+
+## Quick start (one command)
 
 ```bash
-cd MP3/camelia-project/backend
-./run.sh
+cd camelia-ai-menu
+./start.sh              # installs what is missing, seeds the database, starts both servers
+./start.sh --reset      # rebuild the demo database from scratch first
 ```
 
-Wait for `API → http://localhost:9000`. Leave it running.
+On macOS you can also **double-click `start.command`** in Finder. Ctrl-C stops both servers.
+This requires Node 20+ and Python 3.10+; everything else is handled for you.
 
-**Terminal 2 — frontend** (click the **`+`** in the terminal panel for a second one):
+## Run it locally (manual, two terminals)
+
+Requirements: **Node.js 20 or newer** (required by Tailwind CSS 4), Python 3.10+. Docker is optional.
+Check with `node -v`; if it is older, run `nvm use 20` inside `frontend/` (there is an `.nvmrc`).
+
+The project lives in **this folder** — both commands below assume you are at the repo root.
+`backend/` has no `package.json`; the React app is in `frontend/`.
+
+### Terminal 1 — backend (port **9000**)
 
 ```bash
-cd MP3/camelia-project/frontend
-./run.sh
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python seed.py                       # 6 categories, 26 dishes, demo users, sample orders
+uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
-Wait for `Website → http://localhost:5173`. Now open <http://localhost:5173>.
+- API docs: http://localhost:9000/docs
+- Health check: http://localhost:9000/api/health
 
-| Terminal | Folder | You should see | Ctrl-C stops |
+The database is created and seeded automatically on first start, so `python seed.py` is only
+needed if you want a fresh copy (`python seed.py --reset` rebuilds everything).
+
+You must see `(.venv)` at the start of your prompt before running `pip` or `uvicorn` — both
+commands live inside the virtual environment. If `pip` is still not found, use
+`python3 -m pip install -r requirements.txt` and `python3 -m uvicorn app.main:app --port 9000`.
+
+> Port 9000 is used because 8000 is frequently taken by other local services. If you prefer
+> 8000, change `--port` here and `VITE_API_PROXY` in `frontend/vite.config.ts`.
+
+### Terminal 2 — frontend (port **5173**)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:5173. Vite proxies `/api` to the backend on port 9000, so no CORS
+configuration is needed in development.
+
+### Checks
+
+```bash
+cd backend && pytest -q          # 33 tests
+cd frontend && npm run build     # type-check + production bundle
+```
+
+---
+
+## API overview
+
+Interactive documentation with request/response schemas: `http://localhost:9000/docs`.
+
+| Method | Path | Auth | Purpose |
 |---|---|---|---|
-| **1** | `MP3/camelia-project/backend` | `API → http://localhost:9000` | only the API |
-| **2** | `MP3/camelia-project/frontend` | `Website → http://localhost:5173` | only the website |
+| GET | `/api/health` | — | Liveness + version |
+| POST | `/api/auth/register` · `/api/auth/login` | — | Create customer / obtain JWT |
+| GET | `/api/auth/me` | user | Current profile |
+| GET | `/api/categories` | — | Six menu sections |
+| GET | `/api/dishes` | — | Filters: `category`, `search`, `max_price`, `diet`, `occasion`, `sort` |
+| GET | `/api/dishes/{id}` | — | Single dish with rating summary |
+| GET | `/api/dishes/{id}/ratings` | — | Reviews, newest first |
+| POST | `/api/dishes/{id}/ratings` | user | Create or update your rating |
+| GET/POST | `/api/favourites` · `/api/favourites/{id}` | user | List / toggle |
+| GET | `/api/recommend/meta` | — | Model weights + quiz option lists |
+| POST | `/api/recommend?limit=5` | optional | Run the AI quiz (guests allowed, logged anonymously) |
+| POST | `/api/recommend/{log}/choose/{dish}` | — | Record which suggestion was acted on |
+| POST/GET | `/api/orders` | user | Pre-order / list my orders |
+| POST | `/api/orders/{id}/cancel` | user | Cancel while still pending or accepted |
+| GET | `/api/admin/orders` · PATCH `/api/admin/orders/{id}` | admin | Kitchen queue + status |
+| POST/PATCH/DELETE | `/api/admin/dishes[/{id}]` | admin | Menu management (deletes retire instead) |
+| GET | `/api/admin/customers` · `/api/admin/categories` | admin | Reference lists |
+| GET | `/api/admin/analytics?days=7` | admin | KPIs, daily series, top dishes, quiz mix |
 
-`run.sh` handles the first-run setup itself: it creates the Python virtual environment,
-installs the dependencies, seeds the database if it is missing, and frees the port from a
-previous run. The frontend version installs `node_modules` if they are missing.
-
-> Need both in a single panel instead? Use **`3️⃣ RUN BOTH (one terminal)`**. That is the old
-> combined behaviour — convenient, but a Ctrl-C stops everything, so it is not the way to
-> develop.
-
-> The other folders (`project/`, `sabba/`, `truster-technology/`) are earlier unrelated work.
-> Ignore them completely.
+`GET /api/menu` is kept for backwards compatibility with the first prototype client.
 
 ---
 
-## Before you start: update to my latest code
+## Project structure
 
-In VS Code open the terminal (**Ctrl-`**) and run:
-
-```bash
-git pull origin arena/cb16c143-camelia-ai-menu
+```text
+backend/
+  app/
+    main.py            FastAPI app, CORS, startup seeding
+    config.py          Environment-driven settings
+    database.py        Engine, session, Base
+    models.py          Eight SQLAlchemy models
+    schemas.py         Pydantic request/response models
+    security.py        bcrypt hashing, JWT, role guards
+    recommender.py     The hybrid AI (pure functions, unit-testable)
+    serializers.py     Dish → API payload with rating aggregates
+    routers/           auth · menu · recommendations · ratings · orders · admin
+  seed.py              26-dish demo menu + demo users/orders/ratings
+  tests/test_api.py    33 tests (isolated temp database)
+frontend/
+  src/
+    pages/             Home · Menu · DishDetail · Recommend · HowItWorks · Login · Cart · Orders · Admin
+    components/        Layout, Logo, DishCard, ui primitives, admin modal
+    context/           AuthContext (JWT) · CartContext (localStorage)
+    lib/               api client, types, presentation helpers
+docs/
+  SCHEMA.md            Implemented database schema (ERD + data dictionary)
+  DATABASE-DESIGN.md   Earlier proposal, kept for the evolution record
 ```
 
-If VS Code says you are on `main`, switch first:
+---
 
-```bash
-git checkout arena/cb16c143-camelia-ai-menu
-git pull origin arena/cb16c143-camelia-ai-menu
-```
+## Deployment (free tier)
+
+1. **Neon** — create a Postgres database, copy the connection string
+   (`postgresql://user:pass@host/db?sslmode=require`).
+2. **Render** — new Web Service from this repo, root directory `backend`:
+   - Build: `pip install -r requirements.txt`
+   - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - Env: `DATABASE_URL`, `JWT_SECRET` (long random string), `CORS_ORIGINS=https://your-app.vercel.app`
+   The service seeds the demo menu on first boot.
+3. **Vercel** — new project, root directory `frontend`:
+   - Build: `npm run build`, output `dist`
+   - Env: `VITE_API_URL=https://your-render-service.onrender.com`
+   - `vercel.json` rewrites all routes to `index.html` so client-side routing works.
+
+Free tiers sleep after inactivity, so the first request after idle can take ~30 seconds.
+The demo must also run fully offline from a laptop — fonts are self-hosted and no external
+CDN or LLM is required.
 
 ---
 
-## Is everything working?
+## Notes for the write-up
 
-Two files must exist. Check with:
-
-```bash
-ls MP3/camelia-project/backend/seed.py MP3/camelia-project/backend/app/recommender.py
-```
-
-- Both listed → ✅ the project is fine, start it.
-- "No such file" → you are on the wrong branch or in an old copy. Run the `git checkout` above.
-
-### ⚠️ If `git pull` printed `D` lines — read this
-
-A line like `D       MP3/camelia-project/frontend/index.html` means that file is **missing
-from your working copy**. `git pull` only writes files that changed upstream, so those stay
-missing. If `frontend/index.html` is one of them, Vite starts up and prints "ready", but the
-browser shows **`HTTP ERROR 404`** — which looks like the server is down when it is not.
-
-Fix it — this restores the missing files without touching your own edits:
-
-```bash
-git status --short | grep '^ D'     # what is missing
-git checkout -- MP3/camelia-project  # restore just the project
-```
-
-Both `run.sh` scripts now do this check themselves in their own folder, and restore what is
-missing, so running `./run.sh` is enough.
-
-The backend and frontend themselves are healthy. The only thing that ever went wrong was
-running commands in the wrong folder — the task above cannot make that mistake.
-
----
-
-## What the two servers are
-
-| | Folder | Runs on | Start it with |
-|---|---|---|---|
-| Backend (Python, the AI) | `MP3/camelia-project/backend` | port **9000** | `./run.sh` |
-| Frontend (React) | `MP3/camelia-project/frontend` | port **5173** | `./run.sh` |
-
-Each folder has its own `run.sh` — **run each one in its own terminal**. `backend/` has
-**no** `package.json` — never run `npm` there. `frontend/` has no `seed.py` — never run
-`python` there.
-
----
-
-## Leaving a `(.venv)` prompt
-
-If your prompt starts with `(.venv)`, a Python virtual environment is activated. Type:
-
-```bash
-deactivate
-```
-
-You never need it for this project — `backend/run.sh` calls `.venv/bin/python` directly. If
-you activated a venv under `Desktop/MP3/camelia-project/...` (one `MP3` short), you were in a
-leftover copy rather than the repo.
-
-## Demo accounts
-
-| Role | Email | Password |
-|---|---|---|
-| Admin | `admin@camelia.rw` | `Admin123` |
-| Customer | `customer@camelia.rw` | `Customer123` |
-
----
-
-## If something refuses to start
-
-| Symptom | Fix |
-|---|---|
-| "Wrong folder: app/recommender.py is missing" | You ran `backend/run.sh` from somewhere else. `cd MP3/camelia-project/backend` first, or use the VS Code task. |
-| **`HTTP ERROR 404` on localhost:5173** | `frontend/index.html` is deleted from your working copy (the `D` lines from a pull). Run `./run.sh` — it restores it. |
-| Page loads but no dishes ("The kitchen is offline") | Backend not running, or running on 8000 instead of 9000. |
-| Hundreds of `.venv` reload messages | Missing `--reload-dir app`. The task adds it for you. |
-| `command not found: npm` | Node is not installed. Install Node 20+ from nodejs.org. |
-| `command not found: uvicorn` | The venv is not active. `run.sh` calls the venv directly, so this cannot happen there — only if you typed `uvicorn` yourself. |
-| Node too old for Tailwind 4 | `node -v` must be v20+. `nvm install 20 && nvm use 20`. |
-| "Port 9000 is still in use" | An old copy is running. Stop it in the other terminal, or `lsof -ti:9000 \| xargs kill -9`. |
-
-Note: `start.sh` at `MP3/camelia-project/` still exists and still runs both servers in one
-terminal — it is what `start.command` uses when you double-click it in Finder. For day-to-day
-work prefer the two `run.sh` scripts above.
-
-Full detail: [`MP3/camelia-project/docs/RUN-FIRST.md`](MP3/camelia-project/docs/RUN-FIRST.md).
-
----
-
-## What is actually in here
-
-- `MP3/camelia-project/` — **the project.** React app, FastAPI backend, the AI recommender,
-  the database schema, the docs for your book.
-- `MP3/camelia-project/docs/` — `SCHEMA.md` (ERD), `TEST_RESULTS.md`, `RUN-FIRST.md`, `HANDOVER.md`.
-- `project/`, `sabba/`, `truster-technology/` — old static practice pages, unrelated.
+- `docs/SCHEMA.md` is the implemented schema (ERD + data dictionary) — use it for the
+  database chapter.
+- Every quiz is logged in `recommendation_logs` together with which suggestion was chosen,
+  so top-1 hit rate and top-5 conversion can be computed from real data rather than invented.
+- Limitations to state honestly: 26-dish corpus, sparse ratings, no collaborative filtering
+  yet, and demo traffic only until real customers are involved.
+- The menu data is realistic but fictional; confirm prices and allergen information with the
+  restaurant before any real use.

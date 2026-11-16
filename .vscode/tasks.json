@@ -7,7 +7,7 @@
       "type": "shell",
       "command": "./run.sh",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project/backend"
+        "cwd": "${workspaceFolder}/backend"
       },
       "isBackground": true,
       "problemMatcher": [],
@@ -28,7 +28,7 @@
       "type": "shell",
       "command": "./run.sh",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project/frontend"
+        "cwd": "${workspaceFolder}/frontend"
       },
       "isBackground": true,
       "problemMatcher": [],
@@ -44,7 +44,7 @@
       "type": "shell",
       "command": "./start.sh",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project"
+        "cwd": "${workspaceFolder}"
       },
       "isBackground": true,
       "problemMatcher": [],
@@ -59,7 +59,7 @@
       "type": "shell",
       "command": "./.venv/bin/python seed.py --reset",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project/backend"
+        "cwd": "${workspaceFolder}/backend"
       },
       "problemMatcher": [],
       "presentation": {
@@ -72,7 +72,7 @@
       "type": "shell",
       "command": "./.venv/bin/python -m pytest -q",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project/backend"
+        "cwd": "${workspaceFolder}/backend"
       },
       "problemMatcher": [],
       "presentation": {
@@ -85,7 +85,7 @@
       "type": "shell",
       "command": "npm run build",
       "options": {
-        "cwd": "${workspaceFolder}/MP3/camelia-project/frontend"
+        "cwd": "${workspaceFolder}/frontend"
       },
       "problemMatcher": [],
       "presentation": {

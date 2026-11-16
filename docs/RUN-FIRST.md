@@ -11,12 +11,12 @@ call fails you look at Terminal 1. Restarting one never touches the other.
 ## Before anything: are you in the right folder?
 
 Your clone is **`~/Documents/Desktop/MP3`**. The project inside it is
-`MP3/MP3/camelia-project` on disk (the second `MP3` is a folder in the repo — that is
-normal, the git path is just `MP3/camelia-project`).
+`camelia-ai-menu` on disk (the second `MP3` is a folder in the repo — that is
+normal, the git path is just ``).
 
 ```bash
 cd ~/Documents/Desktop/MP3
-ls MP3/camelia-project/backend/seed.py MP3/camelia-project/backend/app/recommender.py
+ls backend/seed.py backend/app/recommender.py
 ```
 
 - Both files listed → ✅ correct folder, carry on.
@@ -63,8 +63,8 @@ cd /Users/macbook/Documents/Desktop/MP3
 ```
 
 > ⚠️ Note the venv path in your prompt:
-> `Desktop/MP3/camelia-project/backend/.venv` — that is **one `MP3` short**. The repo's copy
-> is `Desktop/MP3/MP3/camelia-project/backend`. If you activated the wrong one, you were
+> `Desktop/backend/.venv` — that is **one `MP3` short**. The repo's copy
+> is `Desktop/camelia-ai-menubackend`. If you activated the wrong one, you were
 > working in the leftover copy.
 
 ---
@@ -82,11 +82,11 @@ Both files listed → real folder. `No such file` → leftover copy.
 `run.sh` now prints its own path as its first line, so it can never be ambiguous:
 
 ```
-Running from: /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/backend
+Running from: /Users/macbook/Documents/Desktop/camelia-ai-menubackend
 API  →  http://localhost:9000
 ```
 
-If the path shown does not contain `MP3/MP3/camelia-project`, it is the wrong folder, and
+If the path shown does not contain `camelia-ai-menu`, it is the wrong folder, and
 `run.sh` stops with `STOP — this folder is not the project` before it builds anything.
 
 ---
@@ -97,13 +97,13 @@ If yes, tracked files are **missing from your working copy** (a folder rename or
 switch does this). `git pull` will not bring them back, because nothing about them changed
 upstream.
 
-The dangerous one is `D MP3/camelia-project/frontend/index.html`: Vite still starts and says
+The dangerous one is `D frontend/index.html`: Vite still starts and says
 "ready", but the browser shows **`HTTP ERROR 404`** — it looks like a dead server, and it is
 not.
 
 ```bash
 git status --short | grep '^ D'      # list what is missing
-git checkout -- MP3/camelia-project  # restore them
+git checkout --   # restore them
 ```
 
 Both `run.sh` scripts now check their own folder for missing tracked files and restore them
@@ -121,7 +121,7 @@ and never overwrite the running script itself.
 Open VS Code's terminal (**Ctrl-`**) and run:
 
 ```bash
-cd ~/Documents/Desktop/MP3/MP3/camelia-project/backend
+cd ~/Documents/Desktop/camelia-ai-menubackend
 ./run.sh
 ```
 
@@ -157,7 +157,7 @@ Check in a browser: <http://localhost:9000/api/health> →
 Click the **`+`** at the right of the terminal panel to open a second terminal, then:
 
 ```bash
-cd ~/Documents/Desktop/MP3/MP3/camelia-project/frontend
+cd ~/Documents/Desktop/camelia-ai-menufrontend
 ./run.sh
 ```
 
@@ -240,13 +240,13 @@ API leaves the site serving on 5173.
 
 | Message | Cause | Fix |
 |---|---|---|
-| `STOP — this folder is not the project` | You are in the leftover copy (often one `MP3` too few) | `cd /Users/macbook/Documents/Desktop/MP3/MP3/camelia-project/backend` |
+| `STOP — this folder is not the project` | You are in the leftover copy (often one `MP3` too few) | `cd /Users/macbook/Documents/Desktop/camelia-ai-menubackend` |
 | Prompt shows `(.venv)` and you want out | A venv is activated | `deactivate` — `run.sh` never needs it |
 | `zsh: permission denied: ./run.sh` | Executable bit lost (copied the file by hand) | `chmod +x run.sh` |
 | `command not found: npm` | Node is not installed | install Node 20+ from nodejs.org |
 | `command not found: uvicorn` | You typed it yourself outside the venv | use `./run.sh`; it calls `.venv/bin/python` |
 | `install: illegal option -- r` | Typed the macOS `install` command, not `pip` | use `./run.sh`, or `.venv/bin/python -m pip install -r requirements.txt` |
-| `can't open file .../backend/package.json` | Ran `npm` inside `backend/` | The React app is in `frontend/`. There is no `package.json` in `backend/`. |
+| `can't open file ...backend/package.json` | Ran `npm` inside `backend/` | The React app is in `frontend/`. There is no `package.json` in `backend/`. |
 | `Port 9000 is still in use` | Another API is already running | stop it in its terminal, or `lsof -ti:9000 \| xargs kill -9` |
 | `Port 5173 is still in use` | Another Vite is already running | stop it, or `lsof -ti:5173 \| xargs kill -9` |
 | `WatchFiles detected changes in '.venv/...'` repeatedly | uvicorn started without `--reload-dir app` | `run.sh` always passes it |
@@ -258,6 +258,6 @@ API leaves the site serving on 5173.
 
 ## What still works the old way
 
-`MP3/camelia-project/start.sh` (and `start.command`, which you can double-click in Finder)
+`/start.sh` (and `start.command`, which you can double-click in Finder)
 still boots both servers in **one** terminal. It is handy for a quick demo, but for
 development use the two `run.sh` scripts — that is what they are for.

@@ -24,7 +24,7 @@ if [ ! -f "$BACKEND/app/recommender.py" ]; then
   red "This does not look like the right folder."
   echo "  Expected $BACKEND/app/recommender.py"
   echo "  You are probably in an OLD copy of the project (the one without seed.py)."
-  echo "  Use the fresh clone:  cd ~/Documents/Desktop/MP3/camelia-repo/MP3/camelia-project"
+  echo "  Use the fresh clone:  cd ~/Documents/Desktop/camelia-ai-menu"
   exit 1
 fi
 

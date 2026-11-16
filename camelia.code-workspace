@@ -1,11 +1,7 @@
 {
   "folders": [
     {
-      "name": "▶ PROJECT (open this)",
-      "path": "MP3/camelia-project"
-    },
-    {
-      "name": "Repo root (README, git)",
+      "name": "Camelia AI Menu",
       "path": "."
     }
   ],
@@ -18,7 +14,7 @@
       "**/dist": true,
       "**/.DS_Store": true
     },
-    "python.defaultInterpreterPath": "${workspaceFolder:▶ PROJECT (open this)}/backend/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
     "python.terminal.activateEnvironment": true,
     "editor.formatOnSave": false,
     "files.trimTrailingWhitespace": true,
