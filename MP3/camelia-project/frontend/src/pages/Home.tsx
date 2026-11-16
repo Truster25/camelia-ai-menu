@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
 import { api } from '../lib/api';
 import type { Dish } from '../lib/types';
+import { DishTile } from '../components/DishTile';
 import { HeroSlideshow } from '../components/HeroSlideshow';
 import { StoryCarousel } from '../components/StoryCarousel';
 import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
 import { SectionHeading, Spinner } from '../components/ui';
-import { DishReveal } from '../components/DishReveal';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
 
@@ -106,13 +106,13 @@ export function Home() {
   const visibleDishes = useMemo(() => {
     // Signature plates first, then whatever else the menu holds. No pills any
     // more: the landing row is a taster, and /menu is where the full filter
-    // lives. Four plates, matching the four-across reference row.
+    // lives. Five plates, always.
     return [...signatures]
       .sort(
         (a, b) =>
           Number(b.is_signature) - Number(a.is_signature) || b.popularity_seed - a.popularity_seed,
       )
-      .slice(0, 4);
+      .slice(0, 5);
   }, [signatures]);
 
   useEffect(() => {
@@ -129,77 +129,69 @@ export function Home() {
   return (
     <div>
       {/* ------------------------------------------------------------------ hero */}
-      {/* Built from the reference the client sent: the whole site sits inside a
-          rounded panel that floats above a blurred version of the food, with a
-          deep shadow underneath. The blur is the same photograph, so the panel
-          always agrees with what is inside it. */}
-      <section data-header-hero className="relative w-full px-3 pb-14 pt-[86px] sm:px-5 sm:pb-20 sm:pt-[92px] lg:px-7">
-        <div className="relative mx-auto max-w-[1560px]">
-          {/* Blurred backdrop, inset and rounded, sitting behind the panel. */}
-          <div className="absolute -inset-x-1 -bottom-2 top-2 -z-10 overflow-hidden rounded-[32px] sm:-inset-x-2 sm:rounded-[40px]">
-            <HeroSlideshow
-              slides={heroSlides}
-              interval={5200}
-              className="absolute inset-0 scale-105 blur-[30px] saturate-[1.15]"
-            />
-            {/* Only enough darkening to keep the halo from competing with the
-                panel. Too much and it reads as flat black instead of glow. */}
-            <div className="absolute inset-0 bg-forest-950/20" aria-hidden="true" />
-          </div>
+      <section data-header-hero className="relative min-h-[100svh] w-full">
+        <div className="relative min-h-[100svh]">
+          {/* the photograph fills the whole first screen; header floats over it */}
+          <div className="relative min-h-[100svh] w-full">
+            <HeroSlideshow slides={heroSlides} interval={4000} className="absolute inset-0" />
 
-          {/* The panel itself. */}
-          <div className="hero-panel relative overflow-hidden rounded-[26px] shadow-[0_50px_120px_-40px_rgba(0,0,0,0.95)] ring-1 ring-white/10 sm:rounded-[34px]">
-            <HeroSlideshow slides={heroSlides} interval={5200} className="absolute inset-0" />
-
-            {/* Scrim: the photograph has to stay visible, so this only darkens
-                the left two-thirds where the type sits. */}
-            <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-forest-950/94 via-forest-950/62 to-forest-950/20"
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-forest-950/25"
-              aria-hidden="true"
-            />
-
-            <div className="relative flex min-h-[520px] flex-col justify-center px-6 py-20 sm:px-10 sm:py-24 lg:min-h-[600px] lg:px-14 lg:py-24">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-pale/90">
-                {t('home.aside.kicker')}
-              </p>
-
-              <h1 className="mt-6 max-w-[14ch] font-display text-[clamp(2.1rem,5vw,4.4rem)] leading-[1.03] tracking-[-0.03em] text-cream">
-                {t('home.hero.line1')} <br />
-                {t('home.hero.line2')} <br />
+            {/* copy sits on top of the photograph */}
+            <div className="hero-copy relative z-10 flex h-full flex-col justify-center px-5 pb-16 pt-40 sm:px-10 sm:pb-20 sm:pt-48 lg:max-w-[62%] lg:px-14 lg:pb-16 lg:pt-56 xl:max-w-[58%]">
+              <h1 className="max-w-[13ch] font-display text-[clamp(2rem,5.4vw,4.6rem)] leading-[1.03] tracking-[-0.03em] text-cream">
+                {t('home.hero.line1')}
+                <br />
+                {t('home.hero.line2')}
+                <br />
                 <em className="not-italic text-amber-logo">{t('home.hero.line3')}</em>
               </h1>
 
               <span className="mt-8 block h-px w-10 bg-cream/40" aria-hidden="true" />
 
-              {/* Copy is capped to a narrow column so it never reaches the
-                  plate. The plate owns the right half of the photograph. */}
-              <p className="mt-8 max-w-[38ch] text-[13px] leading-[1.8] text-sage-200/85">
-                {t('home.aside.lead')}
-              </p>
-
-              <div className="mt-9 flex flex-wrap items-center gap-5">
-                <Link
-                  to="/menu"
-                  className="group inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.18em] text-cream"
-                >
+              <div className="mt-12 flex flex-wrap items-center gap-5">
+                <Link to="/menu" className="group inline-flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.18em] text-cream">
                   <span className="grid h-12 w-12 place-items-center rounded-full bg-amber-logo text-forest-950 transition group-hover:translate-x-1">
                     <ArrowRight size={18} />
                   </span>
                   {t('home.hero.explore')}
                 </Link>
-                <Link
-                  to="/recommend"
-                  className="inline-flex items-center gap-2 rounded-full bg-cream/95 px-5 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-forest-950 transition hover:bg-amber-pale"
-                >
-                  {t('home.aside.cta')} <ArrowRight size={14} />
+                <Link to="/recommend" className="hidden items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-cream/70 transition hover:text-cream sm:inline-flex">
+                  <Sparkles size={13} /> {t('home.hero.ask')}
                 </Link>
               </div>
+
             </div>
           </div>
+
+          {/* right-hand panel, exactly like the reference layout */}
+          <aside className="absolute inset-y-0 right-0 z-10 hidden w-[440px] justify-center px-10 pb-28 pt-[220px] lg:flex xl:w-[480px] xl:px-12">
+            {/* The wash has to fade all the way out on its left edge, or the
+                rectangle shows as a seam across the plate. */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-l from-black/75 via-black/40 to-transparent" aria-hidden="true" />
+            <div className="relative w-full">
+            <p className="text-[11px] tracking-[0.04em] text-sage-300/80">{t('home.aside.kicker')}</p>
+
+            <h2 className="mt-6 font-display text-[clamp(1.9rem,2.4vw,2.5rem)] leading-[1.18] tracking-[-0.02em] text-cream">
+              {t('home.aside.title1')}
+              <br />
+              {t('home.aside.title2')}
+            </h2>
+
+            <p className="mt-7 max-w-[30ch] text-[13.5px] leading-[1.85] text-sage-300">
+              {t('home.aside.lead')}
+            </p>
+
+            <p className="mt-5 max-w-[34ch] text-[12px] leading-[1.85] text-sage-400">
+              {t('home.aside.body')}
+            </p>
+
+            <Link
+              to="/recommend"
+              className="mt-9 inline-flex w-fit items-center gap-4 rounded-full bg-amber-logo px-6 py-3.5 text-[10px] font-bold uppercase tracking-[0.16em] text-forest-950 transition hover:bg-amber-pale"
+            >
+              {t('home.aside.cta')} <ArrowRight size={15} />
+            </Link>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -207,21 +199,14 @@ export function Home() {
       <StoryCarousel slides={storySlides} />
 
       {/* ------------------------------------------------------------ signatures */}
-      {/* Four plates, four cards. The reference this is built from keeps four
-          items in the row and lets the type underneath do the naming, so the
-          photographs are the whole card. */}
-      <section
-        data-header-theme="dark"
-        className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:px-10 md:py-24"
-      >
+      <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
         <SectionHeading
           kicker={t('dishes.kicker')}
-          title={
+          title={(
             <>
-              {t('dishes.title')}{' '}
-              <em className="not-italic text-amber-soft">{t('dishes.title.accent')}</em>
+              {t('dishes.title')} <em className="not-italic text-amber-soft">{t('dishes.title.accent')}</em>
             </>
-          }
+          )}
           description={t('dishes.body')}
           action={
             <Link
@@ -232,23 +217,23 @@ export function Home() {
             </Link>
           }
         />
-
         {status === 'loading' && <Spinner label={t('dishes.loading')} />}
-
         {status === 'error' && (
           <div className="card mt-10 p-8">
             <p className="font-display text-xl text-sage-100">{t('dishes.empty.title')}</p>
-            <p className="mt-2 text-sm text-sage-400">{t('dishes.empty.body')}</p>
+            <p className="mt-2 text-sm text-sage-400">
+              {t('dishes.empty.body')}
+            </p>
           </div>
         )}
-
         {status === 'ready' && (
-          <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-10 md:mt-16 md:grid-cols-4 md:gap-x-7">
+          <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:mt-16 lg:grid-cols-5">
             {visibleDishes.map((dish) => (
-              <DishReveal key={dish.id} dish={dish} category={dish.category_name} />
+              <DishTile key={dish.id} dish={dish} category={dish.category_name} />
             ))}
           </div>
         )}
+
       </section>
 
       {/* ------------------------------------------------------------ second card */}
@@ -301,7 +286,7 @@ export function Home() {
                 </div>
               ))}
             </dl>
-            </div>
+          </div>
 
           <ol className="space-y-4">
             {quizSteps.map((step) => (
