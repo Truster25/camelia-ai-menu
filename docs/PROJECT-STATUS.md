@@ -2,7 +2,7 @@
 
 **AI-based menu recommendation system · Case study: Camellia Café & Restaurant, Kigali**
 
-Last updated: 16 November 2026 · Commit `5198bcf`
+Last updated: 19 November 2026 · Commit `ad4d9ab`
 
 ---
 
@@ -23,7 +23,7 @@ admin dashboard.
 | Backend | FastAPI 0.115.12, SQLAlchemy 2.0.57, scikit-learn 1.9.1 |
 | Authentication | JWT (HS256), bcrypt password hashing |
 | Database | SQLite locally, PostgreSQL in production |
-| Tests | 33 backend tests, pytest |
+| Tests | 67 backend tests, pytest |
 
 ---
 

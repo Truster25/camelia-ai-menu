@@ -31,7 +31,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 | Admin: analytics dashboard, menu CRUD, order status management, customer list | ✅ |
 | JWT auth with roles (customer / admin), bcrypt password hashing | ✅ |
 | Quiz logging for evaluation (top-1 hit rate, top-5 conversion) | ✅ |
-| 33 backend tests (`pytest`) | ✅ |
+| 67 backend tests (`pytest`) | ✅ |
 | Deployment to Vercel + Render + Neon | ⏳ documented, not executed |
 
 ### The recommender in one paragraph
@@ -107,7 +107,7 @@ configuration is needed in development.
 ### Checks
 
 ```bash
-cd backend && pytest -q          # 64 tests
+cd backend && pytest -q          # 67 tests
 cd frontend && npm run build     # type-check + production bundle
 ```
 
@@ -157,7 +157,7 @@ backend/
     serializers.py     Dish → API payload with rating aggregates
     routers/           auth · menu · recommendations · ratings · orders · admin
   seed.py              130-dish menu + users/orders/ratings
-  tests/test_api.py    64 tests (isolated temp database)
+  tests/test_api.py    67 tests (isolated temp database)
 frontend/
   src/
     pages/             Home · Menu · DishDetail · Recommend · HowItWorks · Login · Cart · Orders · Admin

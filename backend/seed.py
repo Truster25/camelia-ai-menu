@@ -123,6 +123,12 @@ def seed(reset: bool = False) -> None:
             # Already seeded. Still backfill any dish photo that is missing, so
             # an existing database picks up newly added images without a reset.
             filled = 0
+            # The menu in menu_data.py is the source of truth, so a field that was
+            # corrected there must reach a database that already exists. Before
+            # this, a database seeded before the dietary review kept its old
+            # labels, and the gluten-free filter quietly returned nothing.
+            source = {row["name"]: row for row in MENU}
+            corrected = 0
             for dish in db.scalars(select(Dish)).all():
                 wanted = dish_photo(dish.name)
                 # Backfill a missing photo, and also correct one that had to
@@ -130,6 +136,21 @@ def seed(reset: bool = False) -> None:
                 if wanted and dish.image_url != wanted:
                     dish.image_url = wanted
                     filled += 1
+
+                row = source.get(dish.name)
+                if row is None:
+                    continue
+                for field, column in (
+                    ("is_vegetarian", "is_vegetarian"),
+                    ("is_vegan", "is_vegan"),
+                    ("is_halal", "is_halal"),
+                    ("is_gluten_free", "is_gluten_free"),
+                    ("spice_level", "spice_level"),
+                    ("price", "price_rwf"),
+                ):
+                    if getattr(dish, column) != row[field]:
+                        setattr(dish, column, row[field])
+                        corrected += 1
             # The demo accounts are part of the promised setup, so a missing one
             # is repaired here rather than left for someone to discover on stage.
             missing_users = 0
@@ -145,11 +166,11 @@ def seed(reset: bool = False) -> None:
                     )
                     missing_users += 1
 
-            if filled or missing_users:
+            if filled or missing_users or corrected:
                 db.commit()
                 print(
-                    f"Database already seeded, backfilled {filled} dish image(s) "
-                    f"and {missing_users} account(s)."
+                    f"Database already seeded, backfilled {filled} dish image(s), "
+                    f"{missing_users} account(s) and corrected {corrected} dish field(s)."
                 )
             else:
                 print("Database already seeded, nothing to do. Use --reset to rebuild.")

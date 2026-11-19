@@ -79,6 +79,33 @@ def test_dish_filters(client):
     assert any("Steak" in d["name"] for d in found)
 
 
+@pytest.mark.parametrize(
+    "diet,flag",
+    [
+        ("vegan", "is_vegan"),
+        ("vegetarian", "is_vegetarian"),
+        ("gluten-free", "is_gluten_free"),
+    ],
+)
+def test_each_diet_filter_returns_the_dishes_that_carry_it(client, diet, flag):
+    """A filter that returns nothing looks identical to a filter with no matches.
+
+    The gluten-free filter once returned an empty menu even though the menu data
+    marked 63 dishes, because the database had been seeded before those labels
+    existed and nothing reconciled the two. Only the vegan filter was tested, so
+    the other two could break in silence. Every filter is now checked against
+    the menu itself.
+    """
+    from menu_data import DISHES
+
+    expected = sum(1 for row in DISHES if row[flag])
+    assert expected > 0, f"the menu marks no dish {diet}; the filter would look broken"
+
+    returned = client.get(f"/api/dishes?diet={diet}").json()
+    assert len(returned) == expected, f"{diet} returned {len(returned)} of {expected}"
+    assert all(dish[flag] for dish in returned)
+
+
 def test_halal_filter_is_honest_while_unconfirmed(client):
     """Until Camellia confirms certification, the halal filter returns nothing.
 

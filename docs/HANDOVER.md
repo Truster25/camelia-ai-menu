@@ -3,7 +3,7 @@
 > **For the next Arena chat / developer:** the repo below is the single source of truth.
 > Read this file, then `README.md`, then `docs/SCHEMA.md`. Do not start from scratch.
 
-Last updated: **2026-11-11** · Version **1.0.0**
+Last updated: **2026-11-19** · Version **1.0.0**
 
 ---
 
@@ -20,7 +20,7 @@ Last updated: **2026-11-11** · Version **1.0.0**
 
 AI-based menu recommendation system — case study **Camellia Café & Restaurant, Kigali**.
 A guest answers five questions (diet, spice, budget, cuisine, occasion) and a hybrid AI
-ranker scores all 26 dishes: TF-IDF cosine similarity 40% + preference rules 25% +
+ranker scores all 130 dishes: TF-IDF cosine similarity 40% + preference rules 25% +
 popularity 20% + occasion 15%, with dietary needs applied as **hard filters before ranking**.
 The guest gets the top five with scores and plain-English reasons, can rate dishes, save
 favourites and pre-order with a table number. Admins manage the menu, orders and see
@@ -60,14 +60,15 @@ npm install
 npm run dev                          # http://localhost:5173
 ```
 
-Checks: `cd backend && pytest -q` (33 tests) · `cd frontend && npm run build`.
+Checks: `cd backend && pytest -q` (67 tests) · `cd frontend && npm run build`.
 
 ## What is DONE ✅
 
 - **Backend** — 8 tables (`docs/SCHEMA.md`), 25+ endpoints, JWT auth with roles, bcrypt hashing,
   admin guards, server-side order pricing, retire-instead-of-delete for dishes with history.
 - **AI recommender** — `backend/app/recommender.py`, weights served by `GET /api/recommend/meta`,
-  33 tests including diet-filter guarantees (halal never returns the pork dishes).
+  67 tests including diet-filter guarantees and a check that nothing claims to be
+  halal before Camellia confirms certification.
 - **Frontend pages** — Home (VELO landing), Menu (search + category/diet/price filters + sort),
   DishDetail (ingredients, allergens warning, ratings, favourite, add to cart), Recommend
   (5-step quiz → top 5 with score breakdown), HowItWorks (method + honest limitations),
@@ -113,7 +114,7 @@ match; the curated map at the top of `seed.py` is checked first and still wins.
 
 ## Known limitations (state these honestly in the report)
 
-- Corpus is 26 dishes; ratings are sparse and partly seeded for the demo.
+- Corpus is 130 dishes; ratings are sparse and partly seeded for the demo.
 - No collaborative filtering yet — deliberate, per the build plan's minimum-data rule.
 - `recommendation_logs` currently contains demo traffic; label it as such.
 - Allergen information must be confirmed with the restaurant — the app says "none declared",
