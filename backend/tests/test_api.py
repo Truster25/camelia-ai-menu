@@ -421,6 +421,38 @@ def test_search_returns_what_was_asked_for(client, query, expected_first):
     assert expected_first.lower() in names[0].lower(), f"{query!r} returned {names}"
 
 
+@pytest.mark.parametrize(
+    "query,expected_word",
+    [
+        ("coffee", "coffee"),
+        ("tea", "tea"),
+        ("juice", "juice"),
+        ("breakfast", "breakfast"),
+        ("dinner", "curry"),
+        ("burger", "burger"),
+        ("soup", "soup"),
+        ("salad", "salad"),
+        ("chicken", "chicken"),
+        ("fish", "fish"),
+        ("beef", "beef"),
+        ("shake", "shake"),
+        ("dessert", "cake"),
+    ],
+)
+def test_a_single_food_word_returns_that_kind_of_dish(client, query, expected_word):
+    """The everyday case: someone types one word and wants the obvious thing.
+
+    "dinner" is the interesting one, because no dish is called dinner. It has
+    to reach the plates a person would recognise as dinner rather than fall
+    through to the taste profile.
+    """
+    response = client.post("/api/search", json={"query": query, "limit": 3})
+    assert response.status_code == 200
+    names = [row["dish"]["name"].lower() for row in response.json()["results"]]
+    assert names, f"no results for {query!r}"
+    assert any(expected_word in name for name in names), f"{query!r} returned {names}"
+
+
 def test_search_honours_dietary_language(client):
     """"no meat" must not be read as a request for the grill."""
     response = client.post("/api/search", json={"query": "no meat", "limit": 6})

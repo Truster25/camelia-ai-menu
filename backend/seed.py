@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import argparse
 import random
+import re
+import unicodedata
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
@@ -69,6 +72,33 @@ IMAGES = {
 }
 
 
+def _slug(name: str) -> str:
+    """Turn a dish name into the filename its photograph would have.
+
+    "Creamed Frappé" becomes "creamed-frappe", so a photo dropped into
+    frontend/public/images/dishes/ is picked up automatically. That keeps the
+    seeder honest without a hand-maintained list that drifts out of date.
+    """
+    plain = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-zA-Z0-9]+", "-", plain).strip("-").lower()
+
+
+DISH_PHOTO_DIR = (
+    Path(__file__).resolve().parent.parent / "frontend" / "public" / "images" / "dishes"
+)
+
+
+def dish_photo(name: str) -> str | None:
+    """The photograph for a dish: the curated one first, then the folder."""
+    curated = IMAGES.get(name)
+    if curated:
+        return curated
+    candidate = DISH_PHOTO_DIR / f"{_slug(name)}.jpg"
+    if candidate.exists():
+        return f"/images/dishes/{candidate.name}"
+    return None
+
+
 COMMENTS = [
     (5, "Exactly what I wanted. The recommender nailed it."),
     (5, "Great portion, will order again."),
@@ -91,7 +121,7 @@ def seed(reset: bool = False) -> None:
             # an existing database picks up newly added images without a reset.
             filled = 0
             for dish in db.scalars(select(Dish)).all():
-                wanted = IMAGES.get(dish.name)
+                wanted = dish_photo(dish.name)
                 # Backfill a missing photo, and also correct one that had to
                 # share another dish's photo before its own existed.
                 if wanted and dish.image_url != wanted:
@@ -131,7 +161,7 @@ def seed(reset: bool = False) -> None:
                 calories=row["calories"],
                 popularity_seed=row["popularity_seed"],
                 art_tone="amber",
-                image_url=IMAGES.get(row["name"]),
+                image_url=dish_photo(row["name"]),
                 is_available=True,
                 is_signature=row["is_signature"],
             )

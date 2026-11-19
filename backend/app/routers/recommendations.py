@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..database import get_db
 from ..models import Dish, Rating, RecommendationLog, User
-from ..recommender import explain_weights, is_eligible, parse_free_text, recommend
+from ..recommender import _CATEGORY_HINTS, explain_weights, is_eligible, parse_free_text, recommend
 from ..schemas import (
     QuizAnswers,
     RecommendResponse,
@@ -147,12 +147,31 @@ def search_menu(
         raise HTTPException(status_code=503, detail="The menu has not been seeded yet.")
 
     answers, understood = parse_free_text(payload.query)
+
+    # Words that name a kind of dish ("breakfast", "juice", "grilled") are worth
+    # far more than a stray word match. Without this, "something for breakfast"
+    # returned Black Forest cake, because "breakfast" appears in neither the cake
+    # nor most dish text, while the cake matched on a different word entirely.
+    lowered = payload.query.lower()
+    wanted_categories = {
+        cat
+        for word, cats in _CATEGORY_HINTS.items()
+        if word in lowered
+        for cat in cats
+    }
     ratings = db.scalars(select(Rating)).all()
 
     # If nothing in the sentence was recognised, fall back to treating the words
     # themselves as the question. The ranker compares text against the dish
     # descriptions, so "chocolate" or "tilapia" still lands sensibly.
-    if not understood:
+    # "grilled meat" matches no quiz answer and appears in no dish name, so both
+    # earlier branches missed it and it fell back to the default profile. A food
+    # word with no literal match should still steer the ranking, via the
+    # occasions field, which is where the menu records what a dish is for.
+    food_words = {"meat", "chicken", "fish", "beef", "grilled", "spicy", "vegetarian"}
+    said_food = food_words & set(lowered.replace(",", " ").split())
+
+    if not understood and said_food and not wanted_categories:
         # Nothing structured was recognised, so the words themselves are the
         # query. Score every dish on how much of the sentence it actually
         # contains, then let the ranker break ties.
@@ -182,7 +201,14 @@ def search_menu(
             results, _, considered = recommend(
                 matching, list(ratings), answers, limit=len(matching)
             )
-            results.sort(key=lambda r: -overlap(r.dish))
+            def by_category(result) -> int:
+                category = (result.dish.category.name if result.dish.category else "") or ""
+                return 1 if category.lower() in {c.lower() for c in wanted_categories} else 0
+
+            if wanted_categories:
+                results.sort(key=lambda r: (-by_category(r), -overlap(r.dish)))
+            else:
+                results.sort(key=lambda r: -overlap(r.dish))
             results = results[: payload.limit]
         else:
             # Genuinely nothing matched. Return the popular end of the menu
@@ -211,11 +237,17 @@ def search_menu(
                     result.dish.description or "",
                     result.dish.ingredients or "",
                     result.dish.cuisine or "",
+                    (result.dish.category.name if result.dish.category else "") or "",
                 ]
             ).lower()
             score = sum(1 for word in terms if word in haystack)
             if any(word in (result.dish.name or "").lower() for word in terms):
                 score += 2
+            # A dish in a category the sentence named is the strongest signal of
+            # all: "breakfast" should beat a sweeter-sounding word match.
+            category = (result.dish.category.name if result.dish.category else "") or ""
+            if category.lower() in {c.lower() for c in wanted_categories}:
+                score += 10
             return score
 
         results.sort(key=lambda r: -mentions(r))
