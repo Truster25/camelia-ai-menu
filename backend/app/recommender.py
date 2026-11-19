@@ -364,6 +364,35 @@ _NEGATIONS = ("no meat", "meat free", "meat-free", "without meat", "no fish",
               "no chicken", "not spicy", "no spice", "no dairy", "no gluten")
 
 
+# Words that describe a kind of dish but are not a quiz answer. They are used to
+# boost dishes whose category, name or description matches, which is what makes
+# "something for breakfast" return breakfast rather than cake.
+_CATEGORY_HINTS: dict[str, tuple[str, ...]] = {
+    "breakfast": ("breakfast", "omelette", "breakfast"),
+    "lunch": ("light dishes", "sandwiches", "burgers", "soups"),
+    "dinner": ("kingsize meals", "asian curries", "mexican & pilau"),
+    "dessert": ("desserts & pastry",),
+    "cake": ("desserts & pastry",),
+    "juice": ("fresh juices",),
+    "shake": ("smoothies & shakes",),
+    "smoothie": ("smoothies & shakes",),
+    "coffee": ("coffee",),
+    "tea": ("tea",),
+    "soup": ("soups",),
+    "salad": ("salads",),
+    "burger": ("burgers",),
+    "sandwich": ("sandwiches",),
+    "curry": ("asian curries",),
+    "grilled": ("kingsize meals", "light dishes"),
+    "meat": ("kingsize meals", "burgers", "asian curries"),
+    "chicken": ("kingsize meals", "asian curries", "burgers"),
+    "fish": ("kingsize meals", "asian curries", "burgers"),
+    "beef": ("kingsize meals", "asian curries", "burgers"),
+    "vegetarian": ("salads", "soups"),
+    "spicy": ("asian curries", "mexican & pilau"),
+}
+
+
 def _scan(text: str, table: list[tuple[tuple[str, ...], str]]) -> str | None:
     for phrases, value in table:
         for phrase in phrases:
