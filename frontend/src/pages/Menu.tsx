@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState, type AnchorHTMLAttributes } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Search, Sparkles, X } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Category, Dish } from '../lib/types';
@@ -10,10 +11,6 @@ import { useLang } from '../context/LanguageContext';
 
 type DietFilter = '' | 'vegetarian' | 'vegan' | 'halal' | 'gluten-free';
 type SortOrder = 'menu' | 'price' | 'rating' | 'popularity';
-
-function Link({ to, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { to: string }) {
-  return <a href={to} {...props} />;
-}
 
 const dietOptions: { value: DietFilter; label: string }[] = [
   { value: '', label: 'Everything' },
