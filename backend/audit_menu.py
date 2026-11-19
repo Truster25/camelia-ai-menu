@@ -85,9 +85,68 @@ def main() -> int:
     for name in extra:
         print(f"  UNPRINTED  {name} ({by_name[name]['price']:,})")
 
-    if wrong or missing or extra:
+    # ---- photography, dietary labels and the written record ----
+    import re
+    from pathlib import Path
+
+    import seed
+    from menu_data import DISHES as menu
+
+    print()
+    with_photo = sum(1 for row in menu if seed.dish_photo(row["name"]))
+    print(f"photographs        {with_photo} of {len(menu)} dishes ({len(menu) - with_photo} still on generated art)")
+
+    meat_words = ("beef", "chicken", "fish", "pork", "bacon", "ham", "sausage",
+                  "mince", "steak", "nugget", "wing", "fillet", "stroganoff", "hotpot")
+    gluten_words = ("bread", "pasta", "spaghetti", "baguette", "chapati", "bun",
+                    "tortilla", "croissant", "cake", "batter", "flour", "noodle",
+                    "sandwich", "cracker", "cookie", "pastry")
+
+    label_faults = []
+    for row in menu:
+        ing = row["ingredients"].lower()
+        if row["is_vegetarian"] and any(w in ing for w in meat_words):
+            label_faults.append(f"vegetarian but lists meat: {row['name']}")
+        if row["is_gluten_free"] and any(w in ing for w in gluten_words):
+            label_faults.append(f"gluten free but lists wheat: {row['name']}")
+        if row["is_vegan"] and not row["is_vegetarian"]:
+            label_faults.append(f"vegan but not vegetarian: {row['name']}")
+        if row["is_halal"]:
+            label_faults.append(f"claims halal before Camellia confirmed it: {row['name']}")
+    print(f"dietary labels     {'consistent with their ingredients' if not label_faults else str(len(label_faults)) + ' FAULT(S)'}")
+    for fault in label_faults:
+        print(f"  {fault}")
+
+    # The documents must not disagree with the menu about its own size.
+    root = Path(__file__).resolve().parent.parent
+    stale = []
+    for doc in list((root / "docs").glob("*.md")) + [root / "README.md"]:
+        # The dietary review counts how many dishes carry each label, which is
+        # a different number from the size of the menu.
+        if doc.name == "DIETARY-REVIEW.md":
+            continue
+        text = doc.read_text(encoding="utf-8")
+        # Only claims about the size of the whole menu. The dietary review
+        # counts how many dishes carry a label, which is a different number.
+        for found in re.findall(r"(?<![\d,.])(\d{2,3}) dishes(?: in| across| on|,|\b)", text):
+            if int(found) != len(menu):
+                stale.append(f"{doc.name} says {found} dishes, the menu has {len(menu)}")
+        for found in re.findall(r"\b(\d{1,2}) sections\b", text):
+            if int(found) != len(CATEGORIES):
+                stale.append(f"{doc.name} says {found} sections, there are {len(CATEGORIES)}")
+    print(f"written record     {'agrees with the menu' if not stale else str(len(stale)) + ' STALE CLAIM(S)'}")
+    for item in stale:
+        print(f"  {item}")
+
+    problems = bool(wrong or missing or extra or label_faults or stale)
+    print()
+    if problems:
+        print("NOT SETTLED. See the lines above.")
         return 1
-    print("\nEvery price the app shows is a price on the printed menu.")
+    print("Every price matches the printed menu, every label matches its ingredients,")
+    print("and every document agrees with the menu about its own size.")
+    if with_photo < len(menu):
+        print(f"Photography is the one thing still open: {len(menu) - with_photo} dishes to go.")
     return 0
 
 
