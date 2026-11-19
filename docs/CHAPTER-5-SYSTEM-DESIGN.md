@@ -223,7 +223,7 @@ The system follows a **Client-Server Architecture** (Hybrid Full-Stack) where:
 - **Testing:** pytest (218 tests passed).
 
 ### 7.3 Development Tools
-- **IDE:** VS Code (Mac/Zsh), Arena.ai Agent Mode.
+- **IDE:** VS Code (Mac/Zsh). *(Note: Arena.ai Agent Mode is the sandbox environment used for development in this session, but the book manuscript should reference VS Code as the primary developer tool per the Handover guidelines.)*
 - **Version Control:** Git (Branch: `arena/727f4717-camelia-ai-menu`).
 - **Environment:** Python `.venv`, Node.js/npm.
 
