@@ -26,6 +26,9 @@ from menu_data import CATEGORIES, DISHES as MENU  # noqa: E402
 DEMO_USERS = [
     ("Camelia Administrator", "admin@camelia.rw", "Admin123", "admin"),
     ("Aline Mukamana", "customer@camelia.rw", "Customer123", "customer"),
+    # The kitchen has its own account because it needs a different view: orders
+    # and nothing else. It cannot change the menu or read the takings.
+    ("Jean Bosco Habimana", "kitchen@camelia.rw", "Kitchen123", "kitchen"),
 ]
 
 # Photography per dish. Only photos that actually exist in
@@ -127,9 +130,27 @@ def seed(reset: bool = False) -> None:
                 if wanted and dish.image_url != wanted:
                     dish.image_url = wanted
                     filled += 1
-            if filled:
+            # The demo accounts are part of the promised setup, so a missing one
+            # is repaired here rather than left for someone to discover on stage.
+            missing_users = 0
+            for name, email, password, role in DEMO_USERS:
+                if db.scalar(select(User).where(User.email == email)) is None:
+                    db.add(
+                        User(
+                            name=name,
+                            email=email,
+                            password_hash=hash_password(password),
+                            role=role,
+                        )
+                    )
+                    missing_users += 1
+
+            if filled or missing_users:
                 db.commit()
-                print(f"Database already seeded, backfilled {filled} missing dish image(s).")
+                print(
+                    f"Database already seeded, backfilled {filled} dish image(s) "
+                    f"and {missing_users} account(s)."
+                )
             else:
                 print("Database already seeded, nothing to do. Use --reset to rebuild.")
             return

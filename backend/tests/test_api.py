@@ -539,6 +539,28 @@ def test_customer_cannot_promote_anyone(client):
     assert response.status_code == 403
 
 
+@pytest.mark.parametrize(
+    "email,password,role",
+    [
+        ("admin@camelia.rw", "Admin123", "admin"),
+        ("customer@camelia.rw", "Customer123", "customer"),
+        ("kitchen@camelia.rw", "Kitchen123", "kitchen"),
+    ],
+)
+def test_each_demo_account_exists_and_has_its_own_role(client, email, password, role):
+    """The three accounts are promised to whoever runs the demo.
+
+    The kitchen account once disappeared when the seeding was rewritten, and
+    nothing caught it because the role tests create their own user. Signing in
+    as each seeded account is the only thing that would have noticed.
+    """
+    response = client.post("/api/auth/login", json={"email": email, "password": password})
+    assert response.status_code == 200, f"{email} cannot sign in"
+    token = response.json()["access_token"]
+    me = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert me.json()["role"] == role
+
+
 def test_kitchen_can_see_orders(client, admin_headers):
     kitchen = _make_kitchen(client, admin_headers)
     assert client.get("/api/admin/orders", headers=kitchen).status_code == 200

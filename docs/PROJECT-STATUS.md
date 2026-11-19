@@ -104,6 +104,7 @@ Seeded with 130 dishes across 16 sections, each with its own photograph.
 |---|---|---|
 | Admin | `admin@camelia.rw` | `Admin123` |
 | Customer | `customer@camelia.rw` | `Customer123` |
+| Kitchen | `kitchen@camelia.rw` | `Kitchen123` |
 
 ---
 
@@ -174,7 +175,9 @@ with nine of them marked as signature dishes.
 |---|---|
 | `docs/SCHEMA.md` | Full database design |
 | `docs/DATABASE-DESIGN.md` | Table-by-table rationale |
-| `docs/TEST_RESULTS.md` | The 64 tests and how to run them |
+| `docs/TEST_RESULTS.md` | The 67 tests and how to run them |
+| `docs/PAYMENT-EXPLAINED.md` | Why payment is simulated, in plain words |
+| `docs/DIETARY-REVIEW.md` | The dietary questions Camellia needs to answer |
 | `docs/HANDOVER.md` | Where everything lives |
 | `docs/RUN-FIRST.md` | Setup and troubleshooting |
 | `BUILD-PLAN.md` | Original phased plan |
