@@ -131,7 +131,7 @@ cd ~/Documents/Desktop/camelia-ai-menubackend
 |---|---|
 | `.venv` exists and is usable | rebuilds it if it was copied from another machine |
 | `fastapi, sqlalchemy, sklearn, jose, bcrypt` import | runs `pip install -r requirements.txt` if not |
-| `camelia.db` exists | runs `seed.py` to create 130 dishes and the demo users |
+| `camelia.db` exists | runs `seed.py` to create 132 dishes and the demo users |
 | port 9000 is free | stops a leftover copy from a previous run |
 
 You should see:
@@ -193,7 +193,7 @@ Open the **repo root** (the folder with `MP3/` in it), then **Terminal → Run T
 | **`1️⃣ BACKEND (port 9000)`** | Terminal 1 — the API. Opens its own panel named *backend*. |
 | **`2️⃣ FRONTEND (port 5173)`** | Terminal 2 — the site. Opens its own panel named *frontend*. |
 | `3️⃣ RUN BOTH (one terminal)` | The old combined start — one Ctrl-C stops everything. |
-| `4️⃣ Reset demo database` | Deletes `camelia.db` and re-seeds 130 dishes. |
+| `4️⃣ Reset demo database` | Deletes `camelia.db` and re-seeds 132 dishes. |
 | `5️⃣ Run backend tests` | `pytest -q` — 67 tests. |
 | `6️⃣ Build frontend` | TypeScript check + production build. |
 | `7️⃣ Git pull (arena branch)` | Pulls the latest pushed code. |

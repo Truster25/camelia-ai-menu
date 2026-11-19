@@ -21,7 +21,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 | Area | Status |
 |---|---|
 | VELO-style landing page with the official Camellia logos | ✅ |
-| Menu of 130 dishes in 16 sections, search + diet/price/category filters | ✅ |
+| Menu of 132 dishes in 16 sections, search + diet/price/category filters | ✅ |
 | Dish detail: ingredients, allergens, allergens warning, spice, prep time | ✅ |
 | **Hybrid AI recommender** (TF-IDF 40% · preferences 25% · popularity 20% · occasion 15%) | ✅ |
 | Dietary requirements enforced as **hard filters** before ranking | ✅ |
@@ -76,7 +76,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python seed.py                       # 16 sections, 130 dishes, users, sample orders
+python seed.py                       # 16 sections, 132 dishes, users, sample orders
 uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 

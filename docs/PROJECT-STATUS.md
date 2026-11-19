@@ -78,7 +78,7 @@ Plus `/privacy`.
 `users` · `categories` · `dishes` · `orders` · `order_items` · `ratings` · `favourites` ·
 `recommendation_logs`
 
-Seeded with 130 dishes across 16 sections, each with its own photograph.
+Seeded with 132 dishes across 16 sections, each with its own photograph.
 
 ---
 
