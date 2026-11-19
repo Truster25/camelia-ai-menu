@@ -59,11 +59,12 @@ def test_legacy_menu_endpoint_keeps_its_shape(client):
     assert all(item["price_rwf"] > 0 for item in body["items"])
 
 
-def test_menu_is_seeded_with_six_categories_and_26_dishes(client):
+def test_menu_is_seeded_with_the_real_camellia_menu(client):
     categories = client.get("/api/categories").json()
     dishes = client.get("/api/dishes").json()
-    assert len(categories) == 6
-    assert len(dishes) == 26
+    # 16 sections, transcribed from the printed menu.
+    assert len(categories) == 16
+    assert len(dishes) == 130
     assert {d["category_name"] for d in dishes} == {c["name"] for c in categories}
 
 
@@ -74,8 +75,24 @@ def test_dish_filters(client):
     cheap = client.get("/api/dishes?max_price=5000").json()
     assert cheap and all(d["price_rwf"] <= 5000 for d in cheap)
 
-    found = client.get("/api/dishes?search=tilapia").json()
-    assert any(d["name"] == "Grilled Tilapia" for d in found)
+    found = client.get("/api/dishes?search=steak").json()
+    assert any("Steak" in d["name"] for d in found)
+
+
+def test_halal_filter_is_honest_while_unconfirmed(client):
+    """Until Camellia confirms certification, the halal filter returns nothing.
+
+    That is the safe failure and it is deliberate. This test exists so nobody
+    "fixes" it by marking dishes halal to make the demo look fuller: a wrong
+    halal claim is the one bug a restaurant cannot forgive.
+    """
+    halal = client.get("/api/dishes?diet=halal").json()
+    assert halal == [], "nothing may be marked halal until the restaurant confirms it"
+
+    quiz = {"diet": "halal", "spice": "mild", "budget": "mid", "cuisine": "any", "occasion": "casual"}
+    body = client.post("/api/recommend", json=quiz).json()
+    assert body["results"] == []
+    assert body["filters_applied"], "the customer should be told a filter was applied"
 
 
 def test_unknown_dish_returns_404(client):
@@ -130,7 +147,7 @@ def test_customer_cannot_reach_admin_routes(client, customer_headers):
 
 
 def test_recommend_returns_five_ranked_dishes(client):
-    quiz = {"diet": "halal", "spice": "mild", "budget": "low", "cuisine": "rwandan", "occasion": "casual"}
+    quiz = {"diet": "none", "spice": "mild", "budget": "low", "cuisine": "rwandan", "occasion": "casual"}
     body = client.post("/api/recommend", json=quiz).json()
     assert len(body["results"]) == 5
     scores = [row["score"] for row in body["results"]]
@@ -316,8 +333,21 @@ def test_admin_can_create_update_and_retire_a_dish(client, admin_headers):
 
 
 def test_dish_with_order_history_is_retired_not_deleted(client, admin_headers):
+    """A dish that appears on past orders must be hidden, not destroyed.
+
+    Naming a specific dish made this test depend on which dishes the seeder
+    happened to give order history to. It now finds one that actually has an
+    order, which is what the rule is about.
+    """
+    ordered_ids = {
+        item["dish_id"]
+        for order in client.get("/api/admin/orders", headers=admin_headers).json()
+        for item in order["items"]
+        if item["dish_id"] is not None
+    }
+    assert ordered_ids, "the seeder should create orders for this test to mean anything"
     dishes = client.get("/api/dishes").json()
-    ordered = next(dish for dish in dishes if dish["name"] == "Katogo")
+    ordered = next(dish for dish in dishes if dish["id"] in ordered_ids)
     response = client.delete(f"/api/admin/dishes/{ordered['id']}", headers=admin_headers)
     assert response.json()["retired"] is True
     assert client.get(f"/api/dishes/{ordered['id']}").json()["is_available"] is False
@@ -371,10 +401,10 @@ def test_choice_can_be_recorded_against_a_log(client):
 @pytest.mark.parametrize(
     "query,expected_first",
     [
-        ("coffee", "Pour Over"),
-        ("juice", "Juice"),
-        ("tilapia", "Tilapia"),
-        ("chocolate", "Fondant"),
+        ("espresso", "Espresso"),
+        ("passion", "Passion"),
+        ("mango", "Mango"),
+        ("croissant", "Croissant"),
     ],
 )
 def test_search_returns_what_was_asked_for(client, query, expected_first):
