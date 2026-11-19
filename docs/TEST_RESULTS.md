@@ -14,7 +14,7 @@ cd frontend && npm run build
 ## 1. Automated backend tests
 
 ```
-67 passed in 8.87s
+72 passed in 8.96s
 ```
 
 The test module points `DATABASE_URL` at a temporary SQLite file, so running the suite never
@@ -72,7 +72,7 @@ touches the developer's local `camelia.db`. Each module start seeds the full men
 | 48 | Payment | `test_admin_can_mark_payment_received` | only an admin may mark paid | PASS |
 | 49 | Metric | `test_analytics_reports_recommendation_effectiveness` | chosen ÷ quizzes reported | PASS |
 
-The count in the header (67) is the number of collected test runs; parametrised
+The count in the header (72) is the number of collected test runs; parametrised
 tests appear once each in the table above because they are one behaviour.
 
 ---

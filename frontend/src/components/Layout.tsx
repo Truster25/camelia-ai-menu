@@ -170,8 +170,11 @@ export function Header({ overlay = false }: HeaderProps) {
             )}
           </Link>
 
+          {/* Booking is by phone or walk-in, which is what the restaurant actually
+              does. This used to point at the basket, so the one button promising a
+              table delivered a shopping list. */}
           <Link
-            to="/cart"
+            to="/contact"
             className={`hidden items-center gap-3 rounded-full border px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.16em] transition hover:bg-amber-logo hover:text-forest-950 md:inline-flex ${
               theme === 'dark' ? 'border-[#a9742a]/60 text-[#8a5f1f]' : 'border-amber-logo/70 text-amber-pale'
             }`}

@@ -23,7 +23,7 @@ admin dashboard.
 | Backend | FastAPI 0.115.12, SQLAlchemy 2.0.57, scikit-learn 1.9.1 |
 | Authentication | JWT (HS256), bcrypt password hashing |
 | Database | SQLite locally, PostgreSQL in production |
-| Tests | 67 backend tests, pytest |
+| Tests | 72 backend tests, pytest |
 
 ---
 
@@ -160,10 +160,14 @@ with nine of them marked as signature dishes.
 - **Dietary labels need the restaurant to confirm them.** The questions are written out,
   section by section, in `docs/DIETARY-REVIEW.md`. Until they are answered the labels stay
   conservative, which means the halal filter is correctly empty rather than wrong.
-- **The newsletter form has no backend endpoint.** It looks correct and submitting does
-  nothing, so no address is ever stored.
-- **Translation is partial.** Navigation, footer, home page and menu headings are translated;
-  dish descriptions and some secondary pages are English only.
+- **The newsletter form stores addresses but sends nothing.** Submitting now keeps the
+  address in a `subscribers` table and confirms it on screen. No email is ever sent from
+  it, because the project has no mail provider configured.
+- **Translation covers the frame, not the contents.** Every one of the 117 interface
+  strings exists in all three languages, and the navigation, headings, buttons and footer
+  switch completely. What stays English is the restaurant's own text: dish names and
+  descriptions, and the long-form story and help pages. Those are not phrase-book copy and
+  should be translated by someone who can write them well, not word for word.
 - **Not deployed.** It runs locally. `render.yaml` and `vercel.json` are ready but nothing is
   live.
 
@@ -175,7 +179,7 @@ with nine of them marked as signature dishes.
 |---|---|
 | `docs/SCHEMA.md` | Full database design |
 | `docs/DATABASE-DESIGN.md` | Table-by-table rationale |
-| `docs/TEST_RESULTS.md` | The 67 tests and how to run them |
+| `docs/TEST_RESULTS.md` | The 72 tests and how to run them |
 | `docs/PAYMENT-EXPLAINED.md` | Why payment is simulated, in plain words |
 | `docs/DIETARY-REVIEW.md` | The dietary questions Camellia needs to answer |
 | `docs/HANDOVER.md` | Where everything lives |
