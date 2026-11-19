@@ -11,7 +11,8 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 · **SQLite locally / PostgreSQL in production**.
 
 > Demo accounts — Admin: `admin@camelia.rw` / `Admin123` · Customer: `customer@camelia.rw` / `Customer123`.
-> The dish names and prices are a realistic demo menu, not the restaurant's confirmed prices.
+> The dish names, sections and prices are transcribed from the restaurant's printed menu.
+> Confirm them with Camellia before publishing prices.
 
 ---
 
@@ -20,7 +21,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 | Area | Status |
 |---|---|
 | VELO-style landing page with the official Camellia logos | ✅ |
-| Menu of 26 dishes in 6 categories, search + diet/price/category filters | ✅ |
+| Menu of 130 dishes in 16 sections, search + diet/price/category filters | ✅ |
 | Dish detail: ingredients, allergens, allergens warning, spice, prep time | ✅ |
 | **Hybrid AI recommender** (TF-IDF 40% · preferences 25% · popularity 20% · occasion 15%) | ✅ |
 | Dietary requirements enforced as **hard filters** before ranking | ✅ |
@@ -75,7 +76,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python seed.py                       # 6 categories, 26 dishes, demo users, sample orders
+python seed.py                       # 16 sections, 130 dishes, users, sample orders
 uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
@@ -106,7 +107,7 @@ configuration is needed in development.
 ### Checks
 
 ```bash
-cd backend && pytest -q          # 33 tests
+cd backend && pytest -q          # 64 tests
 cd frontend && npm run build     # type-check + production bundle
 ```
 
@@ -155,8 +156,8 @@ backend/
     recommender.py     The hybrid AI (pure functions, unit-testable)
     serializers.py     Dish → API payload with rating aggregates
     routers/           auth · menu · recommendations · ratings · orders · admin
-  seed.py              26-dish demo menu + demo users/orders/ratings
-  tests/test_api.py    33 tests (isolated temp database)
+  seed.py              130-dish menu + users/orders/ratings
+  tests/test_api.py    64 tests (isolated temp database)
 frontend/
   src/
     pages/             Home · Menu · DishDetail · Recommend · HowItWorks · Login · Cart · Orders · Admin
@@ -178,7 +179,7 @@ docs/
    - Build: `pip install -r requirements.txt`
    - Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
    - Env: `DATABASE_URL`, `JWT_SECRET` (long random string), `CORS_ORIGINS=https://your-app.vercel.app`
-   The service seeds the demo menu on first boot.
+   The service seeds the menu on first boot.
 3. **Vercel** — new project, root directory `frontend`:
    - Build: `npm run build`, output `dist`
    - Env: `VITE_API_URL=https://your-render-service.onrender.com`
@@ -196,7 +197,7 @@ CDN or LLM is required.
   database chapter.
 - Every quiz is logged in `recommendation_logs` together with which suggestion was chosen,
   so top-1 hit rate and top-5 conversion can be computed from real data rather than invented.
-- Limitations to state honestly: 26-dish corpus, sparse ratings, no collaborative filtering
+- Limitations to state honestly: 130-dish corpus, sparse ratings, no collaborative filtering
   yet, and demo traffic only until real customers are involved.
 - The menu data is realistic but fictional; confirm prices and allergen information with the
   restaurant before any real use.

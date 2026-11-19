@@ -75,6 +75,23 @@ Checks: `cd backend && pytest -q` (33 tests) · `cd frontend && npm run build`.
   Admin (overview KPIs + 7-day chart, menu CRUD modal, order status buttons, customers).
 - **Assets** — `logo-orange.png` / `logo-white.png` are the client logos with transparent margins
   trimmed and downscaled (86 KB / 70 KB). Originals kept as `camellia-*.png`. Hero photo is AI-generated.
+
+### Replacing a dish photograph
+
+Dish pictures live in `frontend/public/images/dishes/`, named after the dish:
+lowercase, punctuation removed, spaces turned into hyphens. "Creamed Frappé" is
+`creamed-frappe.jpg`. The seeder looks a dish up by that name, so the only step
+is to drop the file in and run:
+
+```bash
+cd backend && python seed.py
+```
+
+It reports how many photos it picked up. No list to edit, and a dish with no
+photo keeps showing generated art rather than a picture of some other dish.
+
+A few dishes are served from `images/hero/` because those photographs genuinely
+match; the curated map at the top of `seed.py` is checked first and still wins.
 - **Docs** — `README.md` (setup, API table, deployment), `docs/SCHEMA.md` (ERD + data dictionary),
   `docs/DATABASE-DESIGN.md` (earlier proposal, kept as the evolution record), `docs/TEST_RESULTS.md`,
   `BUILD-PLAN.md` with a progress section, `render.yaml`, `frontend/vercel.json`, Dockerfiles.
