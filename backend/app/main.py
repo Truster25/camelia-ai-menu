@@ -1,4 +1,4 @@
-"""Camelia AI Menu API — FastAPI application entry point."""
+"""Camellia AI Menu API — FastAPI application entry point."""
 from __future__ import annotations
 
 import logging
@@ -46,7 +46,7 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description=(
-        "AI-based menu recommendation system for Camelia Café & Restaurant, Kigali.\n\n"
+        "AI-based menu recommendation system for Camellia Café & Restaurant, Kigali.\n\n"
         "Hybrid recommender: TF-IDF cosine similarity (40%), preference rules (25%), "
         "popularity (20%) and occasion match (15%), with dietary requirements applied as hard filters."
     ),
@@ -90,7 +90,7 @@ def legacy_menu() -> dict:
         dishes = db.scalars(select(Dish).where(Dish.is_available.is_(True))).unique().all()
         return {
             "items": [serialise_dish(d).model_dump() for d in dishes],
-            "notice": "Live Camelia menu served from the database.",
+            "notice": "Live Camellia menu served from the database.",
         }
     finally:
         db.close()

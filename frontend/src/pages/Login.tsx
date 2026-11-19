@@ -45,7 +45,7 @@ export function Login() {
       <div>
         <LogoMark className="h-14 w-14 text-xl" />
         <h1 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] leading-tight tracking-[-0.03em]">
-          {mode === 'login' ? 'Welcome back to Camelia.' : 'Join the table.'}
+          {mode === 'login' ? 'Welcome back to Camellia.' : 'Join the table.'}
         </h1>
         <p className="mt-4 max-w-sm text-sm leading-relaxed text-sage-400">
           {mode === 'login'

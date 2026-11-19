@@ -4,7 +4,7 @@
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
 
-  /* Camelia palette — warm near-black, sampled from the reference UI.
+  /* Camellia palette — warm near-black, sampled from the reference UI.
      The previous values were green-cast (#0b120e has g > r); these are warmer
      (r slightly above g), which is what the reference screenshot shows. */
   --color-forest-950: #151610;
@@ -104,7 +104,7 @@
   }
 }
 
-/* The Camelia mark glows softly on dark surfaces. */
+/* The Camellia mark glows softly on dark surfaces. */
 .logo-img {
   filter: drop-shadow(0 0 22px rgba(237, 155, 54, 0.18));
   object-fit: contain;

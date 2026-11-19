@@ -8,7 +8,7 @@ type LogoProps = {
 };
 
 /**
- * Official Camelia logo.
+ * Official Camellia logo.
  *
  * `logo-orange.png` / `logo-white.png` are the client-supplied artwork with the
  * transparent margins trimmed and downscaled (86 KB instead of 600 KB). The
@@ -20,7 +20,7 @@ export function Logo({ variant = 'orange', className = 'h-11', to = '/' }: LogoP
   const image = (
     <img
       src={src}
-      alt="Camelia Café & Restaurant, Kigali"
+      alt="Camellia Café & Restaurant, Kigali"
       className={`logo-img w-auto ${className}`}
       width={560}
       height={variant === 'white' ? 267 : 302}
@@ -28,7 +28,7 @@ export function Logo({ variant = 'orange', className = 'h-11', to = '/' }: LogoP
   );
   if (to === null) return image;
   return (
-    <Link to={to} className="inline-flex shrink-0 items-center" aria-label="Camelia home">
+    <Link to={to} className="inline-flex shrink-0 items-center" aria-label="Camellia home">
       {image}
     </Link>
   );

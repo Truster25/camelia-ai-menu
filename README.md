@@ -1,6 +1,6 @@
-# Camelia AI Menu
+# Camellia AI Menu
 
-**AI-based menu recommendation system · Case study: Camelia Café & Restaurant, Kigali.**
+**AI-based menu recommendation system · Case study: Camellia Café & Restaurant, Kigali.**
 
 A customer answers five quick questions — diet, spice, budget, cuisine, occasion — and a
 hybrid AI ranker scores every available dish, returning the top five with a match score and
@@ -19,7 +19,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 
 | Area | Status |
 |---|---|
-| VELO-style landing page with the official Camelia logos | ✅ |
+| VELO-style landing page with the official Camellia logos | ✅ |
 | Menu of 26 dishes in 6 categories, search + diet/price/category filters | ✅ |
 | Dish detail: ingredients, allergens, allergens warning, spice, prep time | ✅ |
 | **Hybrid AI recommender** (TF-IDF 40% · preferences 25% · popularity 20% · occasion 15%) | ✅ |

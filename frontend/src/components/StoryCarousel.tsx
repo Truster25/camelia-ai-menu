@@ -68,7 +68,7 @@ export function StoryCarousel({ slides, interval = 6500, mirrored = false, ancho
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
       aria-roledescription="carousel"
-      aria-label={label ?? 'Camelia story'}
+      aria-label={label ?? 'Camellia story'}
     >
       <div className="relative mx-auto max-w-[1460px]">
         {/* Circular bites. Painted in the section's own colour, over the card

@@ -50,7 +50,7 @@ const en: Dict = {
 
   'dishes.kicker': 'Something for every craving',
   'dishes.title': 'A taste of',
-  'dishes.title.accent': 'Camelia.',
+  'dishes.title.accent': 'Camellia.',
   'dishes.body':
     'Six sections, twenty-six dishes, and one AI that reads the whole menu before making a suggestion. These are the plates guests keep coming back for.',
   'dishes.all': 'All dishes',
@@ -63,7 +63,7 @@ const en: Dict = {
   'ai.title1': 'Not sure what to order?',
   'ai.title2': 'Let the menu ask.',
   'ai.body':
-    'Answer five short questions and Camelia’s recommender scores every available dish against your answers: diet, spice, budget, cuisine and occasion. Dietary needs are hard filters. If it is not halal, it will never appear in a halal result.',
+    'Answer five short questions and Camellia’s recommender scores every available dish against your answers: diet, spice, budget, cuisine and occasion. Dietary needs are hard filters. If it is not halal, it will never appear in a halal result.',
   'ai.cta': 'Start the 60-second quiz',
   'ai.how': 'How it works',
   'ai.stat1': 'Dishes ranked',
@@ -185,7 +185,7 @@ const rw: Dict = {
 
   'dishes.kicker': 'Kuri buri kifuzo',
   'dishes.title': 'Uburyohe bwa',
-  'dishes.title.accent': 'Camelia.',
+  'dishes.title.accent': 'Camellia.',
   'dishes.body':
     'Ibyiciro byenye, ibiryo makumyabiri na gatandatu, na AI imwe isoma menu yose mbere yo kugira icyo yifuza. Ibi ni ibiryo abakiriya bagarukiraho.',
   'dishes.all': 'Ibiryo byose',
@@ -198,7 +198,7 @@ const rw: Dict = {
   'ai.title1': 'Ntuzi icyo kurya?',
   'ai.title2': 'Reka menu ikubaze.',
   'ai.body':
-    'Subiza ibibazo bitanu kandi sisitemu ya Camelia itanga amanota ku biryo byose ukurikije ibyo wasubije: indyo, urugero rw’ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe. Indyo zisabwa nta gukebwa zigomba. Niba atari halal, ntizizigera ziboneka mu bisubizo bya halal.',
+    'Subiza ibibazo bitanu kandi sisitemu ya Camellia itanga amanota ku biryo byose ukurikije ibyo wasubije: indyo, urugero rw’ibirungo, ingengo y’imari, ubwoko bw’ibiryo n’igihe. Indyo zisabwa nta gukebwa zigomba. Niba atari halal, ntizizigera ziboneka mu bisubizo bya halal.',
   'ai.cta': 'Tangira ibibazo by’amasegonda 60',
   'ai.how': 'Bikora gute',
   'ai.stat1': 'Ibiryo bipimwa',
@@ -320,7 +320,7 @@ const fr: Dict = {
 
   'dishes.kicker': 'Pour toutes les envies',
   'dishes.title': 'Un avant-goût de',
-  'dishes.title.accent': 'Camelia.',
+  'dishes.title.accent': 'Camellia.',
   'dishes.body':
     'Six catégories, vingt-six plats, et une IA qui lit toute la carte avant de suggérer. Voici les plats que nos clients redemandent.',
   'dishes.all': 'Tous les plats',
@@ -333,7 +333,7 @@ const fr: Dict = {
   'ai.title1': 'Vous hésitez ?',
   'ai.title2': 'Laissez la carte vous demander.',
   'ai.body':
-    'Répondez à cinq questions : Camelia note chaque plat selon vos réponses (régime, épices, budget, cuisine et occasion). Les régimes sont des filtres stricts : un plat non halal n’apparaîtra jamais dans un résultat halal.',
+    'Répondez à cinq questions : Camellia note chaque plat selon vos réponses (régime, épices, budget, cuisine et occasion). Les régimes sont des filtres stricts : un plat non halal n’apparaîtra jamais dans un résultat halal.',
   'ai.cta': 'Commencer le test de 60 secondes',
   'ai.how': 'Comment ça marche',
   'ai.stat1': 'Plats classés',

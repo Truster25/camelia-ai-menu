@@ -38,7 +38,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   try {
     response = await fetch(`${API_BASE}/api${path}`, { ...init, headers });
   } catch {
-    throw new ApiError('Cannot reach the Camelia API. Is the backend running on port 9000?', 0);
+    throw new ApiError('Cannot reach the Camellia API. Is the backend running on port 9000?', 0);
   }
 
   if (response.status === 401) {

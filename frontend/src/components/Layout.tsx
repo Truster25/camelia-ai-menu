@@ -322,7 +322,7 @@ export function Footer() {
               </ul>
             </nav>
 
-            <nav aria-label="About Camelia">
+            <nav aria-label="About Camellia">
               <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-amber-soft">
                 {t('footer.about')}
               </p>
@@ -392,7 +392,7 @@ export function Footer() {
             </div>
             <div className="flex items-center gap-4">
               <LanguageSwitcher tone="light" />
-              <p>© {new Date().getFullYear()} Camelia Café &amp; Restaurant</p>
+              <p>© {new Date().getFullYear()} Camellia Café &amp; Restaurant</p>
             </div>
           </div>
         </div>

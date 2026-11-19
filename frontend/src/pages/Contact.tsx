@@ -1,6 +1,6 @@
 import { Clock, Mail, MapPin, Phone } from 'lucide-react';
 
-/** Where Camelia actually is. Used for the map link and the directions block. */
+/** Where Camellia actually is. Used for the map link and the directions block. */
 const ADDRESS = {
   lines: ['KG 7 Avenue', 'Kiyovu, Kigali', 'Rwanda'],
   /** Opens the restaurant pin in Google Maps. */
@@ -126,7 +126,7 @@ export function Contact() {
               </a>
             </div>
             <iframe
-              title="Map showing Camelia on KG 7 Avenue, Kiyovu, Kigali"
+              title="Map showing Camellia on KG 7 Avenue, Kiyovu, Kigali"
               src="https://www.openstreetmap.org/export/embed.html?bbox=30.050%2C-1.960%2C30.080%2C-1.935&layer=mapnik&marker=-1.9475%2C30.0655"
               className="relative h-[320px] w-full border-0 sm:h-[440px] lg:h-full lg:min-h-[440px]"
               loading="lazy"

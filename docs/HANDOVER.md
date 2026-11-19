@@ -18,14 +18,14 @@ Last updated: **2026-11-11** · Version **1.0.0**
 
 ## Project in one paragraph
 
-AI-based menu recommendation system — case study **Camelia Café & Restaurant, Kigali**.
+AI-based menu recommendation system — case study **Camellia Café & Restaurant, Kigali**.
 A guest answers five questions (diet, spice, budget, cuisine, occasion) and a hybrid AI
 ranker scores all 26 dishes: TF-IDF cosine similarity 40% + preference rules 25% +
 popularity 20% + occasion 15%, with dietary needs applied as **hard filters before ranking**.
 The guest gets the top five with scores and plain-English reasons, can rate dishes, save
 favourites and pre-order with a table number. Admins manage the menu, orders and see
 analytics. Landing page is VELO-style ("Made for moments worth savouring") using the official
-Camelia logos.
+Camellia logos.
 
 ## Stack (locked — do not change without supervisor approval)
 
@@ -84,7 +84,7 @@ Checks: `cd backend && pytest -q` (33 tests) · `cd frontend && npm run build`.
 
 ## What is NEXT (pick one)
 
-1. **UAT with real customers** — 5–10 Camelia guests, record ease score /10 and top-1 hit rate;
+1. **UAT with real customers** — 5–10 Camellia guests, record ease score /10 and top-1 hit rate;
    this is the Chapter 6 evidence. Use `docs/TEST_RESULTS.md` as the recording sheet.
 2. **Deploy** — Neon → Render → Vercel (steps in README "Deployment"). Then re-run the demo
    against production and screenshot it for the appendix.

@@ -1,4 +1,4 @@
-# Camelia menu recommendation system — build plan
+# Camellia menu recommendation system — build plan
 
 **Status:** Proposed implementation plan. No application code, dataset, deployment or evaluation has been completed. Update this file and the handover document as work progresses.
 
@@ -115,7 +115,7 @@ The vertical slices from the plan above are now implemented end to end.
 **Not done / next**
 - Collaborative filtering: deliberately deferred until enough real ratings exist (the plan's
   minimum-data threshold), so keep it described as future work.
-- Usability testing with real Camelia customers (5–10 participants) for Chapter 6.
+- Usability testing with real Camellia customers (5–10 participants) for Chapter 6.
 - Screenshots, test-result tables and the final ERD export for the appendix.
 - Confirm the menu, prices and allergen data with the restaurant before real use.
 

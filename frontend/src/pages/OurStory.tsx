@@ -14,21 +14,21 @@ const team: Person[] = [
     name: 'Aline Mukamana',
     role: 'Head chef',
     image: '/images/team/chef-aline.jpg',
-    alt: 'Head chef Aline plating grilled tilapia in the Camelia kitchen',
+    alt: 'Head chef Aline plating grilled tilapia in the Camellia kitchen',
     line: 'Fifteen years at the grill. She decides what goes on the fire each morning, and she will tell you honestly which dish is better today.',
   },
   {
     name: 'Eric Nshuti',
     role: 'Coffee lead',
     image: '/images/team/barista-eric.jpg',
-    alt: 'Eric pouring latte art at the Camelia coffee bar',
+    alt: 'Eric pouring latte art at the Camellia coffee bar',
     line: 'Roasts and pours. If your latte arrives with a fern on it, that is Eric, and he will remember how you take it next time.',
   },
   {
     name: 'Chantal Uwase',
     role: 'Floor manager',
     image: '/images/team/floor-chantal.jpg',
-    alt: 'Floor manager Chantal welcoming guests at the Camelia entrance',
+    alt: 'Floor manager Chantal welcoming guests at the Camellia entrance',
     line: 'Runs the room. Finds you a table on a Friday, and quietly moves the speaker when a birthday needs one.',
   },
   {
@@ -44,7 +44,7 @@ const milestones = [
   {
     year: '2016',
     title: 'One grill, six tables',
-    body: 'Camelia opens on KG 7 Avenue with a charcoal grill, a coffee machine and a short menu of dishes the family already cooked at home.',
+    body: 'Camellia opens on KG 7 Avenue with a charcoal grill, a coffee machine and a short menu of dishes the family already cooked at home.',
   },
   {
     year: '2019',
@@ -59,7 +59,7 @@ const milestones = [
   {
     year: '2026',
     title: 'The menu that asks',
-    body: 'Camelia adds an AI assistant that reads the whole menu against your taste, diet, budget and occasion, so nobody has to guess.',
+    body: 'Camellia adds an AI assistant that reads the whole menu against your taste, diet, budget and occasion, so nobody has to guess.',
   },
 ];
 
@@ -82,7 +82,7 @@ export function OurStory() {
             We started with one grill and <em className="not-italic text-amber-logo">a short menu.</em>
           </h1>
           <p className="mt-7 max-w-[62ch] text-[15px] leading-[1.85] text-sage-300">
-            Camelia is a family kitchen on KG 7 Avenue in Kigali. It has never been a place that
+            Camellia is a family kitchen on KG 7 Avenue in Kigali. It has never been a place that
             chases trends. The brochettes still go on charcoal, the beans still simmer for hours, and
             the leaves are still cut the morning you eat them. What has changed is how quickly we can
             work out what you actually feel like eating.

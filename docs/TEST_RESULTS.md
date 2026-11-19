@@ -1,4 +1,4 @@
-# Test Results — Camelia AI Menu v1.0
+# Test Results — Camellia AI Menu v1.0
 
 **Date:** 11 November 2026
 **Environment:** Python 3.11.2 · Node.js 22.22.3 · SQLite (test database in the OS temp folder)
@@ -138,7 +138,7 @@ Vegan · medium · mid budget · any cuisine · date night — 7 dishes eligible
 | Rank | Dish | Score |
 |---|---|---|
 | 1 | Rwandan Single-Origin Pour Over | 61.2 |
-| 2 | Camelia Garden Salad | 50.7 |
+| 2 | Camellia Garden Salad | 50.7 |
 | 3 | Passion Fruit Juice | 45.4 |
 
 **Interpretation for the write-up:** the vegetarian result set (16 dishes) is larger than the
@@ -150,7 +150,7 @@ that is expected behaviour, not a defect. Absolute scores matter less than the o
 
 ## 5. What is NOT tested yet
 
-- Usability with real Camelia customers (planned: 5–10 participants, ease score /10).
+- Usability with real Camellia customers (planned: 5–10 participants, ease score /10).
 - Load and concurrency beyond the single-worker development server.
 - PostgreSQL-specific behaviour (the suite runs on SQLite; the models are portable but the
   deployed database has not been exercised).

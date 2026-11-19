@@ -22,7 +22,7 @@ export function Privacy() {
             What we keep, and <em className="not-italic text-amber-logo">what we don&apos;t.</em>
           </h1>
           <p className="mt-6 text-[15px] leading-[1.85] text-sage-300">
-            Camelia asks five questions to suggest a dish. That is the whole reason we hold any
+            Camellia asks five questions to suggest a dish. That is the whole reason we hold any
             information about you, and this page says exactly what that means.
           </p>
         </div>
@@ -37,7 +37,7 @@ export function Privacy() {
             },
             {
               q: 'Your password',
-              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camelia can read your password, and it cannot be recovered if you forget it, only reset.',
+              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camellia can read your password, and it cannot be recovered if you forget it, only reset.',
             },
             {
               q: 'How your taste answers are used',

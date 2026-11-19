@@ -244,7 +244,7 @@ export function Home() {
         interval={7000}
         mirrored
         anchor="drinks"
-        label="Drinks at Camelia"
+        label="Drinks at Camellia"
       />
 
       {/* --------------------------------------------------------------- AI block */}

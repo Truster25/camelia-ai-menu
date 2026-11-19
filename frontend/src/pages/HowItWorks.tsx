@@ -44,7 +44,7 @@ export function HowItWorks() {
         A recommender you can <em className="not-italic text-amber-soft">explain</em>, not just trust.
       </h1>
       <p className="mt-5 max-w-2xl text-sm leading-relaxed text-sage-400">
-        Camelia’s AI reads the whole menu, then ranks it around you. Every recommendation shows its score and the four
+        Camellia’s AI reads the whole menu, then ranks it around you. Every recommendation shows its score and the four
         signals behind it, because at the table you deserve to know <em>why</em> a dish was picked for you.
       </p>
 

@@ -18,7 +18,7 @@ def _default_database_url() -> str:
 
 
 class Settings:
-    PROJECT_NAME: str = "Camelia AI Menu API"
+    PROJECT_NAME: str = "Camellia AI Menu API"
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
 
