@@ -11,7 +11,7 @@ from sqlalchemy import select
 from .config import settings
 from .database import SessionLocal, init_db
 from .models import Dish
-from .routers import admin, auth, menu, orders, ratings, recommendations
+from .routers import admin, auth, menu, newsletter, orders, ratings, recommendations
 
 logger = logging.getLogger("camelia")
 logging.basicConfig(level=logging.INFO)
@@ -96,5 +96,5 @@ def legacy_menu() -> dict:
         db.close()
 
 
-for router in (auth.router, menu.router, recommendations.router, ratings.router, orders.router, admin.router):
+for router in (auth.router, menu.router, recommendations.router, ratings.router, orders.router, admin.router, newsletter.router):
     app.include_router(router, prefix=api_prefix)

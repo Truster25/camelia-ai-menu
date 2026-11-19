@@ -200,3 +200,17 @@ class RecommendationLog(Base):
     chosen_dish_id: Mapped[int | None] = mapped_column(ForeignKey("dishes.id"), nullable=True)
     top_score: Mapped[float] = mapped_column(Float, default=0.0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+
+
+class Subscriber(Base):
+    """Someone who asked to hear from the restaurant.
+
+    The footer form used to accept an address and drop it on the floor, which
+    looks like a working signup and stores nothing. This is where it goes now.
+    """
+
+    __tablename__ = "subscribers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

@@ -653,3 +653,24 @@ def test_analytics_reports_recommendation_effectiveness(client, admin_headers):
     effectiveness = body["recommendation_effectiveness"]
     assert set(effectiveness) == {"quizzes", "shown", "chosen", "acceptance_rate"}
     assert 0 <= effectiveness["acceptance_rate"] <= 100
+
+
+# ---------------------------------------------------------------------------
+# Newsletter
+# ---------------------------------------------------------------------------
+
+
+def test_newsletter_stores_an_address_once(client):
+    first = client.post("/api/newsletter", json={"email": "reader@example.rw"})
+    assert first.status_code == 201
+
+    again = client.post("/api/newsletter", json={"email": "READER@example.rw"})
+    assert again.status_code == 201
+    assert again.json()["message"] == first.json()["message"], (
+        "the same answer must come back either way, so the endpoint cannot be "
+        "used to check whether somebody is on the list"
+    )
+
+
+def test_newsletter_rejects_an_address_that_is_not_one(client):
+    assert client.post("/api/newsletter", json={"email": "nope"}).status_code == 422

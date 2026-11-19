@@ -34,6 +34,9 @@ const en: Dict = {
   'nav.signout': 'Sign out',
   'nav.admin': 'Dashboard',
   'nav.kitchen': 'Kitchen',
+  'footer.subscribed': 'You are on the list. We will be in touch.',
+  'footer.sending': 'Sending',
+  'footer.signupError': 'That did not go through. Please try again.',
   'nav.book': 'Book a table',
 
   'home.hero.line1': 'Good food',
@@ -170,6 +173,9 @@ const rw: Dict = {
   'nav.signout': 'Sohoka',
   'nav.admin': 'Ubuyobozi',
   'nav.kitchen': 'Ibyo mu gikoni',
+  'footer.subscribed': 'Uri ku rutonde. Tuzakumenyesha.',
+  'footer.sending': 'Kohereza',
+  'footer.signupError': 'Ntibyakunze. Ongera ugerageze.',
   'nav.book': 'Fata ikigwi',
 
   'home.hero.line1': 'Ibiryo byiza',
@@ -306,6 +312,9 @@ const fr: Dict = {
   'nav.signout': 'Se déconnecter',
   'nav.admin': 'Tableau de bord',
   'nav.kitchen': 'Cuisine',
+  'footer.subscribed': 'Vous êtes inscrit. Nous vous tiendrons au courant.',
+  'footer.sending': 'Envoi',
+  'footer.signupError': 'L envoi a échoué. Veuillez réessayer.',
   'nav.book': 'Réserver une table',
 
   'home.hero.line1': 'La bonne cuisine',

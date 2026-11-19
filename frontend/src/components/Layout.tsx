@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useLang } from '../context/LanguageContext';
+import { api } from '../lib/api';
 
 type NavItem = { to: string; label: string; end?: boolean };
 
@@ -253,6 +254,24 @@ export function Header({ overlay = false }: HeaderProps) {
 }
 
 export function Footer() {
+  // The newsletter form used to swallow the address and say nothing, so it now
+  // keeps its own state and tells the guest what happened.
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupState, setSignupState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+
+  const handleSignup = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (signupState === 'sending') return;
+    setSignupState('sending');
+    try {
+      await api.post('/newsletter', { email: signupEmail.trim() });
+      setSignupState('done');
+      setSignupEmail('');
+    } catch {
+      setSignupState('error');
+    }
+  };
+
   const { t } = useLang();
 
   return (
@@ -360,24 +379,37 @@ export function Footer() {
                 </a>
               </p>
               <p className="mt-5 text-[12px] leading-relaxed text-sage-400">{t('footer.news')}</p>
-              <form
-                className="mt-3 flex items-center gap-2 border-b border-cream/25 pb-1.5 focus-within:border-amber-logo"
-                onSubmit={(event) => event.preventDefault()}
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder={t('footer.email')}
-                  aria-label="Email address for the newsletter"
-                  className="min-w-0 flex-1 bg-transparent text-[12.5px] text-cream outline-none placeholder:text-sage-400"
-                />
-                <button
-                  type="submit"
-                  className="inline-flex shrink-0 items-center gap-1 text-[9.5px] font-bold uppercase tracking-[0.14em] text-amber-soft transition hover:text-cream"
+              {signupState === 'done' ? (
+                <p className="mt-3 border-b border-cream/25 pb-1.5 text-[12.5px] text-amber-pale">
+                  {t('footer.subscribed')}
+                </p>
+              ) : (
+                <form
+                  className="mt-3 flex items-center gap-2 border-b border-cream/25 pb-1.5 focus-within:border-amber-logo"
+                  onSubmit={handleSignup}
                 >
-                  {t('footer.submit')} <ArrowRight size={12} />
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    required
+                    value={signupEmail}
+                    onChange={(event) => setSignupEmail(event.target.value)}
+                    placeholder={t('footer.email')}
+                    aria-label="Email address for the newsletter"
+                    disabled={signupState === 'sending'}
+                    className="min-w-0 flex-1 bg-transparent text-[12.5px] text-cream outline-none placeholder:text-sage-400 disabled:opacity-60"
+                  />
+                  <button
+                    type="submit"
+                    disabled={signupState === 'sending'}
+                    className="inline-flex shrink-0 items-center gap-1 text-[9.5px] font-bold uppercase tracking-[0.14em] text-amber-soft transition hover:text-cream disabled:opacity-60"
+                  >
+                    {signupState === 'sending' ? t('footer.sending') : t('footer.submit')} <ArrowRight size={12} />
+                  </button>
+                </form>
+              )}
+              {signupState === 'error' && (
+                <p className="mt-2 text-[11.5px] text-red-300">{t('footer.signupError')}</p>
+              )}
             </div>
           </div>
 
