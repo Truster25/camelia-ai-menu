@@ -213,7 +213,7 @@ DISHES = [
     # -------------------------------------------------------- Kingsize Meals
     d("Camellia Hotpot", "Kingsize Meals", 12000,
       "Beef or chicken hotpot in a banana leaf sauce, served with chapatis.",
-      spice=2, ingredients="beef or chicken,banana leaf,spices,chapati", prep=25, calories=980, pop=79, signature=True, cuisine="rwandan", gf=True),
+      spice=2, ingredients="beef or chicken,banana leaf,spices,chapati", prep=25, calories=980, pop=79, signature=True, cuisine="rwandan", allergens="gluten"),
     d("Beef Chicken Fish Stew", "Kingsize Meals", 12000,
       "Stewed beef, chicken or fish with a Rwandan sauce, served with chips and salad.",
       ingredients="beef chicken or fish,vegetables,chips,salad", prep=25, calories=920, pop=74, cuisine="rwandan"),

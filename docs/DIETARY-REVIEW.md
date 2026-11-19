@@ -13,10 +13,10 @@ this site is shown to customers.**
 
 | Label | Rule used | Set on |
 |---|---|---|
-| **Vegan** | The ingredients listed cannot contain an animal product. Practically: single-fruit and single-vegetable juices, black tea, soda, water. | 36 dishes |
-| **Vegetarian** | The listed ingredients contain no meat or fish. Eggs and dairy allowed. | 94 dishes |
+| **Vegan** | The ingredients listed cannot contain an animal product. Practically: single-fruit and single-vegetable juices, black tea, soda, water. | 39 dishes |
+| **Vegetarian** | The listed ingredients contain no meat or fish. Eggs and dairy allowed. | 100 dishes |
 | **Halal** | **Never set. Not on any dish.** | 0 dishes |
-| **Gluten free** | Only where nothing baked, battered, or thickened appears. | very few |
+| **Gluten free** | Only where nothing baked, battered, or thickened appears. | 68 dishes |
 
 ### Halal is deliberately empty
 

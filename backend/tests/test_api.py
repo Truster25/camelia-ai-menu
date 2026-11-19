@@ -772,3 +772,63 @@ def test_search_finds_the_lattes(client):
     names = [row["name"] for row in client.get("/api/dishes?search=latte").json()]
     assert "Cafe Latte" in names
     assert "Vanilla Latte" in names
+
+
+# ---------------------------------------------------------------------------
+# Dietary labels must not contradict their own ingredients
+# ---------------------------------------------------------------------------
+
+MEAT_WORDS = (
+    "beef", "chicken", "fish", "pork", "bacon", "ham", "sausage", "mince",
+    "steak", "nugget", "wing", "fillet", "stroganoff", "hotpot", "tilapia",
+)
+
+GLUTEN_WORDS = (
+    "bread", "pasta", "spaghetti", "baguette", "chapati", "bun", "tortilla",
+    "croissant", "cake", "batter", "flour", "noodle", "sandwich", "cracker",
+    "cookie", "pastry",
+)
+
+
+def test_nothing_with_meat_is_labelled_vegetarian():
+    """The label and the ingredient list have to agree.
+
+    The printed menu does not state any of this, so every label is an
+    inference from the ingredients. An inference that contradicts the
+    ingredients in the same record is simply a mistake.
+    """
+    from menu_data import DISHES
+
+    wrong = [
+        row["name"]
+        for row in DISHES
+        if row["is_vegetarian"]
+        and any(word in row["ingredients"].lower() for word in MEAT_WORDS)
+    ]
+    assert wrong == [], f"marked vegetarian but lists meat: {wrong}"
+
+
+def test_nothing_with_wheat_is_labelled_gluten_free():
+    """The hotpot is served with chapatis and was marked gluten free.
+
+    For someone with coeliac disease that is the label that matters most, and
+    it is the one the menu never states, so it has to follow the ingredients
+    exactly.
+    """
+    from menu_data import DISHES
+
+    wrong = [
+        row["name"]
+        for row in DISHES
+        if row["is_gluten_free"]
+        and any(word in row["ingredients"].lower() for word in GLUTEN_WORDS)
+    ]
+    assert wrong == [], f"marked gluten free but lists wheat: {wrong}"
+
+
+def test_vegan_implies_vegetarian():
+    """A dish cannot be suitable for a vegan and not for a vegetarian."""
+    from menu_data import DISHES
+
+    wrong = [row["name"] for row in DISHES if row["is_vegan"] and not row["is_vegetarian"]]
+    assert wrong == [], f"vegan but not vegetarian: {wrong}"
