@@ -53,7 +53,7 @@ const en: Dict = {
   'dishes.title': 'A taste of',
   'dishes.title.accent': 'Camellia.',
   'dishes.body':
-    'Six sections, twenty-six dishes, and one AI that reads the whole menu before making a suggestion. These are the plates guests keep coming back for.',
+    'Every section of the menu, and one AI that reads all of it before making a suggestion. These are the plates guests keep coming back for.',
   'dishes.all': 'All dishes',
   'dishes.view': 'View now',
   'dishes.empty.title': 'The kitchen is offline',
@@ -189,7 +189,7 @@ const rw: Dict = {
   'dishes.title': 'Uburyohe bwa',
   'dishes.title.accent': 'Camellia.',
   'dishes.body':
-    'Ibyiciro byenye, ibiryo makumyabiri na gatandatu, na AI imwe isoma menu yose mbere yo kugira icyo yifuza. Ibi ni ibiryo abakiriya bagarukiraho.',
+    'Ibyiciro byose bya menu, na AI imwe ibisoma byose mbere yo kugira icyo yifuza. Ibi ni ibiryo abakiriya bagarukiraho.',
   'dishes.all': 'Ibiryo byose',
   'dishes.view': 'Reba ubu',
   'dishes.empty.title': 'Iyo gikoni irafunze',
@@ -325,7 +325,7 @@ const fr: Dict = {
   'dishes.title': 'Un avant-goût de',
   'dishes.title.accent': 'Camellia.',
   'dishes.body':
-    'Six catégories, vingt-six plats, et une IA qui lit toute la carte avant de suggérer. Voici les plats que nos clients redemandent.',
+    'Toutes les catégories de la carte, et une IA qui la lit en entier avant de suggérer. Voici les plats que nos clients redemandent.',
   'dishes.all': 'Tous les plats',
   'dishes.view': 'Voir maintenant',
   'dishes.empty.title': 'La cuisine est hors ligne',

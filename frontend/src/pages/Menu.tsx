@@ -270,10 +270,20 @@ export function Menu() {
           because the plain-text filter had not matched the sentence. */}
       {status === 'ready' && !aiAnswer && (
         <>
-          <p className="mt-8 text-[11px] uppercase tracking-[0.16em] text-sage-400">
-            {filtered.length} dish{filtered.length === 1 ? '' : 'es'}
-            {category && ` in ${category.replace(/-/g, ' ')}`}
-          </p>
+          <div className="mt-8 flex items-baseline justify-between gap-4">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-sage-400">
+              {filtered.length} dish{filtered.length === 1 ? '' : 'es'}
+              {category && ` in ${category.replace(/-/g, ' ')}`}
+            </p>
+            {category && (
+              <button
+                onClick={() => setCategory('')}
+                className="shrink-0 text-[11px] uppercase tracking-[0.16em] text-amber-pale underline decoration-amber-soft/40 underline-offset-4 transition hover:text-cream hover:decoration-amber-soft"
+              >
+                All dishes
+              </button>
+            )}
+          </div>
           {filtered.length === 0 ? (
             <div className="mt-4">
               <EmptyState
@@ -307,7 +317,7 @@ export function Menu() {
         <div>
           <p className="font-display text-xl text-sage-100">Still deciding?</p>
           <p className="mt-1 text-sm text-sage-400">
-            The quiz narrows 26 dishes to your top 5 · from {formatRwf(2500)}.
+            The quiz narrows {dishes.length} dishes to your top 5 · from {formatRwf(2500)}.
           </p>
         </div>
         <Link to="/recommend" className="btn-primary">

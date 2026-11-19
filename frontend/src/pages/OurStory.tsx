@@ -95,7 +95,7 @@ export function OurStory() {
         <div className="mx-auto grid max-w-[1180px] grid-cols-2 gap-6 border-y border-white/10 py-9 sm:grid-cols-4">
           {[
             ['10', 'Years on the same street'],
-            ['26', 'Dishes on the menu'],
+            ['130', 'Dishes on the menu'],
             ['4', 'People in the kitchen'],
             ['1', 'Menu that asks first'],
           ].map(([value, label]) => (

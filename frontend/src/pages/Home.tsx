@@ -275,7 +275,7 @@ export function Home() {
 
             <dl className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
-                ['26', t('ai.stat1')],
+                [signatures.length ? String(signatures.length) : '130', t('ai.stat1')],
                 ['40%', t('ai.stat2')],
                 ['25%', t('ai.stat3')],
                 ['15%', t('ai.stat4')],
