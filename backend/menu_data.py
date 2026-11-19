@@ -84,6 +84,7 @@ CATEGORIES = [
     ("Smoothies & Shakes", "Blended with fruit, ice cream and milk.", 13),
     ("Mojitos & Detox", "Virgin mojitos and cold-pressed detox.", 14),
     ("Desserts & Pastry", "Cakes, croissants and ice cream.", 15),
+    ("Fresh Fruits", "Fruit plates from the printed menu.", 17),
     ("Soft Drinks", "Water and soda.", 16),
 ]
 
@@ -415,6 +416,21 @@ DISHES = [
       veg=True, vegan=True, ingredients="lime,mint,soda,fruit", prep=6, calories=90, pop=73, cuisine="any", gf=True),
     d("Camellia Detox Juice", "Mojitos & Detox", 7000, "The cold-pressed house detox blend.",
       veg=True, vegan=True, ingredients="cold pressed fruit and vegetables", prep=6, calories=95, pop=61, cuisine="any", gf=True),
+
+    # ----------------------------------------------------------- Fresh Fruits
+    # Printed beside the soups on page 1, and missed the first time.
+    d("Simple Fruit", "Fresh Fruits", 4000,
+      "One item of fruit, cut and served.",
+      veg=True, vegan=True, ingredients="fruit", prep=5, calories=90, pop=52, cuisine="rwandan", gf=True),
+    d("Fruit Macedoine", "Fresh Fruits", 6500,
+      "A mix of local fruit, cut small and served cold.",
+      veg=True, vegan=True, ingredients="fruit", prep=7, calories=140, pop=58, cuisine="rwandan", gf=True),
+    d("Fruit Macedoine Creamy", "Fresh Fruits", 7000,
+      "Local fruit with a spoon of cream.",
+      veg=True, ingredients="fruit,cream", prep=7, calories=210, pop=60, cuisine="rwandan", allergens="milk", gf=True),
+    d("Camellia Fruitcut", "Fresh Fruits", 7000,
+      "The house fruit plate, cut to order.",
+      veg=True, vegan=True, ingredients="fruit", prep=7, calories=150, pop=56, cuisine="rwandan", gf=True),
 
     # --------------------------------------------------- Desserts & Pastry
     d("Bar Cookies", "Desserts & Pastry", 1000, "A house bar cookie.",

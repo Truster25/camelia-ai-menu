@@ -84,6 +84,9 @@ PRINTED_PRICES = {
     "Banana Cake": 1500, "Vanilla Cake": 1500, "Lemon Cake": 1500,
     "Black Forest": 2000, "Branded Cup": 500, "Add Honey": 1000,
     "Water": 1500, "Soda": 2500, "Ice Cream": 2500,
+    # Local fresh fruits, printed beside the soups on page 1
+    "Simple Fruit": 4000, "Fruit Macedoine": 6500,
+    "Fruit Macedoine Creamy": 7000, "Camellia Fruitcut": 7000,
 }
 
 # Which printed page each dish was read from, so the transcription can be
@@ -92,7 +95,9 @@ PAGE = {}
 for _name in ("Minestrone Chicken Soup", "Minestrone Fish Soup",
               "Camellia Local Mushroom Soup", "Vegetable Soup", "Mixed Soup",
               "Fresh Garden Mix Salad", "American Garden Salad",
-              "Beef Strips Salad", "Camellia Chef Salad"):
+              "Beef Strips Salad", "Camellia Chef Salad",
+              "Simple Fruit", "Fruit Macedoine", "Fruit Macedoine Creamy",
+              "Camellia Fruitcut"):
     PAGE[_name] = 1
 for _name in ("French Fries Salad", "Spaghetti Bolognaise", "Camellia Chipati Wrap",
               "Fried Chicken Wings", "Fish Fingers", "Chicken Nuggets", "Beef Sausage"):

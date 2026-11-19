@@ -10,7 +10,7 @@ the dish and the correct price and it is a one-line change.
 
 ## How it stays honest
 
-- All 132 prices are pinned by tests. Change a price in the app without changing
+- All 136 prices are pinned by tests. Change a price in the app without changing
   the printed transcription and the suite fails, naming the dish.
 - A second test fails if the app serves anything not on the printed menu.
 - `python audit_menu.py` reproduces this report and fails loudly if they disagree.
@@ -182,9 +182,9 @@ the dish and the correct price and it is a one-line change.
 
 | | |
 |---|---:|
-| Dishes on the printed menu | 132 |
-| Dishes the app serves | 132 |
-| Prices that agree | 132 |
+| Dishes on the printed menu | 136 |
+| Dishes the app serves | 136 |
+| Prices that agree | 136 |
 | Prices that differ | 0 |
 | Printed but missing from the app | 0 |
 | In the app but not printed | 0 |
@@ -192,6 +192,6 @@ the dish and the correct price and it is a one-line change.
 ## What the photographs did not settle
 
 The **Snacks & desserts** list on page 6 is cut off in the photograph, so those
-items are not in the app. The **Local fresh fruits** heading appears on page 1
-but its prices are not legible. If either is still sold, they need adding from a
-clearer photograph.
+items are not in the app. The **Local fresh fruits** block on page 1 was legible after all and its four
+dishes are now in the app. The **Snacks & desserts** line on page 6 is genuinely
+cut off by the edge of the photograph and still needs a clearer one.

@@ -14,7 +14,7 @@ cd frontend && npm run build
 ## 1. Automated backend tests
 
 ```
-211 passed in 9.56s
+215 passed in 9.56s
 ```
 
 The test module points `DATABASE_URL` at a temporary SQLite file, so running the suite never
@@ -24,7 +24,7 @@ touches the developer's local `camelia.db`. Each module start seeds the full men
 |---|---|---|---|---|
 | 1 | Health | `test_health` | `status=ok`, database connected | PASS |
 | 2 | Compatibility | `test_legacy_menu_endpoint_keeps_its_shape` | old `/api/menu` still returns items with prices | PASS |
-| 3 | Seed | `test_menu_is_seeded_with_the_real_camellia_menu` | 16 sections, 132 dishes, names align | PASS |
+| 3 | Seed | `test_menu_is_seeded_with_the_real_camellia_menu` | 17 sections, 136 dishes, names align | PASS |
 | 4 | Menu | `test_dish_filters` | vegan / price / search filters correct | PASS |
 | 5 | Diet | `test_halal_filter_is_honest_while_unconfirmed` | no dish claims halal before Camellia confirms | PASS |
 | 6 | Menu | `test_unknown_dish_returns_404` | 404 for missing dish | PASS |
@@ -72,7 +72,7 @@ touches the developer's local `camelia.db`. Each module start seeds the full men
 | 48 | Payment | `test_admin_can_mark_payment_received` | only an admin may mark paid | PASS |
 | 49 | Metric | `test_analytics_reports_recommendation_effectiveness` | chosen ÷ quizzes reported | PASS |
 
-The count in the header (211) is the number of collected test runs; parametrised
+The count in the header (215) is the number of collected test runs; parametrised
 tests appear once each in the table above because they are one behaviour.
 
 ---
@@ -93,7 +93,7 @@ TypeScript strict mode compiles with no errors and Vite reports no warnings.
 
 | Page | Check | Result |
 |---|---|---|
-| `/menu` | 132 dishes render, no horizontal overflow at 1440px, no broken images, no console errors | PASS |
+| `/menu` | 136 dishes render, no horizontal overflow at 1440px, no broken images, no console errors | PASS |
 | `/menu` | Category chips, diet filter, price band and search all narrow the list | PASS |
 | `/` | Hero, story, signature dishes and footer photograph | PASS |
 | Quiz | Six questions, results carry reasons, choice is recorded | PASS |

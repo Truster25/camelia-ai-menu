@@ -20,7 +20,7 @@ Last updated: **2026-11-19** · Version **1.0.0**
 
 AI-based menu recommendation system — case study **Camellia Café & Restaurant, Kigali**.
 A guest answers five questions (diet, spice, budget, cuisine, occasion) and a hybrid AI
-ranker scores all 132 dishes: TF-IDF cosine similarity 40% + preference rules 25% +
+ranker scores all 136 dishes: TF-IDF cosine similarity 40% + preference rules 25% +
 popularity 20% + occasion 15%, with dietary needs applied as **hard filters before ranking**.
 The guest gets the top five with scores and plain-English reasons, can rate dishes, save
 favourites and pre-order with a table number. Admins manage the menu, orders and see
@@ -114,7 +114,7 @@ match; the curated map at the top of `seed.py` is checked first and still wins.
 
 ## Known limitations (state these honestly in the report)
 
-- Corpus is 132 dishes; ratings are sparse and partly seeded for the demo.
+- Corpus is 136 dishes; ratings are sparse and partly seeded for the demo.
 - No collaborative filtering yet — deliberate, per the build plan's minimum-data rule.
 - `recommendation_logs` currently contains demo traffic; label it as such.
 - Allergen information must be confirmed with the restaurant — the app says "none declared",

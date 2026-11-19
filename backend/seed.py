@@ -177,8 +177,51 @@ def seed(reset: bool = False) -> None:
                     )
                     missing_users += 1
 
-            if filled or missing_users or corrected:
+            # A dish added to menu_data.py must reach a database that already
+            # exists, and a new section must exist before its dishes do.
+            added_sections = 0
+            known_sections = {c.name for c in db.scalars(select(Category)).all()}
+            for name, description, order in CATEGORIES:
+                if name not in known_sections:
+                    db.add(Category(name=name, description=description, sort_order=order))
+                    added_sections += 1
+            if added_sections:
+                db.flush()
+
+            added_dishes = 0
+            known_dishes = {d.name for d in db.scalars(select(Dish)).all()}
+            sections = {c.name: c for c in db.scalars(select(Category)).all()}
+            for row in MENU:
+                if row["name"] in known_dishes:
+                    continue
+                db.add(Dish(
+                    name=row["name"],
+                    description=row["description"],
+                    category_id=sections[row["category"]].id,
+                    price_rwf=row["price"],
+                    cuisine=row["cuisine"],
+                    occasions=row["occasions"],
+                    is_vegetarian=row["is_vegetarian"],
+                    is_vegan=row["is_vegan"],
+                    is_halal=row["is_halal"],
+                    is_gluten_free=row["is_gluten_free"],
+                    spice_level=row["spice_level"],
+                    ingredients=row["ingredients"],
+                    allergens=row["allergens"],
+                    prep_minutes=row["prep_minutes"],
+                    calories=row["calories"],
+                    popularity_seed=row["popularity_seed"],
+                    art_tone="amber",
+                    image_url=dish_photo(row["name"]),
+                    is_available=True,
+                    is_signature=row["is_signature"],
+                ))
+                added_dishes += 1
+
+            if filled or missing_users or corrected or added_dishes or added_sections:
                 db.commit()
+                if added_dishes:
+                    print(f"Added {added_dishes} dish(es) and {added_sections} section(s).")
                 print(
                     f"Database already seeded, backfilled {filled} dish image(s), "
                     f"{missing_users} account(s) and corrected {corrected} dish field(s)."

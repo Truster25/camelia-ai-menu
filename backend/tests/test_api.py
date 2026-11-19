@@ -65,8 +65,8 @@ def test_menu_is_seeded_with_the_real_camellia_menu(client):
     categories = client.get("/api/categories").json()
     dishes = client.get("/api/dishes").json()
     # 16 sections, transcribed from the printed menu.
-    assert len(categories) == 16
-    assert len(dishes) == 132
+    assert len(categories) == 17
+    assert len(dishes) == 136
     assert {d["category_name"] for d in dishes} == {c["name"] for c in categories}
 
 

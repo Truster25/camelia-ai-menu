@@ -23,7 +23,7 @@ admin dashboard.
 | Backend | FastAPI 0.115.12, SQLAlchemy 2.0.57, scikit-learn 1.9.1 |
 | Authentication | JWT (HS256), bcrypt password hashing |
 | Database | SQLite locally, PostgreSQL in production |
-| Tests | 211 backend tests, pytest |
+| Tests | 215 backend tests, pytest |
 
 ---
 
@@ -78,7 +78,7 @@ Plus `/privacy`.
 `users` · `categories` · `dishes` · `orders` · `order_items` · `ratings` · `favourites` ·
 `recommendation_logs`
 
-Seeded with 132 dishes across 16 sections, each with its own photograph.
+Seeded with 136 dishes across 17 sections, each with its own photograph.
 
 ---
 
@@ -134,7 +134,7 @@ authentication and the admin tools.
 |---|---|
 | Dish names, sections, prices | **Real.** Transcribed from photographs of the printed menu |
 | Dish descriptions | The printed detail line where the menu gives one, otherwise a plain description of the dish |
-| Dish photographs | 62 of 132 dishes have their own picture; the rest still show generated art. The restaurant's own photos replace all of them before service |
+| Dish photographs | 72 of 136 dishes have their own picture; the rest still show generated art. The restaurant's own photos replace all of them before service |
 | Dietary labels | Marked only where the ingredients make it certain. See `docs/DIETARY-REVIEW.md` |
 | Halal | **Deliberately blank.** Nothing is marked halal until Camellia confirms certification |
 | Team names and photographs | Invented |
@@ -142,7 +142,7 @@ authentication and the admin tools.
 | Address, phone, opening hours | Placeholder |
 | `admin@` / `customer@` / `hello@camelia.rw` | Placeholder addresses, not real mailboxes |
 
-The menu as built holds 132 dishes in 16 sections, priced 500 to 41,500 RWF,
+The menu as built holds 136 dishes in 17 sections, priced 500 to 41,500 RWF,
 with nine of them marked as signature dishes.
 
 ---
@@ -153,10 +153,11 @@ with nine of them marked as signature dishes.
   its own picture; until a dish has one it shows generated art rather than a borrowed
   photograph of a different dish. The restaurant's own photography should replace all of
   them before service.
-- **Some printed sections are not modelled.** The menu photographs also showed fresh fruit,
-  iced frappés as a section of their own, sides and sauces, and snacks. Those were folded
-  into other sections or left out. If Camellia wants full fidelity to the printed menu,
-  these are the four to add.
+- **One printed block is still missing.** Fresh fruit is now a section of its own. The
+  snacks and desserts list on page 6 is cut off by the edge of the photograph, so those
+  items are not in the app yet and need a clearer photograph. The sides and sauces printed
+  under the Kingsize page are accompaniments rather than orderable dishes, so they are not
+  listed separately.
 - **Dietary labels need the restaurant to confirm them.** The questions are written out,
   section by section, in `docs/DIETARY-REVIEW.md`. Until they are answered the labels stay
   conservative, which means the halal filter is correctly empty rather than wrong.
@@ -179,7 +180,7 @@ with nine of them marked as signature dishes.
 |---|---|
 | `docs/SCHEMA.md` | Full database design |
 | `docs/DATABASE-DESIGN.md` | Table-by-table rationale |
-| `docs/TEST_RESULTS.md` | The 211 tests and how to run them |
+| `docs/TEST_RESULTS.md` | The 215 tests and how to run them |
 | `docs/PAYMENT-EXPLAINED.md` | Why payment is simulated, in plain words |
 | `docs/DIETARY-REVIEW.md` | The dietary questions Camellia needs to answer |
 | `docs/HANDOVER.md` | Where everything lives |
