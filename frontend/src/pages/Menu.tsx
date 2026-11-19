@@ -1,14 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Filter, Search, Sparkles, X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState, type AnchorHTMLAttributes } from 'react';
+import { Search, Sparkles, X } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Category, Dish } from '../lib/types';
 import { DishCard } from '../components/DishCard';
+import { Select } from '../components/Select';
 import { EmptyState, SectionHeading, Spinner } from '../components/ui';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
 
 type DietFilter = '' | 'vegetarian' | 'vegan' | 'halal' | 'gluten-free';
+type SortOrder = 'menu' | 'price' | 'rating' | 'popularity';
+
+function Link({ to, ...props }: AnchorHTMLAttributes<HTMLAnchorElement> & { to: string }) {
+  return <a href={to} {...props} />;
+}
 
 const dietOptions: { value: DietFilter; label: string }[] = [
   { value: '', label: 'Everything' },
@@ -18,12 +23,25 @@ const dietOptions: { value: DietFilter; label: string }[] = [
   { value: 'gluten-free', label: 'Gluten free' },
 ];
 
+/* Select works on strings, so the price caps are strings here and converted
+   back to numbers where the filter runs. */
 const maxPriceOptions = [
-  { value: 0, label: 'Any price' },
-  { value: 4000, label: 'Under 4,000' },
-  { value: 7000, label: 'Under 7,000' },
-  { value: 10000, label: 'Under 10,000' },
+  { value: '0', label: 'Any price' },
+  { value: '4000', label: 'Under 4,000' },
+  { value: '7000', label: 'Under 7,000' },
+  { value: '10000', label: 'Under 10,000' },
 ];
+
+const sortOptions: { value: SortOrder; label: string }[] = [
+  { value: 'menu', label: 'Menu order' },
+  { value: 'price', label: 'Price: low to high' },
+  { value: 'rating', label: 'Best rated' },
+  { value: 'popularity', label: 'Most popular' },
+];
+
+/** The section name as a URL-safe key, matching what the API returns. */
+const slug = (name: string) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 export function Menu() {
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -38,7 +56,7 @@ export function Menu() {
   // and would hammer the ranker for a partial word.
   const [asking, setAsking] = useState(false);
   const [aiAnswer, setAiAnswer] = useState<{ results: any[]; understood: string[] } | null>(null);
-  const [sort, setSort] = useState<'menu' | 'price' | 'rating' | 'popularity'>('menu');
+  const [sort, setSort] = useState<SortOrder>('menu');
   const { add, count } = useCart();
   const { t } = useLang();
   const [added, setAdded] = useState<string | null>(null);
@@ -115,6 +133,10 @@ export function Menu() {
     if (aiAnswer) setAiAnswer(null);
   };
 
+  // The slug is what the filter holds; this is the readable name for the
+  // "N dishes in …" line, so it reads "Kingsize Meals" and not "kingsize meals".
+  const categoryLabel = categories.find((row) => slug(row.name) === category)?.name ?? '';
+
   return (
     <div data-header-theme="dark" className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
       <SectionHeading
@@ -136,7 +158,7 @@ export function Menu() {
       {/* filter bar */}
       <div className="card mt-9 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
-          <label className="relative flex-1 min-w-[220px]">
+          <label className="relative min-w-[220px] flex-1">
             <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sage-400" />
             <input
               value={search}
@@ -154,20 +176,52 @@ export function Menu() {
             className="btn-primary !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-40"
             title="Describe what you feel like, in your own words"
           >
-            {asking ? <Spinner /> : <Sparkles size={14} />}
+            {/* A dot spinner, not <Spinner />: that component renders a py-16
+                block with the word "Loading…", which cannot sit in a pill. */}
+            {asking ? (
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-forest-950/40 border-t-forest-950" />
+            ) : (
+              <Sparkles size={14} />
+            )}
             <span className="hidden sm:inline">Ask</span>
           </button>
-          <select value={sort} onChange={(event) => setSort(event.target.value as typeof sort)} className="field w-auto" aria-label="Sort dishes">
-            <option value="menu">Menu order</option>
-            <option value="price">Price: low to high</option>
-            <option value="rating">Best rated</option>
-            <option value="popularity">Most popular</option>
-          </select>
           {activeFilters > 0 && (
             <button onClick={resetFilters} className="btn-quiet !px-4 !py-2.5 !text-[10px]">
               <X size={12} /> Clear ({activeFilters})
             </button>
           )}
+        </div>
+
+        {/* Four equal dropdowns. A grid gives each one a fixed share of the row,
+            which is what stops "Menu order" from stretching across the space. */}
+        <div className="mt-4 grid grid-cols-2 gap-2.5 border-t border-white/5 pt-4 sm:gap-3 lg:grid-cols-4">
+          <Select
+            label="Section"
+            value={category}
+            onChange={setCategory}
+            options={[
+              { value: '', label: 'All sections' },
+              ...categories.map((row) => ({ value: slug(row.name), label: row.name })),
+            ]}
+          />
+          <Select
+            label="Diet"
+            value={diet}
+            onChange={(next) => setDiet(next as DietFilter)}
+            options={dietOptions}
+          />
+          <Select
+            label="Price"
+            value={String(maxPrice)}
+            onChange={(next) => setMaxPrice(Number(next))}
+            options={maxPriceOptions}
+          />
+          <Select
+            label="Sort"
+            value={sort}
+            onChange={(next) => setSort(next as SortOrder)}
+            options={sortOptions}
+          />
         </div>
 
         {aiAnswer && (
@@ -201,58 +255,6 @@ export function Menu() {
             </button>
           </div>
         )}
-
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/5 pt-4">
-          <Filter size={13} className="mr-1 text-sage-400" />
-          <button
-            onClick={() => setCategory('')}
-            className={`rounded-full px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] transition ${
-              category === '' ? 'bg-amber-logo text-forest-950' : 'border border-white/10 text-sage-300 hover:border-white/30'
-            }`}
-          >
-            All sections
-          </button>
-          {categories.map((row) => (
-            <button
-              key={row.id}
-              onClick={() => setCategory(row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))}
-              className={`rounded-full px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] transition ${
-                category === row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                  ? 'bg-amber-logo text-forest-950'
-                  : 'border border-white/10 text-sage-300 hover:border-white/30'
-              }`}
-            >
-              {row.name}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Diet</span>
-          {dietOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setDiet(option.value)}
-              className={`rounded-full px-3 py-1 text-[10px] transition ${
-                diet === option.value ? 'bg-white/15 text-white' : 'text-sage-400 hover:text-sage-200'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-          <span className="mx-2 h-4 w-px bg-white/10" />
-          {maxPriceOptions.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setMaxPrice(option.value)}
-              className={`rounded-full px-3 py-1 text-[10px] transition ${
-                maxPrice === option.value ? 'bg-white/15 text-white' : 'text-sage-400 hover:text-sage-200'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {status === 'loading' && <Spinner label="Loading the menu…" />}
@@ -273,7 +275,7 @@ export function Menu() {
           <div className="mt-8 flex items-baseline justify-between gap-4">
             <p className="text-[11px] uppercase tracking-[0.16em] text-sage-400">
               {filtered.length} dish{filtered.length === 1 ? '' : 'es'}
-              {category && ` in ${category.replace(/-/g, ' ')}`}
+              {category && ` in ${categoryLabel}`}
             </p>
             {category && (
               <button

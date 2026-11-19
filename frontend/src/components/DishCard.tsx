@@ -20,12 +20,13 @@ type DishCardProps = {
  * generated gradient tile otherwise. The fallback matters: not every dish has a
  * photograph yet, and a broken <img> would look worse than deliberate art.
  * If a photo is referenced but fails to load, the gradient stays underneath it.
+ *
+ * `index` and `showLabels` are still accepted so existing callers keep working,
+ * but nothing is drawn over the artwork any more.
  */
 export function DishArt({
   dish,
-  index = 0,
   className = 'h-52',
-  showLabels = true,
 }: {
   dish: Dish;
   index?: number;
@@ -56,28 +57,23 @@ export function DishArt({
         />
       )}
       {photo && (
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-forest-950/20" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-forest-950/70 via-transparent to-forest-950/20"
+          aria-hidden="true"
+        />
       )}
-      {!photo && <div className="absolute inset-0 grid place-items-center" aria-hidden="true">
-        <div className="grid h-32 w-32 place-items-center rounded-full border border-white/25">
-          <div className="grid h-24 w-24 place-items-center rounded-full border border-white/15">
-            {dish.is_vegan || dish.is_vegetarian ? (
-              <Leaf size={42} strokeWidth={0.9} className="text-cream/80" />
-            ) : (
-              <Flame size={40} strokeWidth={0.9} className="text-cream/80" />
-            )}
+      {!photo && (
+        <div className="absolute inset-0 grid place-items-center" aria-hidden="true">
+          <div className="grid h-32 w-32 place-items-center rounded-full border border-white/25">
+            <div className="grid h-24 w-24 place-items-center rounded-full border border-white/15">
+              {dish.is_vegan || dish.is_vegetarian ? (
+                <Leaf size={42} strokeWidth={0.9} className="text-cream/80" />
+              ) : (
+                <Flame size={40} strokeWidth={0.9} className="text-cream/80" />
+              )}
+            </div>
           </div>
         </div>
-      </div>}
-      {showLabels && (
-        <div className="absolute left-4 top-4 text-[9px] uppercase tracking-[0.16em] text-cream/60">
-          0{index + 1} / the menu
-        </div>
-      )}
-      {showLabels && dish.is_signature && (
-        <span className="absolute right-4 top-4 rounded-full bg-forest-950/70 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-amber-pale">
-          Signature
-        </span>
       )}
     </div>
   );
@@ -86,24 +82,29 @@ export function DishArt({
 export function DishCard({ dish, onAdd, compact = false, index = 0 }: DishCardProps) {
   const labels = dietaryLabels(dish);
   return (
-    <article className="group card overflow-hidden transition hover:border-amber-soft/40">
+    <article className="group card flex h-full flex-col overflow-hidden transition hover:border-amber-soft/40">
       <Link to={`/menu/${dish.id}`} className="block">
         <DishArt dish={dish} index={index} className={compact ? 'h-36' : 'h-52'} />
       </Link>
-      <div className="p-5">
+
+      {/* flex-1 lets the body fill the card; mt-auto on the buttons pins them to
+          the bottom so every card lines up, whatever the title length. */}
+      <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between gap-3 text-[10px] uppercase tracking-[0.13em] text-amber-soft">
           <span className="truncate">{dish.category_name}</span>
           <span className="shrink-0">{formatRwf(dish.price_rwf)}</span>
         </div>
 
         <Link to={`/menu/${dish.id}`}>
-          <h3 className="mt-2 font-display text-xl leading-snug text-sage-100 transition group-hover:text-white">
+          <h3 className="mt-2 line-clamp-2 font-display text-xl leading-snug text-sage-100 transition group-hover:text-white">
             {dish.name}
           </h3>
         </Link>
 
         {!compact && (
-          <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-sage-400">{dish.description}</p>
+          <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-sage-400">
+            {dish.description}
+          </p>
         )}
 
         <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] uppercase tracking-[0.1em] text-sage-400">
@@ -131,7 +132,7 @@ export function DishCard({ dish, onAdd, compact = false, index = 0 }: DishCardPr
           </div>
         )}
 
-        <div className="mt-4 flex items-center gap-2">
+        <div className="mt-auto flex items-center gap-2 pt-4">
           <Link
             to={`/menu/${dish.id}`}
             className="flex-1 rounded-full border border-white/15 py-2 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-sage-200 transition hover:border-amber-soft hover:text-amber-pale"
