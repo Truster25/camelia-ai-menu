@@ -134,7 +134,7 @@ authentication and the admin tools.
 |---|---|
 | Dish names, sections, prices | **Real.** Transcribed from photographs of the printed menu |
 | Dish descriptions | The printed detail line where the menu gives one, otherwise a plain description of the dish |
-| Dish photographs | Being replaced by one picture per dish; the restaurant's own photos replace them before launch |
+| Dish photographs | 55 of 130 dishes have their own picture; the rest still show generated art. The restaurant's own photos replace all of them before service |
 | Dietary labels | Marked only where the ingredients make it certain. See `docs/DIETARY-REVIEW.md` |
 | Halal | **Deliberately blank.** Nothing is marked halal until Camellia confirms certification |
 | Team names and photographs | Invented |

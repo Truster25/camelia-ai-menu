@@ -288,7 +288,7 @@ DISHES = [
       veg=True, ingredients="chocolate,milk", prep=5, calories=240, pop=74, cuisine="any", allergens="milk", gf=True),
     d("Coffee with Milk", "Coffee", 4000, "Brewed coffee served with hot milk on the side.",
       veg=True, ingredients="coffee,milk", prep=4, calories=90, pop=68, cuisine="any", allergens="milk", gf=True),
-    d("Tea with Milk", "Coffee", 6000, "Black tea served with hot milk.",
+    d("Tea with Milk", "Tea", 3500, "Black tea served with hot milk.",
       veg=True, ingredients="tea,milk", prep=4, calories=60, pop=63, cuisine="any", allergens="milk", gf=True),
     d("Camellia African Coffee", "Coffee", 8000, "The house African coffee, served the traditional way.",
       veg=True, ingredients="coffee,milk,spices", prep=10, calories=140, pop=77, signature=True, cuisine="rwandan", allergens="milk"),

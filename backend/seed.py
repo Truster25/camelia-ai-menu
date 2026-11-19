@@ -128,6 +128,9 @@ def seed(reset: bool = False) -> None:
             # this, a database seeded before the dietary review kept its old
             # labels, and the gluten-free filter quietly returned nothing.
             source = {row["name"]: row for row in MENU}
+            categories_by_name = {
+                category.name: category for category in db.scalars(select(Category)).all()
+            }
             corrected = 0
             for dish in db.scalars(select(Dish)).all():
                 wanted = dish_photo(dish.name)
@@ -147,10 +150,18 @@ def seed(reset: bool = False) -> None:
                     ("is_gluten_free", "is_gluten_free"),
                     ("spice_level", "spice_level"),
                     ("price", "price_rwf"),
+                    ("description", "description"),
                 ):
                     if getattr(dish, column) != row[field]:
                         setattr(dish, column, row[field])
                         corrected += 1
+
+                # A dish filed in the wrong section has to move, or the Tea
+                # section keeps quoting a coffee price for a pot of tea.
+                wanted_category = categories_by_name[row["category"]]
+                if dish.category_id != wanted_category.id:
+                    dish.category_id = wanted_category.id
+                    corrected += 1
             # The demo accounts are part of the promised setup, so a missing one
             # is repaired here rather than left for someone to discover on stage.
             missing_users = 0

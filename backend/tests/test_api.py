@@ -674,3 +674,35 @@ def test_newsletter_stores_an_address_once(client):
 
 def test_newsletter_rejects_an_address_that_is_not_one(client):
     assert client.post("/api/newsletter", json={"email": "nope"}).status_code == 422
+
+
+def test_a_dish_sits_in_the_section_its_price_belongs_to(client):
+    """A pot of tea cannot cost twice a cup of coffee.
+
+    "Tea with Milk" was filed under Coffee at 6,000 while every tea on the
+    printed menu is 3,000 to 4,000. Anyone filtering to Tea never saw it, and
+    anyone filtering to Coffee found a pot of tea in the coffee list. This
+    checks the filing against the menu's own prices rather than against a
+    hand-written list that would drift.
+    """
+    from menu_data import DISHES
+
+    teas = [row for row in DISHES if row["category"] == "Tea"]
+    coffees = [row for row in DISHES if row["category"] == "Coffee"]
+
+    assert teas and coffees
+    # Coffee runs to the ritual house coffee, so its ceiling is higher. A tea
+    # priced above the dearest coffee is almost certainly filed wrongly.
+    assert max(row["price"] for row in teas) <= max(row["price"] for row in coffees)
+
+    # Word by word, because "steak" and "omelette" both contain the letters
+    # but neither is a pot of tea. Iced teas are the exception: they are served
+    # from the coffee bar's iced list, which is where the printed menu puts them.
+    iced = {"Iced Tea", "Iced Spiced Tea"}
+    misfiled = [
+        row["name"]
+        for row in DISHES
+        if "tea" in row["name"].lower().split() and row["category"] != "Tea"
+        and row["name"] not in iced
+    ]
+    assert misfiled == [], f"named a tea but not filed under Tea: {misfiled}"
