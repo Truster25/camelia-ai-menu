@@ -23,7 +23,10 @@ class RegisterIn(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     password: str = Field(min_length=6, max_length=128)
-    role: Literal["customer", "admin"] = "customer"
+    # Deliberately not accepted here. Public registration creates customers
+    # only: if this field were honoured, anyone could post {"role": "admin"} and
+    # own the restaurant. Staff are promoted by an administrator, below.
+    role: Literal["customer"] = "customer"
 
 
 class LoginIn(BaseModel):
@@ -146,6 +149,22 @@ class RecommendationOut(BaseModel):
     badges: list[str] = []
 
 
+class SearchIn(BaseModel):
+    """Free text from the menu search box."""
+
+    query: str = Field(min_length=2, max_length=200)
+    limit: int = Field(default=6, ge=1, le=20)
+
+
+class SearchResponse(BaseModel):
+    query: str
+    results: list[RecommendationOut]
+    # What the parser took from the sentence, shown back to the customer so the
+    # answer is never a black box.
+    understood: list[str]
+    considered: int
+
+
 class RecommendResponse(BaseModel):
     answers: QuizAnswers
     results: list[RecommendationOut]
@@ -187,6 +206,9 @@ class OrderIn(BaseModel):
     items: list[OrderItemIn] = Field(min_length=1, max_length=30)
     table_number: str = Field(default="", max_length=20)
     note: str = Field(default="", max_length=500)
+    # How the customer intends to settle. Restricted to the three methods the
+    # restaurant actually accepts.
+    payment_method: Literal["cash", "momo", "card"] = "cash"
 
 
 class OrderItemOut(BaseModel):
@@ -209,6 +231,8 @@ class OrderOut(BaseModel):
     status: str
     note: str
     total_rwf: int
+    payment_method: str = "cash"
+    payment_status: str = "unpaid"
     created_at: datetime
     items: list[OrderItemOut]
 
@@ -217,7 +241,29 @@ class OrderStatusIn(BaseModel):
     status: Literal["pending", "accepted", "preparing", "ready", "completed", "cancelled"]
 
 
+class RoleIn(BaseModel):
+    role: Literal["customer", "admin", "kitchen"]
+
+
+class PaymentStatusIn(BaseModel):
+    payment_status: Literal["unpaid", "paid", "refunded"]
+
+
 # ---------------------------------------------------------------------- analytics
+
+
+class RecommendationEffectiveness(BaseModel):
+    """Does the AI actually change what people order?
+
+    Three numbers, because `chosen` alone is not enough to judge it. A quiz can
+    produce a top five and the customer can ignore all of it; `shown` counts
+    that. The rate is only meaningful next to both.
+    """
+
+    quizzes: int
+    shown: int
+    chosen: int
+    acceptance_rate: float
 
 
 class TopDish(BaseModel):
@@ -240,3 +286,4 @@ class AnalyticsOut(BaseModel):
     top_dishes: list[TopDish]
     quiz_popularity: dict[str, int]
     last_7_days: list[dict[str, int | str]]
+    recommendation_effectiveness: RecommendationEffectiveness

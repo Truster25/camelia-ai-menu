@@ -33,6 +33,11 @@ export function Menu() {
   const [diet, setDiet] = useState<DietFilter>('');
   const [maxPrice, setMaxPrice] = useState(0);
   const [search, setSearch] = useState('');
+  // The plain-text filter stays instant and local. Asking the AI is a separate
+  // action on the same field, because a request on every keystroke would be slow
+  // and would hammer the ranker for a partial word.
+  const [asking, setAsking] = useState(false);
+  const [aiAnswer, setAiAnswer] = useState<{ results: any[]; understood: string[] } | null>(null);
   const [sort, setSort] = useState<'menu' | 'price' | 'rating' | 'popularity'>('menu');
   const { add, count } = useCart();
   const { t } = useLang();
@@ -86,6 +91,30 @@ export function Menu() {
     setSearch('');
   };
 
+  const askAi = async () => {
+    const query = search.trim();
+    if (query.length < 2) return;
+    setAsking(true);
+    try {
+      const answer = await api.post<{ results: any[]; understood: string[] }>('/search', {
+        query,
+        limit: 6,
+      });
+      setAiAnswer(answer);
+    } catch {
+      setAiAnswer(null);
+    } finally {
+      setAsking(false);
+    }
+  };
+
+  // typing again clears the previous answer: a stale card next to a new query
+  // is worse than no answer at all.
+  const onSearchChange = (value: string) => {
+    setSearch(value);
+    if (aiAnswer) setAiAnswer(null);
+  };
+
   return (
     <div data-header-theme="dark" className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
       <SectionHeading
@@ -111,12 +140,23 @@ export function Menu() {
             <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sage-400" />
             <input
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => onSearchChange(event.target.value)}
+              onKeyDown={(event) => { if (event.key === 'Enter') askAi(); }}
               placeholder="Search dishes, ingredients…"
               className="field pl-10"
               aria-label="Search the menu"
             />
           </label>
+          <button
+            type="button"
+            onClick={askAi}
+            disabled={asking || search.trim().length < 2}
+            className="btn-primary !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-40"
+            title="Describe what you feel like, in your own words"
+          >
+            {asking ? <Spinner /> : <Sparkles size={14} />}
+            <span className="hidden sm:inline">Ask</span>
+          </button>
           <select value={sort} onChange={(event) => setSort(event.target.value as typeof sort)} className="field w-auto" aria-label="Sort dishes">
             <option value="menu">Menu order</option>
             <option value="price">Price: low to high</option>
@@ -129,6 +169,38 @@ export function Menu() {
             </button>
           )}
         </div>
+
+        {aiAnswer && (
+          <div className="mt-4 rounded-2xl border border-amber-logo/25 bg-amber-logo/[0.06] p-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-pale">
+              {aiAnswer.understood.length
+                ? `Read as ${aiAnswer.understood.join(' · ')}`
+                : 'Closest matches on the menu'}
+            </p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {aiAnswer.results.map((row) => (
+                <li key={row.dish.id}>
+                  <Link
+                    to={`/menu/${row.dish.id}`}
+                    className="flex items-baseline justify-between gap-3 rounded-xl px-2 py-1.5 transition hover:bg-white/5"
+                  >
+                    <span className="text-[13px] text-sage-100">{row.dish.name}</span>
+                    <span className="shrink-0 text-[11px] text-amber-pale">
+                      {Math.round(row.score)}%
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <button
+              type="button"
+              onClick={() => setAiAnswer(null)}
+              className="mt-3 text-[10px] uppercase tracking-[0.14em] text-sage-400 hover:text-sage-200"
+            >
+              Show the whole menu
+            </button>
+          </div>
+        )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/5 pt-4">
           <Filter size={13} className="mr-1 text-sage-400" />
@@ -193,7 +265,10 @@ export function Menu() {
         </div>
       )}
 
-      {status === 'ready' && (
+      {/* While an AI answer is on screen the grid is hidden. Leaving both visible
+          put an answer panel directly above a grid that said "0 dishes",
+          because the plain-text filter had not matched the sentence. */}
+      {status === 'ready' && !aiAnswer && (
         <>
           <p className="mt-8 text-[11px] uppercase tracking-[0.16em] text-sage-400">
             {filtered.length} dish{filtered.length === 1 ? '' : 'es'}

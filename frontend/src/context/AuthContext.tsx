@@ -10,6 +10,8 @@ type AuthContextValue = {
   register: (name: string, email: string, password: string) => Promise<User>;
   logout: () => void;
   isAdmin: boolean;
+  /** Admin or kitchen. Kitchen can work orders and nothing else. */
+  isStaff: boolean;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -62,7 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, isAdmin: user?.role === 'admin' }),
+    () => ({
+      user,
+      loading,
+      login,
+      register,
+      logout,
+      isAdmin: user?.role === 'admin',
+      isStaff: user?.role === 'admin' || user?.role === 'kitchen',
+    }),
     [user, loading, login, register, logout],
   );
 

@@ -15,6 +15,7 @@ export function Cart() {
   const [table, setTable] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
+  const [payment, setPayment] = useState<'cash' | 'momo' | 'card'>('cash');
   const [busy, setBusy] = useState(false);
 
   const placeOrder = async () => {
@@ -29,6 +30,7 @@ export function Cart() {
         items: lines.map((line) => ({ dish_id: line.dish.id, quantity: line.quantity })),
         table_number: table,
         note,
+        payment_method: payment,
       });
       clear();
       navigate('/orders', { state: { justPlaced: order.id } });
@@ -137,6 +139,31 @@ export function Cart() {
               </div>
             </div>
 
+            <div className="mt-6">
+              <span className="label">How will you pay?</span>
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {([
+                  ['cash', 'Cash at table'],
+                  ['momo', 'Mobile money'],
+                  ['card', 'Card at table'],
+                ] as const).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setPayment(value)}
+                    aria-pressed={payment === value}
+                    className={`rounded-xl border px-2 py-3 text-[10.5px] font-semibold uppercase leading-tight tracking-[0.1em] transition ${
+                      payment === value
+                        ? 'border-amber-logo bg-amber-logo/15 text-amber-pale'
+                        : 'border-white/12 text-sage-300 hover:border-white/25'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {error && <div className="mt-4"><ErrorNote message={error} /></div>}
 
             <button onClick={placeOrder} disabled={busy} className="btn-primary mt-5 w-full">
@@ -149,7 +176,7 @@ export function Cart() {
               )}
             </button>
             <p className="mt-3 text-center text-[11px] text-sage-400">
-              No online payment. You pay at the table like a normal order.
+              Nothing is charged here. You settle at the table by the method above, and staff mark it paid.
             </p>
           </div>
         </div>

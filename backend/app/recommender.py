@@ -290,3 +290,122 @@ def recommend(
 
 def explain_weights() -> dict[str, float]:
     return WEIGHTS
+
+
+# ---------------------------------------------------------------------------
+# Natural-language search
+# ---------------------------------------------------------------------------
+# The same ranker, reached by a different door.
+#
+# The quiz asks five structured questions. This takes free text: "something warm
+# no meat under six thousand". Rather than build a second model, the text is
+# parsed into the very answers the quiz would have produced, and the existing
+# ranker scores the menu as usual.
+#
+# That choice matters beyond saving work. It means the search box cannot give a
+# different answer from the quiz, and every rule the quiz enforces, hard dietary
+# filters included, is enforced here too, for free.
+#
+# It is deliberately not a language model. It reads for known words and phrases.
+# A phrase it does not recognise falls through to plain text similarity over the
+# dish descriptions, which is what the recommender already does well. Pretending
+# to understand more than that would be dishonest and would fail in front of a
+# panel the first time somebody typed something unexpected.
+
+# Words that map onto a quiz answer. Order matters: the first match wins.
+#
+# Every value here must exist in QUIZ_TEXT. That is not a style preference: the
+# ranker looks the value up in a fixed vocabulary, so an invented value raises
+# KeyError and the request dies with a 500. "coffee" was mapped to a cuisine
+# called "coffee" which the model has never heard of, and typing the word
+# coffee crashed the search. Values are now drawn only from what QUIZ_TEXT and
+# is_eligible actually accept.
+_DIET_WORDS: list[tuple[tuple[str, ...], str]] = [
+    (("vegan", "plant based", "plant-based", "dairy free", "no dairy"), "vegan"),
+    (("vegetarian", "no meat", "meat free", "meat-free", "veggie", "veggies"), "vegetarian"),
+    (("halal",), "halal"),
+    (("gluten free", "gluten-free", "no gluten", "coeliac", "celiac"), "gluten-free"),
+]
+
+_SPICE_WORDS: list[tuple[tuple[str, ...], str]] = [
+    (("very hot", "extra hot", "spicy", "hot", "chilli", "chili", "pili"), "hot"),
+    (("mild", "not spicy", "no spice", "gentle", "plain"), "mild"),
+    (("medium", "some heat", "a bit spicy", "slightly spicy"), "medium"),
+]
+
+_BUDGET_WORDS: list[tuple[tuple[str, ...], str]] = [
+    (("cheap", "cheapest", "budget", "affordable", "low price", "under 6", "less than 6", "student"), "low"),
+    (("expensive", "splash out", "treat", "celebration", "premium", "high end"), "high"),
+    (("mid", "moderate", "reasonable", "middle"), "mid"),
+]
+
+# The model's occasions: quick-bite, casual, date, celebration, family.
+_OCCASION_WORDS: list[tuple[tuple[str, ...], str]] = [
+    (("date", "date night", "romantic", "anniversary", "partner"), "date"),
+    (("family", "kids", "children", "group"), "family"),
+    (("quick", "fast", "in a hurry", "lunch break", "takeaway", "to go", "snack"), "quick-bite"),
+    (("celebration", "birthday", "party", "special occasion", "anniversary dinner"), "celebration"),
+    (("business", "meeting", "client", "work lunch"), "casual"),
+]
+
+# The model's cuisines: rwandan, african, international, any.
+_CUISINE_WORDS: list[tuple[tuple[str, ...], str]] = [
+    (("rwandan", "local", "traditional", "kinyarwanda", "ugali", "isombe", "matooke"), "rwandan"),
+    (("african", "east african", "ugandan", "kenyan", "brochette", "nyama"), "african"),
+    (("italian", "pasta", "pizza", "pizza", "western", "european", "burger", "sandwich",
+      "salad", "cake", "dessert", "coffee", "espresso", "latte", "cappuccino",
+      "juice", "smoothie", "mocha", "tea", "breakfast"), "international"),
+]
+
+
+# Negated food words. "no meat" must not read as "meat", or a vegetarian gets
+# sent to the grill. Anything here is removed before the cuisine scan runs.
+_NEGATIONS = ("no meat", "meat free", "meat-free", "without meat", "no fish",
+              "no chicken", "not spicy", "no spice", "no dairy", "no gluten")
+
+
+def _scan(text: str, table: list[tuple[tuple[str, ...], str]]) -> str | None:
+    for phrases, value in table:
+        for phrase in phrases:
+            if phrase in text:
+                return value
+    return None
+
+
+def _scan_cuisine(text: str) -> str | None:
+    """Cuisine last, and with negated phrases stripped first.
+
+    Diet and heat are read before this runs, so "no meat" has already been
+    understood as vegetarian by the time the word "meat" would be mistaken for a
+    preference for grilled food.
+    """
+    cleaned = text
+    for phrase in _NEGATIONS:
+        cleaned = cleaned.replace(phrase, " ")
+    return _scan(cleaned, _CUISINE_WORDS)
+
+
+def parse_free_text(query: str) -> tuple[dict[str, str], list[str]]:
+    """Turn a sentence into quiz answers plus a note of what was understood.
+
+    The second value is not decoration: the interface shows it back to the
+    customer ("read as: vegan, mild") so the answer is never a black box. If the
+    parse is wrong, they can see that it is wrong and correct it.
+    """
+    text = f" {query.lower().strip()} "
+    understood: list[str] = []
+    answers = {"diet": "none", "spice": "medium", "budget": "mid", "cuisine": "any", "occasion": "casual"}
+
+    for key, table, label in (
+        ("diet", _DIET_WORDS, "diet"),
+        ("spice", _SPICE_WORDS, "heat"),
+        ("budget", _BUDGET_WORDS, "budget"),
+        ("occasion", _OCCASION_WORDS, "occasion"),
+        ("cuisine", _CUISINE_WORDS, "cuisine"),
+    ):
+        found = _scan_cuisine(text) if key == "cuisine" else _scan(text, table)
+        if found:
+            answers[key] = found
+            understood.append(f"{label}: {found.replace('-', ' ')}")
+
+    return answers, understood

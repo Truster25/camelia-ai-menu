@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..database import get_db
 from ..models import Dish, Order, OrderItem, User
-from ..schemas import OrderIn, OrderOut, OrderStatusIn
-from ..security import get_current_user, require_admin
+from ..schemas import OrderIn, OrderOut, OrderStatusIn, PaymentStatusIn
+from ..security import get_current_user, require_admin, require_staff
 
 router = APIRouter(tags=["orders"])
 
@@ -25,7 +25,17 @@ def _create_order(payload: OrderIn, db: Session, user: User | None) -> OrderOut:
     if not payload.items:
         raise HTTPException(status_code=422, detail="Your order needs at least one dish.")
 
-    order = Order(user_id=user.id if user else None, table_number=payload.table_number.strip(), note=payload.note.strip())
+    order = Order(
+        user_id=user.id if user else None,
+        table_number=payload.table_number.strip(),
+        note=payload.note.strip(),
+        payment_method=payload.payment_method,
+        # Card and mobile money are never charged here. The order is recorded as
+        # unpaid and a member of staff marks it paid when the money is actually
+        # taken, which is the truthful state of affairs and avoids pretending a
+        # payment integration exists.
+        payment_status="unpaid",
+    )
     seen: dict[int, int] = {}
     for item in payload.items:
         seen[item.dish_id] = seen.get(item.dish_id, 0) + item.quantity
@@ -96,7 +106,7 @@ def cancel_order(order_id: int, db: Session = Depends(get_db), user: User = Depe
 def all_orders(
     status: str | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: User = Depends(require_admin),
+    _: User = Depends(require_staff),
 ) -> list[OrderOut]:
     stmt = select(Order).options(selectinload(Order.items), selectinload(Order.user))
     if status:
@@ -110,12 +120,33 @@ def update_order_status(
     order_id: int,
     payload: OrderStatusIn,
     db: Session = Depends(get_db),
-    _: User = Depends(require_admin),
+    _: User = Depends(require_staff),
 ) -> OrderOut:
     order = db.get(Order, order_id)
     if order is None:
         raise HTTPException(status_code=404, detail="Order not found.")
     order.status = payload.status
+    db.commit()
+    db.refresh(order)
+    return _serialise_order(order)
+
+
+@router.patch("/admin/orders/{order_id}/payment", response_model=OrderOut)
+def update_payment_status(
+    order_id: int,
+    payload: PaymentStatusIn,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+) -> OrderOut:
+    """Mark an order paid or refunded.
+
+    Administrator only, not kitchen: the person plating food should not be the
+    person confirming the money arrived.
+    """
+    order = db.get(Order, order_id)
+    if order is None:
+        raise HTTPException(status_code=404, detail="Order not found.")
+    order.payment_status = payload.payment_status
     db.commit()
     db.refresh(order)
     return _serialise_order(order)

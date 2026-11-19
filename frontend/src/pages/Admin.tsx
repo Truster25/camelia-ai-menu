@@ -17,13 +17,15 @@ import { api, ApiError, formatDate, formatRwf } from '../lib/api';
 import type { Analytics, Category, Dish, Order } from '../lib/types';
 import { EmptyState, ErrorNote, SectionHeading, Spinner, StatusPill } from '../components/ui';
 import { DishEditModal } from '../components/admin/DishEditModal';
+import { useAuth } from '../context/AuthContext';
 
 type Tab = 'overview' | 'dishes' | 'orders' | 'customers';
 
 const statusOrder = ['pending', 'accepted', 'preparing', 'ready', 'completed', 'cancelled'];
 
 export function Admin() {
-  const [tab, setTab] = useState<Tab>('overview');
+  const { isAdmin } = useAuth();
+  const [tab, setTab] = useState<Tab>(isAdmin ? 'overview' : 'orders');
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -37,21 +39,45 @@ export function Admin() {
   useEffect(() => {
     setLoading(true);
     setError('');
+
+    // Orders load for both roles, so they are fetched on their own. Bundling
+    // them into the same Promise.all as the administrator endpoints meant one
+    // 403 from analytics aborted the whole batch and the kitchen screen showed
+    // "Administrator access required" instead of the orders it is allowed to see.
+    api
+      .get<Order[]>('/admin/orders')
+      .then(setOrders)
+      .catch((caught) =>
+        setError(caught instanceof ApiError ? caught.message : 'Could not load orders.'),
+      )
+      .finally(() => setLoading(false));
+
+    if (!isAdmin) return;
+
     Promise.all([
       api.get<Analytics>('/admin/analytics?days=7'),
       api.get<Dish[]>('/dishes?available_only=false&sort=menu'),
       api.get<Category[]>('/admin/categories'),
-      api.get<Order[]>('/admin/orders'),
     ])
-      .then(([analyticsData, dishData, categoryData, orderData]) => {
+      .then(([analyticsData, dishData, categoryData]) => {
         setAnalytics(analyticsData);
         setDishes(dishData);
         setCategories(categoryData);
-        setOrders(orderData);
       })
-      .catch((caught) => setError(caught instanceof ApiError ? caught.message : 'Could not load admin data.'))
-      .finally(() => setLoading(false));
-  }, [refreshAt]);
+      .catch((caught) => setError(caught instanceof ApiError ? caught.message : 'Could not load admin data.'));
+  }, [refreshAt, isAdmin]);
+
+  const togglePayment = async (order: Order) => {
+    const next = order.payment_status === 'paid' ? 'unpaid' : 'paid';
+    try {
+      const updated = await api.patch<Order>(`/admin/orders/${order.id}/payment`, {
+        payment_status: next,
+      });
+      setOrders((current) => current.map((row) => (row.id === updated.id ? updated : row)));
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : 'Could not update payment.');
+    }
+  };
 
   const updateStatus = async (orderId: number, status: string) => {
     try {
@@ -83,9 +109,13 @@ export function Admin() {
   return (
     <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
       <SectionHeading
-        kicker="Manager dashboard"
-        title={<>The kitchen at a glance.</>}
-        description="Live counts, order flow and menu management. Every number below is current the moment it loads."
+        kicker={isAdmin ? 'Manager dashboard' : 'Kitchen screen'}
+        title={<>{isAdmin ? 'The kitchen at a glance.' : 'Incoming orders.'}</>}
+        description={
+          isAdmin
+            ? 'Live counts, order flow and menu management. Every number below is current the moment it loads.'
+            : 'Move each order along as it is prepared. Menu, revenue and staff are administrator screens.'
+        }
         action={
           <button onClick={() => setRefreshAt(Date.now())} className="btn-quiet">
             <RefreshCw size={14} /> Refresh
@@ -100,8 +130,12 @@ export function Admin() {
           ['overview', 'Overview', <BarChart3 size={14} key="i" />],
           ['dishes', 'Menu', <Utensils size={14} key="i" />],
           ['orders', 'Orders', <ClipboardList size={14} key="i" />],
-          ['customers', 'Customers', <Users size={14} key="i" />],
-        ] as [Tab, string, JSX.Element][]).map(([key, label, icon]) => (
+          ['customers', 'Staff & people', <Users size={14} key="i" />],
+        ] as [Tab, string, JSX.Element][])
+          // Kitchen sees orders and nothing else. Showing tabs that answer 403
+          // is worse than hiding them: the cook would think the page was broken.
+          .filter(([key]) => (isAdmin ? true : key === 'orders'))
+          .map(([key, label, icon]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
@@ -133,6 +167,49 @@ export function Admin() {
               <p className="stat-value">{analytics.recommendations}</p>
               <p className="stat-label">AI quizzes run</p>
             </div>
+          </div>
+
+          {/* Does the AI change what people order? This is the one panel that
+              answers the question an examiner actually asks. */}
+          <div className="card p-6">
+            <div className="flex flex-wrap items-baseline justify-between gap-3">
+              <div>
+                <h2 className="font-display text-xl">Does the AI change what people order?</h2>
+                <p className="mt-1 text-[12px] leading-relaxed text-sage-400">
+                  Of every customer who ran the quiz and went on to order, this is how
+                  many ordered one of the dishes the AI put in front of them.
+                </p>
+              </div>
+              <p className="font-display text-4xl text-amber-pale">
+                {analytics.recommendation_effectiveness.acceptance_rate.toFixed(1)}
+                <span className="text-xl text-sage-400">%</span>
+              </p>
+            </div>
+            <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-white/8 pt-4">
+              <div>
+                <dt className="text-[9px] uppercase tracking-[0.14em] text-sage-400">Quizzes run</dt>
+                <dd className="mt-1 font-display text-2xl text-sage-100">
+                  {analytics.recommendation_effectiveness.quizzes}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[9px] uppercase tracking-[0.14em] text-sage-400">Dishes shown</dt>
+                <dd className="mt-1 font-display text-2xl text-sage-100">
+                  {analytics.recommendation_effectiveness.shown}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[9px] uppercase tracking-[0.14em] text-sage-400">Acted on</dt>
+                <dd className="mt-1 font-display text-2xl text-sage-100">
+                  {analytics.recommendation_effectiveness.chosen}
+                </dd>
+              </div>
+            </dl>
+            {analytics.recommendation_effectiveness.quizzes === 0 && (
+              <p className="mt-3 text-[11px] text-sage-400">
+                No quizzes yet. Run one at <span className="text-amber-pale">Find my dish</span> and this fills in.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
@@ -304,6 +381,20 @@ export function Admin() {
                     <div className="text-right">
                       <p className="font-display text-lg text-amber-pale">{formatRwf(order.total_rwf)}</p>
                       <div className="mt-1.5 flex justify-end"><StatusPill status={order.status} /></div>
+                      {/* Payment is a separate fact from order status: the food
+                          can be ready while the money has not arrived, and the
+                          two were being conflated by having one badge. */}
+                      <button
+                        onClick={() => togglePayment(order)}
+                        className={`mt-2 rounded-full px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.1em] transition ${
+                          order.payment_status === 'paid'
+                            ? 'bg-emerald-400/20 text-emerald-200'
+                            : 'border border-white/10 text-sage-400 hover:border-amber-soft hover:text-amber-pale'
+                        }`}
+                        title="Mark whether the money has been received"
+                      >
+                        {order.payment_status === 'paid' ? 'Paid' : `Unpaid · ${order.payment_method}`}
+                      </button>
                     </div>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-1.5 border-t border-white/5 pt-3">
@@ -351,39 +442,90 @@ export function Admin() {
 }
 
 function CustomersTab() {
-  const [rows, setRows] = useState<{ id: number; name: string; email: string; created_at: string }[] | null>(null);
+  type Person = { id: number; name: string; email: string; role: string; created_at: string };
+  const [rows, setRows] = useState<Person[] | null>(null);
   const [error, setError] = useState('');
+  const [busyId, setBusyId] = useState<number | null>(null);
 
   useEffect(() => {
     api
-      .get<{ id: number; name: string; email: string; created_at: string }[]>('/admin/customers')
+      .get<Person[]>('/admin/customers')
       .then(setRows)
-      .catch((caught) => setError(caught instanceof ApiError ? caught.message : 'Could not load customers.'));
+      .catch((caught) => setError(caught instanceof ApiError ? caught.message : 'Could not load people.'));
   }, []);
 
-  if (error) return <div className="mt-8"><ErrorNote message={error} /></div>;
-  if (!rows) return <Spinner label="Loading customers…" />;
+  const setRole = async (person: Person, role: string) => {
+    setBusyId(person.id);
+    setError('');
+    try {
+      const updated = await api.patch<Person>(`/admin/users/${person.id}/role`, { role });
+      setRows((current) => (current ?? []).map((row) => (row.id === updated.id ? updated : row)));
+    } catch (caught) {
+      setError(caught instanceof ApiError ? caught.message : 'Could not change the role.');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (error && !rows) return <div className="mt-8"><ErrorNote message={error} /></div>;
+  if (!rows) return <Spinner label="Loading people…" />;
 
   return (
-    <div className="card mt-8 overflow-hidden">
-      <table className="w-full min-w-[420px] text-left">
-        <thead className="border-b border-white/10 text-[9px] uppercase tracking-[0.16em] text-sage-400">
-          <tr>
-            <th className="table-cell font-normal">Name</th>
-            <th className="table-cell font-normal">Email</th>
-            <th className="table-cell font-normal">Joined</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
-          {rows.map((row) => (
-            <tr key={row.id}>
-              <td className="table-cell text-sage-100">{row.name}</td>
-              <td className="table-cell text-sage-400">{row.email}</td>
-              <td className="table-cell text-sage-400">{new Date(row.created_at).toLocaleDateString('en-GB')}</td>
+    <div className="mt-8 space-y-4">
+      <div className="card p-5">
+        <h2 className="font-display text-xl">Who can do what</h2>
+        <p className="mt-1.5 max-w-2xl text-[12px] leading-relaxed text-sage-400">
+          Kitchen staff see incoming orders and can move them along. They cannot change the menu,
+          see revenue, or confirm payment. Administrators can do everything. Nobody can promote
+          themselves: registration always creates a customer.
+        </p>
+      </div>
+
+      {error && <ErrorNote message={error} />}
+
+      <div className="card overflow-hidden">
+        <table className="w-full min-w-[560px] text-left">
+          <thead className="border-b border-white/10 text-[9px] uppercase tracking-[0.16em] text-sage-400">
+            <tr>
+              <th className="table-cell font-normal">Name</th>
+              <th className="table-cell font-normal">Email</th>
+              <th className="table-cell font-normal">Joined</th>
+              <th className="table-cell font-normal">Role</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td className="table-cell text-sage-100">{row.name}</td>
+                <td className="table-cell text-sage-400">{row.email}</td>
+                <td className="table-cell text-sage-400">
+                  {new Date(row.created_at).toLocaleDateString('en-GB')}
+                </td>
+                <td className="table-cell">
+                  <div className="flex flex-wrap gap-1">
+                    {(['customer', 'kitchen', 'admin'] as const).map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        disabled={row.role === role || busyId === row.id}
+                        onClick={() => setRole(row, role)}
+                        className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] transition disabled:cursor-default ${
+                          row.role === role
+                            ? 'bg-amber-logo/20 text-amber-pale'
+                            : 'border border-white/10 text-sage-400 hover:border-amber-soft hover:text-amber-pale'
+                        }`}
+                      >
+                        {role}
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
+

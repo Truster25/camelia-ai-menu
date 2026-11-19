@@ -12,6 +12,8 @@ from sqlalchemy.orm import Session, selectinload
 from ..database import get_db
 from ..models import Category, Dish, Order, OrderItem, Rating, RecommendationLog, User
 from ..schemas import (
+    RoleIn,
+    RecommendationEffectiveness,
     AnalyticsOut,
     CategoryOut,
     DishCreate,
@@ -80,9 +82,41 @@ def admin_categories(db: Session = Depends(get_db), _: User = Depends(require_ad
     return [CategoryOut.model_validate(row) for row in rows]
 
 
+@router.patch("/users/{user_id}/role", response_model=UserOut)
+def set_user_role(
+    user_id: int,
+    payload: RoleIn,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+) -> UserOut:
+    """Promote or demote a member of staff.
+
+    Administrator only, and an administrator cannot demote themselves, which is
+    how a restaurant ends up with nobody able to open the dashboard.
+    """
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found.")
+    if user.id == admin.id and payload.role != "admin":
+        raise HTTPException(
+            status_code=409,
+            detail="You cannot remove your own administrator access.",
+        )
+    user.role = payload.role
+    db.commit()
+    db.refresh(user)
+    return UserOut.model_validate(user)
+
+
 @router.get("/customers", response_model=list[UserOut])
 def customers(db: Session = Depends(get_db), _: User = Depends(require_admin)) -> list[UserOut]:
-    rows = db.scalars(select(User).where(User.role == "customer").order_by(User.created_at.desc())).all()
+    """Everyone with an account, staff included.
+
+    This used to return customers only. Once people can be promoted to kitchen,
+    filtering them out here means staff disappear from the one screen that can
+    demote them again, and the role becomes a one-way door.
+    """
+    rows = db.scalars(select(User).order_by(User.created_at.desc())).all()
     return [UserOut.model_validate(row) for row in rows]
 
 
@@ -122,8 +156,24 @@ def analytics(
     top_dishes.sort(key=lambda d: (-d.orders, -d.rating_average))
     top_dishes = top_dishes[:6]
 
+    # Did the AI change what anyone ordered? This is the only honest evidence
+    # that the recommender is worth having, so it is computed from the logs
+    # rather than asserted in the write-up.
+    logs = db.scalars(select(RecommendationLog)).all()
+    quizzes = len(logs)
+    shown = 0
+    chosen = 0
+    for log in logs:
+        try:
+            ids = json.loads(log.result_ids or "[]")
+        except json.JSONDecodeError:
+            ids = []
+        shown += len(ids)
+        if log.chosen_dish_id is not None:
+            chosen += 1
+
     quiz_diets: Counter[str] = Counter()
-    for log in db.scalars(select(RecommendationLog)).all():
+    for log in logs:
         try:
             answers = json.loads(log.answers or "{}")
         except json.JSONDecodeError:
@@ -157,6 +207,14 @@ def analytics(
         top_dishes=top_dishes,
         quiz_popularity=dict(quiz_diets),
         last_7_days=daily,
+        recommendation_effectiveness=RecommendationEffectiveness(
+            quizzes=quizzes,
+            shown=shown,
+            chosen=chosen,
+            # Percentage of quizzes where the customer took one of the
+            # suggestions. Zero quizzes must not divide by zero.
+            acceptance_rate=round(chosen / quizzes * 100, 1) if quizzes else 0.0,
+        ),
     )
 
 

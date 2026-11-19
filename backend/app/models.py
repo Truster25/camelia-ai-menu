@@ -43,6 +43,21 @@ class User(Base):
     def is_admin(self) -> bool:
         return self.role == "admin"
 
+    @property
+    def is_kitchen(self) -> bool:
+        """Kitchen staff. Deliberately narrower than admin.
+
+        Kitchen can move an order along and read the dishes, but cannot edit the
+        menu, cannot see customer records, and cannot see revenue. A restaurant
+        that hands every cook an administrator login is a restaurant where one
+        mistyped click changes a price for everybody.
+        """
+        return self.role == "kitchen"
+
+    @property
+    def can_manage_orders(self) -> bool:
+        return self.role in {"admin", "kitchen"}
+
 
 class Category(Base):
     __tablename__ = "categories"
@@ -143,6 +158,12 @@ class Order(Base):
     status: Mapped[str] = mapped_column(String(20), default="pending", index=True)
     note: Mapped[str] = mapped_column(String(500), default="")
     total_rwf: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Payment is recorded, not processed. `method` is how the customer intends
+    # to settle and `payment_status` tracks whether the restaurant has taken the
+    # money. No card numbers, no mobile-money tokens, nothing to leak.
+    payment_method: Mapped[str] = mapped_column(String(20), default="cash")
+    payment_status: Mapped[str] = mapped_column(String(20), default="unpaid", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
 

@@ -38,7 +38,7 @@ export type User = {
   id: number;
   name: string;
   email: string;
-  role: 'customer' | 'admin';
+  role: 'customer' | 'admin' | 'kitchen';
   created_at: string;
 };
 
@@ -98,6 +98,8 @@ export type Order = {
   status: 'pending' | 'accepted' | 'preparing' | 'ready' | 'completed' | 'cancelled';
   note: string;
   total_rwf: number;
+  payment_method: string;
+  payment_status: string;
   created_at: string;
   items: OrderItem[];
 };
@@ -114,6 +116,12 @@ export type Analytics = {
   top_dishes: { dish_id: number; name: string; orders: number; rating_average: number; rating_count: number }[];
   quiz_popularity: Record<string, number>;
   last_7_days: { date: string; label: string; orders: number; revenue: number }[];
+  recommendation_effectiveness: {
+    quizzes: number;
+    shown: number;
+    chosen: number;
+    acceptance_rate: number;
+  };
 };
 
 export type CartLine = { dish: Dish; quantity: number };

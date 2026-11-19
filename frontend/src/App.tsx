@@ -16,9 +16,11 @@ import { useAuth } from './context/AuthContext';
 import { Spinner } from './components/ui';
 
 function AdminRoute() {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isStaff } = useAuth();
   if (loading) return <Spinner label="Checking permissions…" />;
-  if (!isAdmin) return <Navigate to={user ? '/' : '/login'} replace state={{ from: '/admin' }} />;
+  // Kitchen staff need this screen: it is where incoming orders are moved along.
+  // They get a reduced view inside Admin, not the front door closed on them.
+  if (!isStaff) return <Navigate to={user ? '/' : '/login'} replace state={{ from: '/admin' }} />;
   return <Admin />;
 }
 

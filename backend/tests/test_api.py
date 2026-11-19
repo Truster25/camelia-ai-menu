@@ -100,10 +100,16 @@ def test_register_and_login(client):
 
 
 def test_self_registration_cannot_create_an_admin(client):
+    """Registration rejects a role rather than quietly accepting and ignoring it.
+
+    The old behaviour was 201 with the role downgraded to customer. That is
+    arguably worse than a refusal: the caller is told the request succeeded, so a
+    bug that depended on the role fails silently somewhere else later. 422 says
+    plainly that this endpoint does not take a role at all.
+    """
     payload = {"name": "Sneaky", "email": "sneaky@example.rw", "password": "secret123", "role": "admin"}
     response = client.post("/api/auth/register", json=payload)
-    assert response.status_code == 201
-    assert response.json()["user"]["role"] == "customer"
+    assert response.status_code == 422
 
 
 def test_bad_password_is_rejected(client):
@@ -355,3 +361,184 @@ def test_choice_can_be_recorded_against_a_log(client):
     response = client.post(f"/api/recommend/{body['log_id']}/choose/{chosen}")
     assert response.status_code == 200
     assert response.json()["chosen_dish_id"] == chosen
+
+
+# ---------------------------------------------------------------------------
+# Natural-language search
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "query,expected_first",
+    [
+        ("coffee", "Pour Over"),
+        ("juice", "Juice"),
+        ("tilapia", "Tilapia"),
+        ("chocolate", "Fondant"),
+    ],
+)
+def test_search_returns_what_was_asked_for(client, query, expected_first):
+    """A named thing must come back first.
+
+    This is the bug that mattered: the search once answered "coffee" with beef,
+    because the profile score outranked the literal word and the shortlist had
+    already been truncated before the words were looked at.
+    """
+    response = client.post("/api/search", json={"query": query, "limit": 3})
+    assert response.status_code == 200
+    names = [row["dish"]["name"] for row in response.json()["results"]]
+    assert names, f"no results for {query!r}"
+    assert expected_first.lower() in names[0].lower(), f"{query!r} returned {names}"
+
+
+def test_search_honours_dietary_language(client):
+    """"no meat" must not be read as a request for the grill."""
+    response = client.post("/api/search", json={"query": "no meat", "limit": 6})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["understood"], "the parser should report what it understood"
+    assert all(row["dish"]["is_vegetarian"] for row in body["results"])
+
+
+def test_search_reports_what_it_understood(client):
+    """The interface shows the parse back to the customer, so it has to exist."""
+    body = client.post("/api/search", json={"query": "vegan date night"}).json()
+    joined = " ".join(body["understood"])
+    assert "vegan" in joined
+    assert "date" in joined
+
+
+def test_search_never_crashes_on_unrecognised_text(client):
+    """Every value the parser can emit must exist in the ranker's vocabulary.
+
+    An invented value used to raise KeyError and return 500.
+    """
+    for query in ["coffee", "zzz qqq", "expensive romantic", "quick"]:
+        response = client.post("/api/search", json={"query": query})
+        assert response.status_code == 200, f"{query!r} -> {response.status_code}"
+
+
+# ---------------------------------------------------------------------------
+# Roles and payment
+# ---------------------------------------------------------------------------
+
+
+def _make_kitchen(client, admin_headers) -> dict:
+    """Register a customer, then have an administrator promote them to kitchen.
+
+    The promotion step is the point. Public registration can only create
+    customers, so staff accounts cannot be self-issued.
+    """
+    email = "kitchen.test@camelia.rw"
+    client.post("/api/auth/register", json={"name": "Kitchen Test", "email": email,
+                                            "password": "Kitchen123"})
+    # Already exists on a second call, so look the account up either way rather
+    # than assuming this is the first time. The previous version threw
+    # StopIteration the moment the helper was used twice.
+    people = client.get("/api/admin/customers", headers=admin_headers).json()
+    user_id = next(u["id"] for u in people if u["email"] == email)
+    promoted = client.patch(f"/api/admin/users/{user_id}/role", headers=admin_headers,
+                            json={"role": "kitchen"})
+    assert promoted.status_code == 200
+    token = client.post("/api/auth/login", json={"email": email, "password": "Kitchen123"}).json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_registration_cannot_self_assign_a_role(client):
+    """The security property, stated positively.
+
+    A registration without a role field creates a customer, and a customer
+    cannot reach the admin screens.
+    """
+    email = "sneaky@camelia.rw"
+    created = client.post("/api/auth/register", json={"name": "Sneaky", "email": email,
+                                                      "password": "Sneaky123"})
+    assert created.status_code == 201
+    assert created.json()["user"]["role"] == "customer"
+    token = client.post("/api/auth/login", json={"email": email, "password": "Sneaky123"}).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    assert client.get("/api/admin/analytics", headers=headers).status_code == 403
+
+
+def test_admin_cannot_demote_themselves(client, admin_headers):
+    """Otherwise a single mistaken click locks everyone out of the dashboard."""
+    me = client.get("/api/auth/me", headers=admin_headers).json()
+    response = client.patch(f"/api/admin/users/{me['id']}/role", headers=admin_headers,
+                            json={"role": "customer"})
+    assert response.status_code == 409
+
+
+def test_customer_cannot_promote_anyone(client):
+    token = client.post("/api/auth/login", json=CUSTOMER).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    me = client.get("/api/auth/me", headers=headers).json()
+    response = client.patch(f"/api/admin/users/{me['id']}/role", headers=headers,
+                            json={"role": "admin"})
+    assert response.status_code == 403
+
+
+def test_kitchen_can_see_orders(client, admin_headers):
+    kitchen = _make_kitchen(client, admin_headers)
+    assert client.get("/api/admin/orders", headers=kitchen).status_code == 200
+
+
+def test_kitchen_cannot_manage_the_menu(client, admin_headers):
+    """The important half of the role. A cook cannot change a price."""
+    kitchen = _make_kitchen(client, admin_headers)
+    response = client.post(
+        "/api/admin/dishes",
+        headers=kitchen,
+        json={"name": "Should Not Exist", "category_id": 1, "price_rwf": 1000},
+    )
+    assert response.status_code == 403
+
+
+def test_kitchen_cannot_see_analytics(client, admin_headers):
+    """Revenue is not the kitchen's business."""
+    kitchen = _make_kitchen(client, admin_headers)
+    assert client.get("/api/admin/analytics", headers=kitchen).status_code == 403
+
+
+def test_customer_cannot_see_orders(client):
+    token = client.post("/api/auth/login", json=CUSTOMER).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    assert client.get("/api/admin/orders", headers=headers).status_code == 403
+
+
+def test_order_records_payment_method_and_starts_unpaid(client):
+    token = client.post("/api/auth/login", json=CUSTOMER).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    dishes = client.get("/api/dishes").json()
+    body = client.post(
+        "/api/orders",
+        headers=headers,
+        json={"items": [{"dish_id": dishes[0]["id"], "quantity": 1}], "payment_method": "momo"},
+    ).json()
+    assert body["payment_method"] == "momo"
+    # Nothing is ever charged. The order is recorded as unpaid until staff say otherwise.
+    assert body["payment_status"] == "unpaid"
+
+
+def test_admin_can_mark_payment_received(client, admin_headers):
+    token = client.post("/api/auth/login", json=CUSTOMER).json()["access_token"]
+    dishes = client.get("/api/dishes").json()
+    order = client.post(
+        "/api/orders",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"items": [{"dish_id": dishes[0]["id"], "quantity": 1}], "payment_method": "cash"},
+    ).json()
+    response = client.patch(
+        f"/api/admin/orders/{order['id']}/payment",
+        headers=admin_headers,
+        json={"payment_status": "paid"},
+    )
+    assert response.status_code == 200
+    assert response.json()["payment_status"] == "paid"
+
+
+def test_analytics_reports_recommendation_effectiveness(client, admin_headers):
+    """The number that answers "how do you know the AI works?"."""
+    body = client.get("/api/admin/analytics", headers=admin_headers).json()
+    effectiveness = body["recommendation_effectiveness"]
+    assert set(effectiveness) == {"quizzes", "shown", "chosen", "acceptance_rate"}
+    assert 0 <= effectiveness["acceptance_rate"] <= 100
