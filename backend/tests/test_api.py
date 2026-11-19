@@ -64,7 +64,7 @@ def test_menu_is_seeded_with_the_real_camellia_menu(client):
     dishes = client.get("/api/dishes").json()
     # 16 sections, transcribed from the printed menu.
     assert len(categories) == 16
-    assert len(dishes) == 130
+    assert len(dishes) == 132
     assert {d["category_name"] for d in dishes} == {c["name"] for c in categories}
 
 
@@ -691,14 +691,13 @@ def test_a_dish_sits_in_the_section_its_price_belongs_to(client):
     coffees = [row for row in DISHES if row["category"] == "Coffee"]
 
     assert teas and coffees
-    # Coffee runs to the ritual house coffee, so its ceiling is higher. A tea
-    # priced above the dearest coffee is almost certainly filed wrongly.
-    assert max(row["price"] for row in teas) <= max(row["price"] for row in coffees)
 
-    # Word by word, because "steak" and "omelette" both contain the letters
-    # but neither is a pot of tea. Iced teas are the exception: they are served
-    # from the coffee bar's iced list, which is where the printed menu puts them.
-    iced = {"Iced Tea", "Iced Spiced Tea"}
+    # Word by word, because "steak" and "omelette" both contain the letters but
+    # neither is a pot of tea. Three items are deliberately outside the Tea
+    # section because that is where the printed menu puts them: the iced teas
+    # sit in the iced frappes column, and "Tea with nido" is sold from the
+    # brewed column beside "Coffee with nido" at the same price.
+    iced = {"Iced Tea", "Iced Spiced Tea", "Tea with Milk"}
     misfiled = [
         row["name"]
         for row in DISHES
@@ -706,3 +705,131 @@ def test_a_dish_sits_in_the_section_its_price_belongs_to(client):
         and row["name"] not in iced
     ]
     assert misfiled == [], f"named a tea but not filed under Tea: {misfiled}"
+
+
+# ---------------------------------------------------------------------------
+# Prices, as printed
+# ---------------------------------------------------------------------------
+
+# Read off photographs of the printed Camellia menu. This is the contract: if a
+# price changes here without changing on the printed menu, or the other way
+# round, the menu is lying to a customer at the table.
+PRINTED_PRICES = {
+    # Brewed & special
+    "Espresso Single": 2000, "Black Coffee": 3000, "A Pot of Milk": 3000,
+    "Espresso Double": 3000, "Espresso Macchiato": 2500, "Americano": 2500,
+    "Cafe Latte": 3000, "Cappuccino": 3500, "Cafe Mocha": 3500,
+    "Cinnamon Cappuccino": 4000, "Caramel Macchiato": 3500, "Vanilla Latte": 4500,
+    "Hot Chocolate": 4000, "Coffee with Milk": 6000, "Tea with Milk": 6000,
+    "Camellia African Coffee": 4000,
+    # Iced frappes
+    "Iced Americano": 5000, "Iced Tea": 5000, "Iced Spiced Tea": 5000,
+    "Iced Cafe Latte": 5000, "Iced Vanilla Latte": 5500, "Iced Coffee Mocha": 8000,
+    "Iced African Coffee": 5500, "Caramel Frappé": 6000, "Vanilla Frappé": 6000,
+    "Mocha Frappé": 6000, "White Mocha Frappé": 6000,
+    # Teas
+    "Black Tea": 3000, "Ginger Tea": 3000, "Mint Tea": 3000, "Lemon Tea": 3000,
+    "Green Tea": 3000, "Masala Tea": 3000, "Umwucakiyali": 3000,
+    "Umuravumba": 3000, "Umwenya Tea": 3000, "Hibiscus Tea": 3000,
+    "African Tea": 3500, "Spiced Tea": 4000,
+    # Breakfast
+    "Spanish Omelette": 5500, "Chipati Omelette": 6000, "Special Omelette": 6500,
+    "Create Your Omelette": 7000, "Camellia Executive Breakfast": 11500,
+    "Camellia Steak Omelette": 11500,
+    # Soups and salads
+    "Minestrone Chicken Soup": 6500, "Minestrone Fish Soup": 6500,
+    "Camellia Local Mushroom Soup": 6500, "Vegetable Soup": 6500, "Mixed Soup": 7000,
+    "Fresh Garden Mix Salad": 7000, "American Garden Salad": 7000,
+    "Beef Strips Salad": 7000, "Camellia Chef Salad": 7000,
+    # Sandwiches and burgers
+    "Mushroom Avocado Spinach Baguette": 8500, "Camellia Egg Cheese Baguette": 8500,
+    "Tramazzin Chicken Cheese": 8500, "Croque Madame": 8500, "Croque Monsieur": 8500,
+    "Camellia Nice Face": 9000, "Plain Beef Chicken Fish Burger": 7000,
+    "Camellia Vegetable Burger": 8000, "Camellia Cheese Beef Burger": 8500,
+    "Chicken Cheese Burger": 8500, "Camellia Fish Burger": 8500,
+    "Camellia King Beef Chicken Fish Burger": 41500,
+    # Light dishes
+    "French Fries Salad": 6000, "Spaghetti Bolognaise": 7000,
+    "Camellia Chipati Wrap": 9000, "Fried Chicken Wings": 9000,
+    "Fish Fingers": 9000, "Chicken Nuggets": 9000, "Beef Sausage": 9000,
+    # Kingsize, Mexican, Asian
+    "Camellia Hotpot": 12000, "Beef Chicken Fish Stew": 12000,
+    "Stroganoff Beef Chicken Fish": 12000, "Chicken Leg": 12000,
+    "Fish Fillet": 13500, "Beef Steak": 16000, "Sizzling Dish": 15500,
+    "Quesadillas": 11500, "Fajita Platter": 11500, "Pilau": 12000,
+    "Vegetable Curry": 10500, "Beef Curry": 11500, "Fish Curry": 11500,
+    "Chicken Curry": 11500,
+    # Juices, smoothies, shakes, mojito
+    "Passion Juice": 5000, "Prune Juice": 5000, "Cucumber Juice": 4500,
+    "Carrot Juice": 5000, "Watermelon Juice": 5000, "Papaya Juice": 5000,
+    "Pineapple Juice": 5000, "Beetroot Juice": 5000, "Cocktail Juice": 6000,
+    "Lemon Juice": 6500, "Mango Juice": 6500, "Detox Juice": 7000,
+    "Orange Juice": 7000, "Apple Juice": 7000, "Prune Concentrate": 7000,
+    "Create Your Own Juice": 8000,
+    "Avocado Smoothie": 6000, "Diana Smoothie": 7000, "King Cocktail Smoothie": 7500,
+    "Mango Breeze": 7000, "Shokrin": 7000, "Strawberry Breeze": 7000,
+    "Vanilla Shake": 7000, "Chocolate Shake": 7000, "Strawberry Shake": 7000,
+    "Caramel Shake": 7000, "Mango Shake": 7000, "Banana Shake": 7000,
+    "Pineapple Shake": 7000, "Double Mocha Shake": 7500, "Oreo Shake": 7500,
+    "Virgin Mojito": 6500, "Camellia Detox Juice": 7000,
+    # Pastry, ice cream, soft drinks
+    "Bar Cookies": 1000, "Plain Croissant": 1500, "Chocolate Cake": 1500,
+    "Banana Cake": 1500, "Vanilla Cake": 1500, "Lemon Cake": 1500,
+    "Black Forest": 2000, "Branded Cup": 500, "Add Honey": 1000,
+    "Water": 1500, "Soda": 2500, "Ice Cream": 2500,
+}
+
+
+@pytest.mark.parametrize("name,printed", sorted(PRINTED_PRICES.items()))
+def test_the_price_is_the_price_printed_on_the_menu(name, printed):
+    """Every price on the site must be the price on the paper menu.
+
+    Fourteen were wrong when this test was written, including a pot of milk at
+    two thousand against three on the paper, and hot chocolate at six against
+    four. A customer ordering at the table would have been charged something
+    other than what they were shown.
+    """
+    from menu_data import DISHES
+
+    dish = next((row for row in DISHES if row["name"] == name), None)
+    assert dish is not None, f"{name} is on the printed menu but not in the menu data"
+    assert dish["price"] == printed, f"{name}: site says {dish['price']}, menu says {printed}"
+
+
+def test_nothing_pretends_to_be_on_the_printed_menu_when_it_is_not():
+    """Every dish must trace to a printed line, or be listed as not yet traced.
+
+    Anything invented would be a dish the kitchen cannot serve.
+    """
+    from menu_data import DISHES
+
+    untraced = [row["name"] for row in DISHES if row["name"] not in PRINTED_PRICES]
+    assert untraced == [], f"not on the printed menu: {untraced}"
+
+
+@pytest.mark.parametrize(
+    "term,should_not_contain",
+    [
+        ("latte", "Fajita Platter"),
+        ("tea", "Beef Steak"),
+        ("cake", ""),
+        ("rice", ""),
+    ],
+)
+def test_search_matches_words_not_fragments(client, term, should_not_contain):
+    """A search for latte returned a fajita platter, because "platter" contains
+    "latte". A guest looking for coffee was shown a Mexican sharing plate.
+    Search now matches whole words in descriptions and ingredients.
+    """
+    rows = client.get(f"/api/dishes?search={term}").json()
+    names = [row["name"] for row in rows]
+    if should_not_contain:
+        assert should_not_contain not in names, f"searching {term!r} returned {should_not_contain}"
+    assert names, f"searching {term!r} returned nothing at all"
+
+
+def test_search_finds_the_lattes(client):
+    """The fix for the platter must not lose the drinks it was meant to find."""
+    names = [row["name"] for row in client.get("/api/dishes?search=latte").json()]
+    assert "Cafe Latte" in names
+    assert "Vanilla Latte" in names

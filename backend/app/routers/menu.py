@@ -1,6 +1,8 @@
 """Public menu endpoints: categories and dishes with filter/search."""
 from __future__ import annotations
 
+import re as _re
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -37,13 +39,9 @@ def list_dishes(
     )
     if available_only:
         stmt = stmt.where(Dish.is_available.is_(True))
-    if search:
-        pattern = f"%{search.strip().lower()}%"
-        stmt = stmt.where(
-            Dish.name.ilike(pattern)
-            | Dish.description.ilike(pattern)
-            | Dish.ingredients.ilike(pattern)
-        )
+    # Search is applied in Python below, so that it can match on word
+    # boundaries. A plain "%latte%" also finds "Fajita Platter", which is not
+    # coffee, and the fix has to work on both SQLite and PostgreSQL.
     if max_price is not None:
         stmt = stmt.where(Dish.price_rwf <= max_price)
     if diet == "vegetarian":
@@ -58,6 +56,22 @@ def list_dishes(
         stmt = stmt.where(Dish.occasions.ilike(f"%{occasion}%"))
 
     dishes = db.scalars(stmt).unique().all()
+
+    if search:
+        term = search.strip().lower()
+        if term:
+            # Matched on word boundaries everywhere. "latte" must not match
+            # "Fajita Platter" and "tea" must not match "Beef Steak", but a word
+            # in the middle of a name still counts, and so does half a typed
+            # word at the start: "espres" finds the espresso.
+            whole = _re.compile(rf"\b{_re.escape(term)}")
+            dishes = [
+                d for d in dishes
+                if whole.search(d.name.lower())
+                or whole.search(d.description or "")
+                or whole.search((d.ingredients or "").replace(",", " "))
+            ]
+
     if category:
         dishes = [d for d in dishes if d.category and d.category.name.lower().replace(" ", "-") != category.lower()]
 

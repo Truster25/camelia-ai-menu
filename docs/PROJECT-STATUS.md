@@ -23,7 +23,7 @@ admin dashboard.
 | Backend | FastAPI 0.115.12, SQLAlchemy 2.0.57, scikit-learn 1.9.1 |
 | Authentication | JWT (HS256), bcrypt password hashing |
 | Database | SQLite locally, PostgreSQL in production |
-| Tests | 72 backend tests, pytest |
+| Tests | 211 backend tests, pytest |
 
 ---
 
@@ -134,7 +134,7 @@ authentication and the admin tools.
 |---|---|
 | Dish names, sections, prices | **Real.** Transcribed from photographs of the printed menu |
 | Dish descriptions | The printed detail line where the menu gives one, otherwise a plain description of the dish |
-| Dish photographs | 55 of 130 dishes have their own picture; the rest still show generated art. The restaurant's own photos replace all of them before service |
+| Dish photographs | 62 of 132 dishes have their own picture; the rest still show generated art. The restaurant's own photos replace all of them before service |
 | Dietary labels | Marked only where the ingredients make it certain. See `docs/DIETARY-REVIEW.md` |
 | Halal | **Deliberately blank.** Nothing is marked halal until Camellia confirms certification |
 | Team names and photographs | Invented |
@@ -142,7 +142,7 @@ authentication and the admin tools.
 | Address, phone, opening hours | Placeholder |
 | `admin@` / `customer@` / `hello@camelia.rw` | Placeholder addresses, not real mailboxes |
 
-The menu as built holds 130 dishes in 16 sections, priced 500 to 41,500 RWF,
+The menu as built holds 132 dishes in 16 sections, priced 500 to 41,500 RWF,
 with nine of them marked as signature dishes.
 
 ---
@@ -179,7 +179,7 @@ with nine of them marked as signature dishes.
 |---|---|
 | `docs/SCHEMA.md` | Full database design |
 | `docs/DATABASE-DESIGN.md` | Table-by-table rationale |
-| `docs/TEST_RESULTS.md` | The 72 tests and how to run them |
+| `docs/TEST_RESULTS.md` | The 211 tests and how to run them |
 | `docs/PAYMENT-EXPLAINED.md` | Why payment is simulated, in plain words |
 | `docs/DIETARY-REVIEW.md` | The dietary questions Camellia needs to answer |
 | `docs/HANDOVER.md` | Where everything lives |
