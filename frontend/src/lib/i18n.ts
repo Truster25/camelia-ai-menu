@@ -33,6 +33,7 @@ const en: Dict = {
   'nav.signin': 'Sign in',
   'nav.signout': 'Sign out',
   'nav.admin': 'Dashboard',
+  'nav.kitchen': 'Kitchen',
   'nav.book': 'Book a table',
 
   'home.hero.line1': 'Good food',
@@ -168,6 +169,7 @@ const rw: Dict = {
   'nav.signin': 'Injira',
   'nav.signout': 'Sohoka',
   'nav.admin': 'Ubuyobozi',
+  'nav.kitchen': 'Ibyo mu gikoni',
   'nav.book': 'Fata ikigwi',
 
   'home.hero.line1': 'Ibiryo byiza',
@@ -303,6 +305,7 @@ const fr: Dict = {
   'nav.signin': 'Se connecter',
   'nav.signout': 'Se déconnecter',
   'nav.admin': 'Tableau de bord',
+  'nav.kitchen': 'Cuisine',
   'nav.book': 'Réserver une table',
 
   'home.hero.line1': 'La bonne cuisine',

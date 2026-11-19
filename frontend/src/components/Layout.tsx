@@ -24,7 +24,7 @@ type HeaderProps = {
 
 export function Header({ overlay = false }: HeaderProps) {
   const [open, setOpen] = useState(false);
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isStaff } = useAuth();
   const { count } = useCart();
   const { t } = useLang();
   const location = useLocation();
@@ -137,7 +137,7 @@ export function Header({ overlay = false }: HeaderProps) {
               {t(item.label)}
             </NavLink>
           ))}
-          {isAdmin && (
+          {isStaff && (
             <NavLink
               to="/admin"
               className={({ isActive }) =>
@@ -150,7 +150,7 @@ export function Header({ overlay = false }: HeaderProps) {
                 }`
               }
             >
-              {t('nav.admin')}
+              {isAdmin ? t('nav.admin') : t('nav.kitchen')}
             </NavLink>
           )}
         </nav>
@@ -228,9 +228,9 @@ export function Header({ overlay = false }: HeaderProps) {
                 {t(item.label)}
               </NavLink>
             ))}
-            {isAdmin && (
+            {isStaff && (
               <NavLink to="/admin" className="rounded-lg px-3 py-2.5 uppercase tracking-[0.14em] text-sage-300">
-                {t('nav.admin')}
+                {isAdmin ? t('nav.admin') : t('nav.kitchen')}
               </NavLink>
             )}
             <Link to="/cart" className="rounded-lg px-3 py-2.5 uppercase tracking-[0.14em] text-sage-300">
