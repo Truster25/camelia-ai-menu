@@ -1,6 +1,6 @@
-# Camellia AI Menu
+# Camelia AI Menu
 
-**AI-based menu recommendation system · Case study: Camellia Café & Restaurant, Kigali.**
+**AI-based menu recommendation system · Case study: Camelia Café & Restaurant, Kigali.**
 
 A customer answers five quick questions — diet, spice, budget, cuisine, occasion — and a
 hybrid AI ranker scores every available dish, returning the top five with a match score and
@@ -12,7 +12,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 
 > Demo accounts — Admin: `admin@camelia.rw` / `Admin123` · Customer: `customer@camelia.rw` / `Customer123`.
 > The dish names, sections and prices are transcribed from the restaurant's printed menu.
-> Confirm them with Camellia before publishing prices.
+> Confirm them with Camelia before publishing prices.
 
 ---
 
@@ -20,8 +20,8 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 
 | Area | Status |
 |---|---|
-| VELO-style landing page with the official Camellia logos | ✅ |
-| Menu of 136 dishes in 17 sections, search + diet/price/category filters | ✅ |
+| VELO-style landing page with the official Camelia logos | ✅ |
+| Menu of 137 dishes in 17 sections, search + diet/price/category filters | ✅ |
 | Dish detail: ingredients, allergens, allergens warning, spice, prep time | ✅ |
 | **Hybrid AI recommender** (TF-IDF 40% · preferences 25% · popularity 20% · occasion 15%) | ✅ |
 | Dietary requirements enforced as **hard filters** before ranking | ✅ |
@@ -31,7 +31,7 @@ Stack: **React 18 + Vite + TypeScript + Tailwind CSS 4** · **FastAPI + SQLAlche
 | Admin: analytics dashboard, menu CRUD, order status management, customer list | ✅ |
 | JWT auth with roles (customer / admin), bcrypt password hashing | ✅ |
 | Quiz logging for evaluation (top-1 hit rate, top-5 conversion) | ✅ |
-| 67 backend tests (`pytest`) | ✅ |
+| Backend API tests (`pytest`) | ✅ |
 | Deployment to Vercel + Render + Neon | ⏳ documented, not executed |
 
 ### The recommender in one paragraph
@@ -76,15 +76,15 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python seed.py                       # 17 sections, 136 dishes, users, sample orders
+python seed.py                       # 17 sections, 137 dishes, users, sample orders
 uvicorn app.main:app --reload --reload-dir app --port 9000
 ```
 
 - API docs: http://localhost:9000/docs
 - Health check: http://localhost:9000/api/health
 
-The database is created and seeded automatically on first start, so `python seed.py` is only
-needed if you want a fresh copy (`python seed.py --reset` rebuilds everything).
+The database is created and seeded automatically on first start. Run `python seed.py` from
+`backend/` to refresh an existing menu while keeping order history. The `--reset` option rebuilds the demo database.
 
 You must see `(.venv)` at the start of your prompt before running `pip` or `uvicorn` — both
 commands live inside the virtual environment. If `pip` is still not found, use
@@ -107,7 +107,7 @@ configuration is needed in development.
 ### Checks
 
 ```bash
-cd backend && pytest -q          # 67 tests
+cd backend && pytest -q          # backend tests
 cd frontend && npm run build     # type-check + production bundle
 ```
 
@@ -122,7 +122,7 @@ Interactive documentation with request/response schemas: `http://localhost:9000/
 | GET | `/api/health` | — | Liveness + version |
 | POST | `/api/auth/register` · `/api/auth/login` | — | Create customer / obtain JWT |
 | GET | `/api/auth/me` | user | Current profile |
-| GET | `/api/categories` | — | Six menu sections |
+| GET | `/api/categories` | — | Menu sections with available dishes |
 | GET | `/api/dishes` | — | Filters: `category`, `search`, `max_price`, `diet`, `occasion`, `sort` |
 | GET | `/api/dishes/{id}` | — | Single dish with rating summary |
 | GET | `/api/dishes/{id}/ratings` | — | Reviews, newest first |
@@ -156,8 +156,8 @@ backend/
     recommender.py     The hybrid AI (pure functions, unit-testable)
     serializers.py     Dish → API payload with rating aggregates
     routers/           auth · menu · recommendations · ratings · orders · admin
-  seed.py              130-dish menu + users/orders/ratings
-  tests/test_api.py    67 tests (isolated temp database)
+  seed.py              137-dish menu + users/orders/ratings
+  tests/test_api.py    API tests (isolated temp database)
 frontend/
   src/
     pages/             Home · Menu · DishDetail · Recommend · HowItWorks · Login · Cart · Orders · Admin
@@ -189,6 +189,12 @@ Free tiers sleep after inactivity, so the first request after idle can take ~30 
 The demo must also run fully offline from a laptop — fonts are self-hosted and no external
 CDN or LLM is required.
 
+**Dish photos uploaded from the admin dashboard** are written to disk on the Render
+service (`backend/uploads/`, served at `/uploads/...`). Render's free plan disk is
+ephemeral: those files do not survive a redeploy. For anything beyond a demo, either
+move to a paid Render plan with a persistent disk, or swap the upload endpoint
+(`backend/app/routers/uploads.py`) to write to S3-compatible object storage instead.
+
 ---
 
 ## Notes for the write-up
@@ -197,7 +203,6 @@ CDN or LLM is required.
   database chapter.
 - Every quiz is logged in `recommendation_logs` together with which suggestion was chosen,
   so top-1 hit rate and top-5 conversion can be computed from real data rather than invented.
-- Limitations to state honestly: 130-dish corpus, sparse ratings, no collaborative filtering
+- Limitations to state honestly: 137-dish corpus, sparse ratings, no collaborative filtering
   yet, and demo traffic only until real customers are involved.
-- The menu data is realistic but fictional; confirm prices and allergen information with the
-  restaurant before any real use.
+- Confirm the cropped menu entries and allergen information with the restaurant before service.

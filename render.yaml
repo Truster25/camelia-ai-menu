@@ -1,11 +1,19 @@
 # Render blueprint for the Camelia API (free tier).
-# Set DATABASE_URL (Neon) and JWT_SECRET in the Render dashboard after the first deploy.
+# Set DATABASE_URL (Neon) and CORS_ORIGINS (your Vercel URL) in the Render
+# dashboard after the first deploy; JWT_SECRET is generated below.
+#
+# Known limitation: the free plan's disk is ephemeral. Dish photos uploaded
+# through the admin dashboard (POST /api/admin/uploads/dish-image) are saved
+# to that disk and are wiped on every deploy and on most restarts. They will
+# keep working for the lifetime of a running instance, but re-upload them
+# after a deploy, or move to a paid plan with a persistent disk, or to object
+# storage (S3-compatible), before relying on this in a real production setup.
 services:
   - type: web
     name: camelia-api
     runtime: python
     plan: free
-    rootDir: MP3/camelia-project/backend
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
