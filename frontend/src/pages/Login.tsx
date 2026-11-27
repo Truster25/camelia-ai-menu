@@ -15,7 +15,7 @@ type AuthFieldProps = ComponentPropsWithoutRef<'input'> & {
   icon: LucideIcon;
 };
 
-function AuthField({ id, label, icon: Icon, type = 'text', ...input }: AuthFieldProps) {
+export function AuthField({ id, label, icon: Icon, type = 'text', ...input }: AuthFieldProps) {
   const { t } = useLang();
   const [visible, setVisible] = useState(false);
   const isPassword = type === 'password';
@@ -184,10 +184,13 @@ function LoginForm({ registering }: { registering: boolean }) {
               <Link to="/privacy">{t('login.privacy')}</Link>
             </div>
           ) : (
-            <label className="auth-remember">
-              <input type="checkbox" name="remember" defaultChecked />
-              {t('login.remember')}
-            </label>
+            <div className="auth-options">
+              <label className="auth-remember">
+                <input type="checkbox" name="remember" defaultChecked />
+                {t('login.remember')}
+              </label>
+              <Link to="/forgot-password">{t('login.forgotPassword')}</Link>
+            </div>
           )}
         </fieldset>
 

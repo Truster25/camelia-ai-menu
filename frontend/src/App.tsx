@@ -6,6 +6,7 @@ import { DishDetail } from './pages/DishDetail';
 import { Recommend } from './pages/Recommend';
 import { HowItWorks } from './pages/HowItWorks';
 import { Login } from './pages/Login';
+import { ForgotPassword } from './pages/ForgotPassword';
 import { Cart } from './pages/Cart';
 import { Orders } from './pages/Orders';
 import { Admin } from './pages/Admin';
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="recommend" element={<Recommend />} />
         <Route path="how-it-works" element={<HowItWorks />} />
         <Route path="login" element={<Login />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="cart" element={<Cart />} />
         <Route path="orders" element={<Orders />} />
         <Route path="our-story" element={<OurStory />} />

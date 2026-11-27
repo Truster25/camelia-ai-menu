@@ -8,6 +8,11 @@ type AuthContextValue = {
   loading: boolean;
   login: (email: string, password: string, remember?: boolean) => Promise<User>;
   register: (name: string, email: string, password: string) => Promise<User>;
+  /** Confirms the email matches an account and returns a short-lived token
+   * authorising a new password for it. Throws (404) if there is no match. */
+  requestPasswordReset: (email: string) => Promise<string>;
+  /** Spends that token to set a new password, and signs the account in. */
+  resetPassword: (token: string, newPassword: string) => Promise<User>;
   logout: () => void;
   isAdmin: boolean;
   /** Admin or kitchen. Kitchen can work orders and nothing else. */
@@ -58,6 +63,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data.user;
   }, []);
 
+  const requestPasswordReset = useCallback(async (email: string) => {
+    const data = await api.post<{ token: string }>('/auth/forgot-password', { email });
+    return data.token;
+  }, []);
+
+  const resetPassword = useCallback(async (token: string, newPassword: string) => {
+    const data = await api.post<TokenResponse>('/auth/reset-password', { token, new_password: newPassword });
+    tokenStore.set(data.access_token);
+    setUser(data.user);
+    return data.user;
+  }, []);
+
   const logout = useCallback(() => {
     tokenStore.clear();
     setUser(null);
@@ -69,11 +86,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       login,
       register,
+      requestPasswordReset,
+      resetPassword,
       logout,
       isAdmin: user?.role === 'admin',
       isStaff: user?.role === 'admin' || user?.role === 'kitchen',
     }),
-    [user, loading, login, register, logout],
+    [user, loading, login, register, requestPasswordReset, resetPassword, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

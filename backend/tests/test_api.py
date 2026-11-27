@@ -241,6 +241,83 @@ def test_bad_password_is_rejected(client):
     assert client.post("/api/auth/login", json={**CUSTOMER, "password": "nope"}).status_code == 401
 
 
+# ------------------------------------------------------------- password reset
+
+
+def test_forgot_password_authorises_a_known_email(client):
+    response = client.post("/api/auth/forgot-password", json={"email": CUSTOMER["email"]})
+    assert response.status_code == 200
+    assert response.json()["token"]
+
+
+def test_forgot_password_rejects_an_unknown_email(client):
+    response = client.post("/api/auth/forgot-password", json={"email": "nobody-here@example.com"})
+    assert response.status_code == 404
+
+
+def test_reset_password_actually_changes_the_password(client):
+    """A dedicated throwaway account, not the shared CUSTOMER fixture data --
+    changing CUSTOMER's real password here would break every other test that
+    logs in with it."""
+    registered = client.post(
+        "/api/auth/register",
+        json={"name": "Reset Test", "email": "reset-test@example.com", "password": "OldPass123"},
+    )
+    assert registered.status_code == 201
+
+    token = client.post("/api/auth/forgot-password", json={"email": "reset-test@example.com"}).json()["token"]
+    reset = client.post("/api/auth/reset-password", json={"token": token, "new_password": "NewPass456"})
+    assert reset.status_code == 200
+    assert reset.json()["user"]["email"] == "reset-test@example.com"
+
+    old = client.post("/api/auth/login", json={"email": "reset-test@example.com", "password": "OldPass123"})
+    assert old.status_code == 401
+    new = client.post("/api/auth/login", json={"email": "reset-test@example.com", "password": "NewPass456"})
+    assert new.status_code == 200
+
+
+def test_reset_password_rejects_a_bad_token(client):
+    response = client.post(
+        "/api/auth/reset-password", json={"token": "not-a-real-token", "new_password": "Whatever123"}
+    )
+    assert response.status_code == 401
+
+
+def test_reset_password_rejects_a_short_password(client):
+    token = client.post("/api/auth/forgot-password", json={"email": CUSTOMER["email"]}).json()["token"]
+    response = client.post("/api/auth/reset-password", json={"token": token, "new_password": "short"})
+    assert response.status_code == 422
+
+
+def test_reset_password_token_cannot_be_used_as_a_session_token(client):
+    """Scoped to resetting a password, not to acting as the account."""
+    token = client.post("/api/auth/forgot-password", json={"email": CUSTOMER["email"]}).json()["token"]
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 401
+
+
+def test_reset_password_rejects_an_expired_token(client):
+    from datetime import datetime, timedelta, timezone
+
+    from jose import jwt
+
+    from app.config import settings
+    from app.security import PASSWORD_RESET_PURPOSE
+
+    user_id = client.post("/api/auth/login", json=CUSTOMER).json()["user"]["id"]
+    expired = jwt.encode(
+        {
+            "sub": str(user_id),
+            "purpose": PASSWORD_RESET_PURPOSE,
+            "exp": datetime.now(timezone.utc) - timedelta(minutes=1),
+        },
+        settings.JWT_SECRET,
+        algorithm=settings.JWT_ALGORITHM,
+    )
+    response = client.post("/api/auth/reset-password", json={"token": expired, "new_password": "Whatever123"})
+    assert response.status_code == 401
+
+
 def test_protected_routes_require_a_token(client):
     assert client.get("/api/orders").status_code == 401
     assert client.get("/api/admin/orders").status_code == 401
