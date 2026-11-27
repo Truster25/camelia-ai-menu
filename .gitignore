@@ -15,6 +15,8 @@ frontend/dist/
 backend/*.db
 backend/camelia.db
 *.sqlite3
+# Admin-uploaded dish photos (runtime data, not source)
+backend/uploads/
 coverage/
 htmlcov/
 frontend/.vite/

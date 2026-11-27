@@ -15,12 +15,26 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = 'camelia_cart_v1';
 
+function restoreDish(dish: Dish): Dish {
+  const previousSpelling = /(camel)l(ia)/gi;
+  return {
+    ...dish,
+    name: dish.name?.replace(previousSpelling, '$1$2'),
+    image_url: dish.image_url?.startsWith('/images/dishes/')
+      ? dish.image_url.replace(previousSpelling, '$1$2')
+      : dish.image_url,
+  };
+}
+
 function readCart(): CartLine[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as CartLine[];
-    return Array.isArray(parsed) ? parsed.filter((line) => line?.dish?.id) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((line: CartLine) => line?.dish?.id)
+      .map((line: CartLine) => ({ ...line, dish: restoreDish(line.dish) }));
   } catch {
     return [];
   }

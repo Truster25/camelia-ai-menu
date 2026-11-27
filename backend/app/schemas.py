@@ -9,6 +9,15 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 # --------------------------------------------------------------------------- auth
 
 
+def _password_fits_bcrypt(value: str) -> str:
+    """bcrypt silently ignores bytes past 72, so a longer password would be
+    accepted here and then fail to verify at login. Multi-byte characters
+    (emoji, accents) make "72 characters" and "72 bytes" different limits."""
+    if len(value.encode("utf-8")) > 72:
+        raise ValueError("Use a password no longer than 72 bytes. Some characters use more than one byte.")
+    return value
+
+
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -28,6 +37,16 @@ class RegisterIn(BaseModel):
     # own the restaurant. Staff are promoted by an administrator, below.
     role: Literal["customer"] = "customer"
 
+    @field_validator("name", mode="before")
+    @classmethod
+    def strip_name(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("password")
+    @classmethod
+    def password_fits_bcrypt(cls, value: str) -> str:
+        return _password_fits_bcrypt(value)
+
 
 class LoginIn(BaseModel):
     email: EmailStr
@@ -38,6 +57,32 @@ class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+
+class ForgotPasswordOut(BaseModel):
+    """The token that authorises setting a new password for this account.
+
+    By design this endpoint does not email anything or prove the caller owns
+    the inbox -- it only confirms the address matches an account and hands
+    back a short-lived token on the spot. See the forgot_password route for
+    the full trade-off.
+    """
+
+    token: str
+
+
+class ResetPasswordIn(BaseModel):
+    token: str
+    new_password: str = Field(min_length=6, max_length=128)
+
+    @field_validator("new_password")
+    @classmethod
+    def password_fits_bcrypt(cls, value: str) -> str:
+        return _password_fits_bcrypt(value)
 
 
 # ---------------------------------------------------------------------- categories

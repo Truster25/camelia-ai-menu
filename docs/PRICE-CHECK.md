@@ -1,6 +1,6 @@
 # Price check against the printed menu
 
-**For Camellia.** The whole menu, dish by dish: the price on the website beside
+**For Camelia.** The whole menu, dish by dish: the price on the website beside
 the price on the printed menu, with the page each was read from.
 
 Nothing here is the app marking its own homework. The printed column is a
@@ -10,7 +10,7 @@ the dish and the correct price and it is a one-line change.
 
 ## How it stays honest
 
-- All 136 prices are pinned by tests. Change a price in the app without changing
+- All 137 catalog prices are pinned by tests, including the carried-forward price below. Change a price in the app without changing
   the printed transcription and the suite fails, naming the dish.
 - A second test fails if the app serves anything not on the printed menu.
 - `python audit_menu.py` reproduces this report and fails loudly if they disagree.
@@ -20,13 +20,13 @@ the dish and the correct price and it is a one-line change.
 
 | Dish | Printed | Website | |
 |---|---:|---:|---|
-| Camellia Local Mushroom Soup | 6,500 | 6,500 | same |
+| Camelia Local Mushroom Soup | 6,500 | 6,500 | same |
 | Minestrone Chicken Soup | 6,500 | 6,500 | same |
 | Minestrone Fish Soup | 6,500 | 6,500 | same |
 | Vegetable Soup | 6,500 | 6,500 | same |
 | American Garden Salad | 7,000 | 7,000 | same |
 | Beef Strips Salad | 7,000 | 7,000 | same |
-| Camellia Chef Salad | 7,000 | 7,000 | same |
+| Camelia Chef Salad | 7,000 | 7,000 | same |
 | Fresh Garden Mix Salad | 7,000 | 7,000 | same |
 | Mixed Soup | 7,000 | 7,000 | same |
 
@@ -35,9 +35,9 @@ the dish and the correct price and it is a one-line change.
 | Dish | Printed | Website | |
 |---|---:|---:|---|
 | French Fries Salad | 6,000 | 6,000 | same |
-| Spaghetti Bolognaise | 7,000 | 7,000 | same |
+| Spaghetti Bolognaise | 9,000 | 9,000 | updated from 7,000 |
 | Beef Sausage | 9,000 | 9,000 | same |
-| Camellia Chipati Wrap | 9,000 | 9,000 | same |
+| Camelia Chipati Wrap | 9,000 | 9,000 | same |
 | Chicken Nuggets | 9,000 | 9,000 | same |
 | Fish Fingers | 9,000 | 9,000 | same |
 | Fried Chicken Wings | 9,000 | 9,000 | same |
@@ -47,22 +47,23 @@ the dish and the correct price and it is a one-line change.
 | Dish | Printed | Website | |
 |---|---:|---:|---|
 | Plain Beef Chicken Fish Burger | 7,000 | 7,000 | same |
-| Camellia Vegetable Burger | 8,000 | 8,000 | same |
-| Camellia Cheese Beef Burger | 8,500 | 8,500 | same |
-| Camellia Egg Cheese Baguette | 8,500 | 8,500 | same |
-| Camellia Fish Burger | 8,500 | 8,500 | same |
+| Camelia Vegetable Burger | 8,000 | 8,000 | same |
+| Camelia Cheese Beef Burger | 8,500 | 8,500 | same |
+| Camelia Egg Cheese Baguette | 8,500 | 8,500 | same |
+| Camelia Fish Burger | 8,500 | 8,500 | same |
 | Chicken Cheese Burger | 8,500 | 8,500 | same |
 | Croque Madame | 8,500 | 8,500 | same |
 | Croque Monsieur | 8,500 | 8,500 | same |
 | Mushroom Avocado Spinach Baguette | 8,500 | 8,500 | same |
 | Tramazzin Chicken Cheese | 8,500 | 8,500 | same |
-| Camellia Nice Face | 9,000 | 9,000 | same |
-| Camellia King Beef Chicken Fish Burger | 41,500 | 41,500 | same |
+| Camelia Nice Face | 9,000 | 9,000 | same |
+| Camelia King Beef Chicken Fish Burger | cropped | 41,500 | prior price retained |
 
 ## Page 4: Kingsize, Mexican, Pilau, Asian
 
 | Dish | Printed | Website | |
 |---|---:|---:|---|
+| Vegetable Fajita | 10,500 | 10,500 | added |
 | Vegetable Curry | 10,500 | 10,500 | same |
 | Beef Curry | 11,500 | 11,500 | same |
 | Chicken Curry | 11,500 | 11,500 | same |
@@ -70,7 +71,7 @@ the dish and the correct price and it is a one-line change.
 | Fish Curry | 11,500 | 11,500 | same |
 | Quesadillas | 11,500 | 11,500 | same |
 | Beef Chicken Fish Stew | 12,000 | 12,000 | same |
-| Camellia Hotpot | 12,000 | 12,000 | same |
+| Camelia Hotpot | 12,000 | 12,000 | same |
 | Chicken Leg | 12,000 | 12,000 | same |
 | Pilau | 12,000 | 12,000 | same |
 | Stroganoff Beef Chicken Fish | 12,000 | 12,000 | same |
@@ -97,7 +98,7 @@ the dish and the correct price and it is a one-line change.
 | Virgin Mojito | 6,500 | 6,500 | same |
 | Apple Juice | 7,000 | 7,000 | same |
 | Banana Shake | 7,000 | 7,000 | same |
-| Camellia Detox Juice | 7,000 | 7,000 | same |
+| Camelia Detox Juice | 7,000 | 7,000 | same |
 | Caramel Shake | 7,000 | 7,000 | same |
 | Chocolate Shake | 7,000 | 7,000 | same |
 | Detox Juice | 7,000 | 7,000 | same |
@@ -131,15 +132,15 @@ the dish and the correct price and it is a one-line change.
 | Water | 1,500 | 1,500 | same |
 | Black Forest | 2,000 | 2,000 | same |
 | Espresso Single | 2,000 | 2,000 | same |
-| Americano | 2,500 | 2,500 | same |
+| Americano | 3,000 | 3,000 | updated from 2,500 |
 | Espresso Macchiato | 2,500 | 2,500 | same |
 | Ice Cream | 2,500 | 2,500 | same |
 | Soda | 2,500 | 2,500 | same |
 | A Pot of Milk | 3,000 | 3,000 | same |
 | Black Coffee | 3,000 | 3,000 | same |
 | Black Tea | 3,000 | 3,000 | same |
-| Cafe Latte | 3,000 | 3,000 | same |
-| Espresso Double | 3,000 | 3,000 | same |
+| Cafe Latte | 3,500 | 3,500 | updated from 3,000 |
+| Espresso Double | 2,500 | 2,500 | updated from 3,000 |
 | Ginger Tea | 3,000 | 3,000 | same |
 | Green Tea | 3,000 | 3,000 | same |
 | Hibiscus Tea | 3,000 | 3,000 | same |
@@ -150,14 +151,14 @@ the dish and the correct price and it is a one-line change.
 | Umwenya Tea | 3,000 | 3,000 | same |
 | Umwucakiyali | 3,000 | 3,000 | same |
 | African Tea | 3,500 | 3,500 | same |
-| Cafe Mocha | 3,500 | 3,500 | same |
+| Cafe Mocha | 4,000 | 4,000 | updated from 3,500 |
 | Cappuccino | 3,500 | 3,500 | same |
-| Caramel Macchiato | 3,500 | 3,500 | same |
-| Camellia African Coffee | 4,000 | 4,000 | same |
-| Cinnamon Cappuccino | 4,000 | 4,000 | same |
+| Caramel Macchiato | 4,500 | 4,500 | updated from 3,500 |
+| Camelia African Coffee | 4,000 | 4,000 | same |
+| Cinnamon Cappuccino | 3,500 | 3,500 | updated from 4,000 |
 | Hot Chocolate | 4,000 | 4,000 | same |
 | Spiced Tea | 4,000 | 4,000 | same |
-| Vanilla Latte | 4,500 | 4,500 | same |
+| Vanilla Latte | 4,000 | 4,000 | updated from 4,500 |
 | Iced Americano | 5,000 | 5,000 | same |
 | Iced Cafe Latte | 5,000 | 5,000 | same |
 | Iced Spiced Tea | 5,000 | 5,000 | same |
@@ -174,24 +175,26 @@ the dish and the correct price and it is a one-line change.
 | White Mocha Frappé | 6,000 | 6,000 | same |
 | Special Omelette | 6,500 | 6,500 | same |
 | Create Your Omelette | 7,000 | 7,000 | same |
-| Iced Coffee Mocha | 8,000 | 8,000 | same |
-| Camellia Executive Breakfast | 11,500 | 11,500 | same |
-| Camellia Steak Omelette | 11,500 | 11,500 | same |
+| Iced Coffee Mocha | 6,000 | 6,000 | updated from 8,000 |
+| Camelia Executive Breakfast | 11,500 | 11,500 | same |
+| Camelia Steak Omelette | 11,500 | 11,500 | same |
 
 ## Summary
 
-| | |
+| Result | Count |
 |---|---:|
-| Dishes on the printed menu | 136 |
-| Dishes the app serves | 136 |
-| Prices that agree | 136 |
-| Prices that differ | 0 |
-| Printed but missing from the app | 0 |
-| In the app but not printed | 0 |
+| Catalog entries compared with the price reference | 137 |
+| Existing prices corrected from the photos | 9 |
+| New item | 1 |
+| Existing prices carried forward pending confirmation | 1 |
+| Differences between the app and the saved reference | 0 |
 
 ## What the photographs did not settle
 
-The **Snacks & desserts** list on page 6 is cut off in the photograph, so those
-items are not in the app. The **Local fresh fruits** block on page 1 was legible after all and its four
-dishes are now in the app. The **Snacks & desserts** line on page 6 is genuinely
-cut off by the edge of the photograph and still needs a clearer one.
+The left edge of the **Snacks & desserts** block on page 6 is cut off. A samosa
+appears in the photo and prices are visible, but the full item names and any
+fillings or portions need a photo of the whole block.
+
+The right edge of the **Camelia King Beef/Chicken/Fish Burger** price on page 3
+is also cut off. The app retains its existing 41,500 RWF until the full price
+can be read.

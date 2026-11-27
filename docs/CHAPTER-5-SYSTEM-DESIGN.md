@@ -1,5 +1,5 @@
 # Chapter 5 – System Design
-**Project Title:** AI-Based Menu Recommendation System – Case Study: Camellia Restaurant
+**Project Title:** AI-Based Menu Recommendation System – Case Study: Camelia Restaurant
 **Prepared for:** Chapter 5 of the ~15,000-word book (MKU BBIT/BSc IT, Semester 8)
 **Date:** 19 November 2026
 **Location:** `/home/user/camelia-ai-menu/docs/CHAPTER-5-SYSTEM-DESIGN.docx` (Markdown source at `/home/user/camelia-ai-menu/docs/CHAPTER-5-SYSTEM-DESIGN.md`)
@@ -154,7 +154,7 @@ The system follows a **Client-Server Architecture** (Hybrid Full-Stack) where:
 ### 4.1 Available Pages & Screenshots
 > **Note:** Screenshots are not stored in the repository (only dish photos in `frontend/public/images/dishes/` and logos in `frontend/public/images/`). The book should reference the following routes:
 - **Homepage (`/`):** Hero, story carousel, signature dishes, AI explainer.
-- **Menu (`/menu`):** 130-dish list, category/diet/price filters, sort.
+- **Menu (`/menu`):** 137-dish list, category/diet/price filters, sort.
 - **Customer Preference Form (`/recommend`):** 5-step quiz.
 - **Meal Recommendation Results (`/recommend`):** Top 5 list with scores.
 - **Staff Login (`/login`):** Authentication page.

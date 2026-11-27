@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Quote } from 'lucide-react';
+import { useMemo } from 'react';
+import { useLang } from '../context/LanguageContext';
 
 type Person = {
   name: string;
@@ -8,60 +10,6 @@ type Person = {
   alt: string;
   line: string;
 };
-
-const team: Person[] = [
-  {
-    name: 'Aline Mukamana',
-    role: 'Head chef',
-    image: '/images/team/chef-aline.jpg',
-    alt: 'Head chef Aline plating grilled tilapia in the Camellia kitchen',
-    line: 'Fifteen years at the grill. She decides what goes on the fire each morning, and she will tell you honestly which dish is better today.',
-  },
-  {
-    name: 'Eric Nshuti',
-    role: 'Coffee lead',
-    image: '/images/team/barista-eric.jpg',
-    alt: 'Eric pouring latte art at the Camellia coffee bar',
-    line: 'Roasts and pours. If your latte arrives with a fern on it, that is Eric, and he will remember how you take it next time.',
-  },
-  {
-    name: 'Chantal Uwase',
-    role: 'Floor manager',
-    image: '/images/team/floor-chantal.jpg',
-    alt: 'Floor manager Chantal welcoming guests at the Camellia entrance',
-    line: 'Runs the room. Finds you a table on a Friday, and quietly moves the speaker when a birthday needs one.',
-  },
-  {
-    name: 'Jean-Paul Habimana',
-    role: 'Kitchen, brochettes',
-    image: '/images/team/grill-jeanpaul.jpg',
-    alt: 'Jean-Paul turning brochettes over the charcoal grill',
-    line: 'Tends the charcoal from six in the morning. The reason the brochettes taste of smoke rather than of gas.',
-  },
-];
-
-const milestones = [
-  {
-    year: '2016',
-    title: 'One grill, six tables',
-    body: 'Camellia opens on KG 7 Avenue with a charcoal grill, a coffee machine and a short menu of dishes the family already cooked at home.',
-  },
-  {
-    year: '2019',
-    title: 'The coffee bar',
-    body: 'Rwandan single-origin beans replace the imported blend. The pour over and the signature latte join the menu, and the afternoon crowd arrives.',
-  },
-  {
-    year: '2022',
-    title: 'The garden plates',
-    body: 'A supplier relationship with growers in Bugesera brings the salad menu. Leaves are cut the same morning they are served.',
-  },
-  {
-    year: '2026',
-    title: 'The menu that asks',
-    body: 'Camellia adds an AI assistant that reads the whole menu against your taste, diet, budget and occasion, so nobody has to guess.',
-  },
-];
 
 /**
  * "Our story" — the page the footer's About links point at.
@@ -72,20 +20,63 @@ const milestones = [
  * instead of a job title alone.
  */
 export function OurStory() {
+  const { t } = useLang();
+
+  const team: Person[] = useMemo(
+    () => [
+      {
+        name: 'Aline Mukamana',
+        role: t('story.team.aline.role'),
+        image: '/images/team/chef-aline.jpg',
+        alt: 'Head chef Aline plating grilled tilapia in the Camelia kitchen',
+        line: t('story.team.aline.line'),
+      },
+      {
+        name: 'Eric Nshuti',
+        role: t('story.team.eric.role'),
+        image: '/images/team/barista-eric.jpg',
+        alt: 'Eric pouring latte art at the Camelia coffee bar',
+        line: t('story.team.eric.line'),
+      },
+      {
+        name: 'Chantal Uwase',
+        role: t('story.team.chantal.role'),
+        image: '/images/team/floor-chantal.jpg',
+        alt: 'Floor manager Chantal welcoming guests at the Camelia entrance',
+        line: t('story.team.chantal.line'),
+      },
+      {
+        name: 'Jean-Paul Habimana',
+        role: t('story.team.jeanpaul.role'),
+        image: '/images/team/grill-jeanpaul.jpg',
+        alt: 'Jean-Paul turning brochettes over the charcoal grill',
+        line: t('story.team.jeanpaul.line'),
+      },
+    ],
+    [t],
+  );
+
+  const milestones = useMemo(
+    () => [
+      { year: '2016', title: t('story.milestone.2016.title'), body: t('story.milestone.2016.body') },
+      { year: '2019', title: t('story.milestone.2019.title'), body: t('story.milestone.2019.body') },
+      { year: '2022', title: t('story.milestone.2022.title'), body: t('story.milestone.2022.body') },
+      { year: '2026', title: t('story.milestone.2026.title'), body: t('story.milestone.2026.body') },
+    ],
+    [t],
+  );
+
   return (
     <div data-header-theme="dark">
       {/* ---------------------------------------------------------- opening */}
       <section className="relative overflow-hidden bg-forest-950 px-5 pb-16 pt-32 sm:px-8 lg:px-10 lg:pt-40">
         <div className="mx-auto max-w-[1180px]">
-          <p className="kicker"><span className="kicker-line" /> Since 2016 · Kigali</p>
+          <p className="kicker">{t('story.since')}</p>
           <h1 className="mt-5 max-w-[20ch] font-display text-[clamp(2.4rem,5vw,4rem)] leading-[1.06] tracking-[-0.03em] text-cream">
-            We started with one grill and <em className="not-italic text-amber-logo">a short menu.</em>
+            {t('story.hero.pre')} <em className="not-italic text-amber-logo">{t('story.hero.accent')}</em>
           </h1>
           <p className="mt-7 max-w-[62ch] text-[15px] leading-[1.85] text-sage-300">
-            Camellia is a family kitchen on KG 7 Avenue in Kigali. It has never been a place that
-            chases trends. The brochettes still go on charcoal, the beans still simmer for hours, and
-            the leaves are still cut the morning you eat them. What has changed is how quickly we can
-            work out what you actually feel like eating.
+            {t('story.hero.body')}
           </p>
         </div>
       </section>
@@ -94,10 +85,10 @@ export function OurStory() {
       <section className="bg-forest-950 px-5 pb-16 sm:px-8 lg:px-10">
         <div className="mx-auto grid max-w-[1180px] grid-cols-2 gap-6 border-y border-white/10 py-9 sm:grid-cols-4">
           {[
-            ['10', 'Years on the same street'],
-            ['130', 'Dishes on the menu'],
-            ['4', 'People in the kitchen'],
-            ['1', 'Menu that asks first'],
+            ['10', t('story.stat.years')],
+            ['130', t('story.stat.dishes')],
+            ['4', t('story.stat.people')],
+            ['1', t('story.stat.menu')],
           ].map(([value, label]) => (
             <div key={label}>
               <p className="font-display text-3xl text-amber-pale">{value}</p>
@@ -112,12 +103,12 @@ export function OurStory() {
       {/* -------------------------------------------------------------- team */}
       <section id="team" className="scroll-mt-24 bg-forest-950 px-5 pb-20 sm:px-8 lg:px-10">
         <div className="mx-auto max-w-[1180px]">
-          <p className="kicker"><span className="kicker-line" /> The people who cook it</p>
+          <p className="kicker">{t('story.team.kicker')}</p>
           <h2 className="mt-4 max-w-[24ch] font-display text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.1] tracking-[-0.02em] text-cream">
-            Every plate here belongs to <em className="not-italic text-amber-soft">someone.</em>
+            {t('story.team.title.pre')} <em className="not-italic text-amber-soft">{t('story.team.title.accent')}</em>
           </h2>
           <p className="mt-4 max-w-[56ch] text-sm leading-relaxed text-sage-400">
-            Four of the people you will meet, and what each of them is responsible for.
+            {t('story.team.body')}
           </p>
 
           <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -145,9 +136,9 @@ export function OurStory() {
       {/* ---------------------------------------------------------- milestones */}
       <section data-header-theme="light" className="bg-cream px-5 py-16 text-ink sm:px-8 md:py-20 lg:px-10">
         <div className="mx-auto max-w-[1180px]">
-          <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-[#8a5a2b]">How we got here</p>
+          <p className="text-[9.5px] font-bold uppercase tracking-[0.18em] text-[#8a5a2b]">{t('story.milestones.kicker')}</p>
           <h2 className="mt-4 max-w-[22ch] font-display text-[clamp(1.8rem,3.4vw,2.6rem)] leading-[1.1] tracking-[-0.02em]">
-            Four moments that changed <em className="not-italic text-[#8a5a2b]">the kitchen.</em>
+            {t('story.milestones.title.pre')} <em className="not-italic text-[#8a5a2b]">{t('story.milestones.title.accent')}</em>
           </h2>
 
           <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -169,17 +160,16 @@ export function OurStory() {
         <div className="mx-auto flex max-w-[820px] flex-col items-center gap-6 text-center">
           <Quote size={26} strokeWidth={1.2} className="text-amber-soft" aria-hidden="true" />
           <p className="font-display text-[clamp(1.3rem,2.4vw,1.85rem)] leading-snug text-cream">
-            “We are not trying to be the biggest restaurant in Kigali. We are trying to be the one
-            people bring their parents to.”
+            {t('story.quote')}
           </p>
           <p className="text-[9.5px] font-bold uppercase tracking-[0.2em] text-sage-400">
-            Aline Mukamana · Head chef
+            Aline Mukamana · {t('story.team.aline.role')}
           </p>
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <Link to="/menu" className="btn-primary">
-              Browse the menu <ArrowRight size={15} />
+              {t('cart.browse')} <ArrowRight size={15} />
             </Link>
-            <Link to="/contact" className="btn-quiet">Find us</Link>
+            <Link to="/contact" className="btn-quiet">{t('story.findUs')}</Link>
           </div>
         </div>
       </section>

@@ -4,7 +4,7 @@
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
 
-  /* Camellia palette — warm near-black, sampled from the reference UI.
+  /* Camelia palette — warm near-black, sampled from the reference UI.
      The previous values were green-cast (#0b120e has g > r); these are warmer
      (r slightly above g), which is what the reference screenshot shows. */
   --color-forest-950: #151610;
@@ -64,10 +64,7 @@
   }
 
   .kicker {
-    @apply flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.22em] text-amber-soft;
-  }
-  .kicker-line {
-    @apply inline-block h-px w-7 bg-amber-soft;
+    @apply text-[10px] font-bold uppercase tracking-[0.22em] text-amber-soft;
   }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-3 rounded-full bg-amber-logo px-6 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-forest-950 transition hover:bg-amber-pale disabled:cursor-not-allowed disabled:opacity-50;
@@ -104,7 +101,7 @@
   }
 }
 
-/* The Camellia mark glows softly on dark surfaces. */
+/* The Camelia mark glows softly on dark surfaces. */
 .logo-img {
   filter: drop-shadow(0 0 22px rgba(237, 155, 54, 0.18));
   object-fit: contain;

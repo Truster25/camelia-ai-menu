@@ -266,7 +266,7 @@ def recommend(
             + WEIGHTS["occasion"] * occasion
         ) * 100
 
-        reason_bits = reasons[:2] or ["a well-loved Camellia plate"]
+        reason_bits = reasons[:2] or ["a well-loved Camelia plate"]
         if occasion == 1.0:
             reason_bits.append(f"great for {answers.get('occasion', 'casual').replace('-', ' ')}")
         if dish.rating_count >= 3 and dish.rating_average >= 4:

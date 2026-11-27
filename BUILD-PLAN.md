@@ -1,4 +1,4 @@
-# Camellia menu recommendation system — build plan
+# Camelia menu recommendation system — build plan
 
 **Status:** Proposed implementation plan. No application code, dataset, deployment or evaluation has been completed. Update this file and the handover document as work progresses.
 
@@ -81,7 +81,7 @@ These inputs refine scope and real data; they do not prevent starting a clearly 
 
 ## Build progress — first prototype
 
-- A responsive landing-page prototype uses the supplied Camellia logo and the dark editorial reference. The hero photo is AI-generated; the menu entries and prices are fictional.
+- A responsive landing-page prototype uses the supplied Camelia logo and the dark editorial reference. The hero photo is AI-generated; the menu entries and prices are fictional.
 - React + TypeScript frontend retrieves three sample items from a FastAPI endpoint. Backend health and menu endpoints have basic tests.
 - A proposed entity/relationship design is in `docs/DATABASE-DESIGN.md`. PostgreSQL is not connected, and no database migration has been applied.
 - Authentication, menu management, orders and the recommendation engine are not implemented yet. Next: implement PostgreSQL models/migrations and a real menu API, followed by manager access.
@@ -115,7 +115,7 @@ The vertical slices from the plan above are now implemented end to end.
 **Not done / next**
 - Collaborative filtering: deliberately deferred until enough real ratings exist (the plan's
   minimum-data threshold), so keep it described as future work.
-- Usability testing with real Camellia customers (5–10 participants) for Chapter 6.
+- Usability testing with real Camelia customers (5–10 participants) for Chapter 6.
 - Screenshots, test-result tables and the final ERD export for the appendix.
 - Confirm the menu, prices and allergen data with the restaurant before real use.
 

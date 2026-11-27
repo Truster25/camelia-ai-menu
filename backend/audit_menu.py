@@ -18,7 +18,7 @@ import sys
 from collections import defaultdict
 
 from menu_data import CATEGORIES, DISHES
-from printed_prices import PAGE, PRINTED_PRICES
+from printed_prices import PAGE, PRINTED_PRICES, UNCONFIRMED_PRICES
 
 PAGE_TITLES = {
     1: "Soups, Salad Zone, Local fresh fruits",
@@ -59,6 +59,8 @@ def main() -> int:
                 printed = PRINTED_PRICES[name]
                 site = by_name[name]["price"] if name in by_name else None
                 verdict = "ok" if site == printed else f"DISAGREES ({site})"
+                if site == printed and name in UNCONFIRMED_PRICES:
+                    verdict = "carried forward; photo cropped"
                 if name not in by_name:
                     verdict = "MISSING FROM THE MENU"
                 print(f"{name:44s} {printed:>9,} {('' if site is None else format(site, ',')):>9s}  {verdict}")
@@ -69,12 +71,12 @@ def main() -> int:
         sections[row["category"]] += 1
 
     print("=" * 66)
-    print(f"printed menu       {len(PRINTED_PRICES)} dishes across {len(set(PAGE.values()))} photographed pages")
+    print(f"price reference    {len(PRINTED_PRICES)} entries across {len(set(PAGE.values()))} photographed pages")
     print(f"the app serves     {len(DISHES)} dishes in {len(CATEGORIES)} sections")
     print("-" * 66)
     print(f"prices that agree  {len(PRINTED_PRICES) - len(wrong)}")
     print(f"prices that differ {len(wrong)}")
-    print(f"printed but absent {len(missing)}")
+    print(f"recorded but absent {len(missing)}")
     print(f"served but unprinted {len(extra)}")
     print("=" * 66)
 
@@ -84,6 +86,8 @@ def main() -> int:
         print(f"  MISSING  {name} (printed at {PRINTED_PRICES[name]:,})")
     for name in extra:
         print(f"  UNPRINTED  {name} ({by_name[name]['price']:,})")
+    for name in sorted(UNCONFIRMED_PRICES):
+        print(f"  PRICE TO CONFIRM  {name} (kept at {PRINTED_PRICES[name]:,} RWF)")
 
     # ---- photography, dietary labels and the written record ----
     import re
@@ -93,8 +97,16 @@ def main() -> int:
     from menu_data import DISHES as menu
 
     print()
-    with_photo = sum(1 for row in menu if seed.dish_photo(row["name"]))
-    print(f"photographs        {with_photo} of {len(menu)} dishes ({len(menu) - with_photo} still on generated art)")
+    root = Path(__file__).resolve().parent.parent
+    public = root / "frontend" / "public"
+    missing_images = []
+    for row in menu:
+        image_url = seed.dish_photo(row["name"])
+        if not (public / image_url.lstrip("/")).is_file():
+            missing_images.append((row["name"], image_url))
+    print(f"dish images        {len(menu) - len(missing_images)} of {len(menu)} files present")
+    for name, url in missing_images:
+        print(f"  MISSING IMAGE  {name}: {url}")
 
     meat_words = ("beef", "chicken", "fish", "pork", "bacon", "ham", "sausage",
                   "mince", "steak", "nugget", "wing", "fillet", "stroganoff", "hotpot")
@@ -112,13 +124,12 @@ def main() -> int:
         if row["is_vegan"] and not row["is_vegetarian"]:
             label_faults.append(f"vegan but not vegetarian: {row['name']}")
         if row["is_halal"]:
-            label_faults.append(f"claims halal before Camellia confirmed it: {row['name']}")
+            label_faults.append(f"claims halal before Camelia confirmed it: {row['name']}")
     print(f"dietary labels     {'consistent with their ingredients' if not label_faults else str(len(label_faults)) + ' FAULT(S)'}")
     for fault in label_faults:
         print(f"  {fault}")
 
     # The documents must not disagree with the menu about its own size.
-    root = Path(__file__).resolve().parent.parent
     stale = []
     for doc in list((root / "docs").glob("*.md")) + [root / "README.md"]:
         # The dietary review counts how many dishes carry each label, which is
@@ -138,15 +149,13 @@ def main() -> int:
     for item in stale:
         print(f"  {item}")
 
-    problems = bool(wrong or missing or extra or label_faults or stale)
+    problems = bool(wrong or missing or extra or missing_images or label_faults or stale)
     print()
     if problems:
         print("NOT SETTLED. See the lines above.")
         return 1
-    print("Every price matches the printed menu, every label matches its ingredients,")
-    print("and every document agrees with the menu about its own size.")
-    if with_photo < len(menu):
-        print(f"Photography is the one thing still open: {len(menu) - with_photo} dishes to go.")
+    print("The catalog matches the price reference, and its image files are present.")
+    print("The dietary and document consistency checks passed.")
     return 0
 
 

@@ -17,12 +17,12 @@ export function Privacy() {
     <div data-header-theme="dark" className="bg-forest-950">
       <section className="px-5 pb-10 pt-32 sm:px-8 lg:px-10 lg:pt-40">
         <div className="mx-auto max-w-[760px]">
-          <p className="kicker"><span className="kicker-line" /> Plain English, no lawyer</p>
+          <p className="kicker">Plain English, no lawyer</p>
           <h1 className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.4rem)] leading-[1.08] tracking-[-0.03em] text-cream">
             What we keep, and <em className="not-italic text-amber-logo">what we don&apos;t.</em>
           </h1>
           <p className="mt-6 text-[15px] leading-[1.85] text-sage-300">
-            Camellia asks five questions to suggest a dish. That is the whole reason we hold any
+            Camelia asks five questions to suggest a dish. That is the whole reason we hold any
             information about you, and this page says exactly what that means.
           </p>
         </div>
@@ -37,7 +37,7 @@ export function Privacy() {
             },
             {
               q: 'Your password',
-              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camellia can read your password, and it cannot be recovered if you forget it, only reset.',
+              a: 'It is never stored. What is stored is a one-way hash produced with bcrypt. Nobody at Camelia can read your password, and it cannot be recovered if you forget it, only reset.',
             },
             {
               q: 'How your taste answers are used',

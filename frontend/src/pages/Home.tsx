@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, Quote, Sparkles, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, ListChecks, Quote, SlidersHorizontal, Sparkles, UtensilsCrossed } from 'lucide-react';
 import { api } from '../lib/api';
 import type { Dish } from '../lib/types';
 import { DishTile } from '../components/DishTile';
@@ -8,14 +8,15 @@ import { HeroSlideshow } from '../components/HeroSlideshow';
 import { StoryCarousel } from '../components/StoryCarousel';
 import type { StorySlide } from '../components/StoryCarousel';
 import type { HeroSlide } from '../components/HeroSlideshow';
-import { SectionHeading, Spinner } from '../components/ui';
-import { useCart } from '../context/CartContext';
+import { Spinner } from '../components/ui';
 import { useLang } from '../context/LanguageContext';
+import { tiltEvents } from '../lib/tilt';
+import './Home.css';
 
 const quizSteps = [
-  { n: '01', title: 'quiz.step1.title', body: 'quiz.step1.body' },
-  { n: '02', title: 'quiz.step2.title', body: 'quiz.step2.body' },
-  { n: '03', title: 'quiz.step3.title', body: 'quiz.step3.body' },
+  { icon: SlidersHorizontal, title: 'quiz.step1.title', body: 'quiz.step1.body' },
+  { icon: Sparkles, title: 'quiz.step2.title', body: 'quiz.step2.body' },
+  { icon: ListChecks, title: 'quiz.step3.title', body: 'quiz.step3.body' },
 ];
 
 /** Five clean plates that rotate every three seconds behind the landing hero. */
@@ -98,29 +99,31 @@ const drinkSlides: StorySlide[] = [
 ];
 
 export function Home() {
-  const [signatures, setSignatures] = useState<Dish[]>([]);
+  const [dishes, setDishes] = useState<Dish[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-  const { add: _add } = useCart();
   const { t } = useLang();
 
   const visibleDishes = useMemo(() => {
-    // Signature plates first, then whatever else the menu holds. No pills any
-    // more: the landing row is a taster, and /menu is where the full filter
-    // lives. Five plates, always.
-    return [...signatures]
+    return [...dishes]
       .sort(
         (a, b) =>
           Number(b.is_signature) - Number(a.is_signature) || b.popularity_seed - a.popularity_seed,
       )
-      .slice(0, 5);
-  }, [signatures]);
+      .slice(0, 4);
+  }, [dishes]);
+
+  const quizFacts = [
+    ...(status === 'ready' && dishes.length ? [[String(dishes.length), t('ai.stat1')]] : []),
+    ['40%', t('ai.stat2')],
+    ['25%', t('ai.stat3')],
+    ['15%', t('ai.stat4')],
+  ];
 
   useEffect(() => {
     api
       .get<Dish[]>('/dishes?sort=popularity')
-      .then((dishes) => {
-        // Keep the whole list: the pill row filters it in the browser.
-        setSignatures(dishes);
+      .then((menu) => {
+        setDishes(menu);
         setStatus('ready');
       })
       .catch(() => setStatus('error'));
@@ -195,127 +198,118 @@ export function Home() {
         </div>
       </section>
 
-      {/* ----------------------------------------------------------------- story */}
-      <StoryCarousel slides={storySlides} />
+      <div className="home-content">
+        <StoryCarousel slides={storySlides} />
 
-      {/* ------------------------------------------------------------ signatures */}
-      <section data-header-theme="dark" className="mx-auto max-w-[1600px] px-5 py-14 sm:px-8 lg:px-10 md:py-16">
-        <SectionHeading
-          kicker={t('dishes.kicker')}
-          title={(
-            <>
-              {t('dishes.title')} <em className="not-italic text-amber-soft">{t('dishes.title.accent')}</em>
-            </>
-          )}
-          description={t('dishes.body')}
-          action={
-            <Link
-              to="/menu"
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-6 py-3 text-[10px] font-bold uppercase tracking-[0.16em] text-sage-200 transition hover:border-white/50 hover:text-white"
-            >
-              {t('dishes.all')} <ArrowUpRight size={14} />
-            </Link>
-          }
-        />
-        {status === 'loading' && <Spinner label={t('dishes.loading')} />}
-        {status === 'error' && (
-          <div className="card mt-10 p-8">
-            <p className="font-display text-xl text-sage-100">{t('dishes.empty.title')}</p>
-            <p className="mt-2 text-sm text-sage-400">
-              {t('dishes.empty.body')}
-            </p>
-          </div>
-        )}
-        {status === 'ready' && (
-          <div className="mt-14 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:mt-16 lg:grid-cols-5">
-            {visibleDishes.map((dish) => (
-              <DishTile key={dish.id} dish={dish} category={dish.category_name} />
-            ))}
-          </div>
-        )}
+        <section aria-labelledby="home-dishes-title" data-header-theme="dark" className="home-gallery">
+          <div className="home-shell">
+            <header className="home-centered">
+              <p className="home-kicker">{t('dishes.kicker')}</p>
+              <h2 id="home-dishes-title" className="home-heading">
+                {t('dishes.title')} <em>{t('dishes.title.accent')}</em>
+              </h2>
+              <p className="home-description">{t('dishes.body')}</p>
+            </header>
 
-      </section>
+            {status === 'loading' && <Spinner label={t('dishes.loading')} />}
+            {status === 'error' && (
+              <div className="home-gallery-message" role="status">
+                <p className="font-display text-xl">{t('dishes.empty.title')}</p>
+                <p className="mt-2 text-sm text-sage-300">{t('dishes.empty.body')}</p>
+              </div>
+            )}
+            {status === 'ready' && (
+              <div className="home-dish-grid">
+                {visibleDishes.map((dish) => (
+                  <DishTile key={dish.id} dish={dish} category={dish.category_name} />
+                ))}
+              </div>
+            )}
 
-      {/* ------------------------------------------------------------ second card */}
-      {/* The drinks card is the same band as the story card, mirrored, so the
-          two read as one set and both get the same arrows and slide timing. */}
-      <StoryCarousel
-        slides={drinkSlides}
-        interval={7000}
-        mirrored
-        anchor="drinks"
-        label="Drinks at Camellia"
-      />
-
-      {/* --------------------------------------------------------------- AI block */}
-      <section data-header-theme="dark" className="relative overflow-hidden bg-forest-800">
-        <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full border border-amber-soft/15" aria-hidden="true" />
-        <div className="mx-auto grid max-w-[1600px] gap-12 px-5 py-20 sm:px-8 lg:px-10 md:py-28 lg:grid-cols-[1fr_1.1fr]">
-          <div>
-            <p className="kicker">
-              <span className="kicker-line" /> {t('ai.kicker')}
-            </p>
-            <h2 className="mt-5 font-display text-[clamp(2rem,4vw,3.2rem)] leading-[1.08] tracking-[-0.03em]">
-              {t('ai.title1')}
-              <br />
-              <em className="not-italic text-amber-soft">{t('ai.title2')}</em>
-            </h2>
-            <p className="mt-6 max-w-md text-sm leading-relaxed text-sage-300">
-              {t('ai.body')}
-            </p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Link to="/recommend" className="btn-primary">
-                <Sparkles size={15} /> {t('ai.cta')}
-              </Link>
-              <Link to="/how-it-works" className="btn-quiet">
-                {t('ai.how')}
+            <div className="home-actions home-actions--center">
+              <Link to="/menu" className="home-action home-action--solid tilt" {...tiltEvents}>
+                {t('dishes.all')} <ArrowUpRight size={17} aria-hidden="true" />
               </Link>
             </div>
-
-            <dl className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-              {[
-                [signatures.length ? String(signatures.length) : '130', t('ai.stat1')],
-                ['40%', t('ai.stat2')],
-                ['25%', t('ai.stat3')],
-                ['15%', t('ai.stat4')],
-              ].map(([value, label]) => (
-                <div key={label}>
-                  <dt className="font-display text-2xl text-amber-pale">{value}</dt>
-                  <dd className="mt-1 text-[9px] uppercase leading-relaxed tracking-[0.14em] text-sage-400">{label}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
+        </section>
 
-          <ol className="space-y-4">
-            {quizSteps.map((step) => (
-              <li key={step.n} className="card flex items-start gap-5 p-6">
-                <span className="font-display text-3xl text-amber-soft/70">{step.n}</span>
-                <div>
-                  <h3 className="font-display text-xl text-sage-100">{t(step.title)}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-sage-400">{t(step.body)}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+        <section aria-labelledby="home-quiz-title" data-header-theme="dark" className="home-quiz">
+          <div className="home-shell">
+            <header className="home-centered">
+              <p className="home-kicker">{t('ai.kicker')}</p>
+              <h2 id="home-quiz-title" className="home-heading">
+                {t('ai.title1')} <em>{t('ai.title2')}</em>
+              </h2>
+              <p className="home-description">{t('ai.body')}</p>
+            </header>
 
-      {/* ------------------------------------------------------------- testimonial */}
-      <section data-header-theme="light" className="bg-amber-logo text-forest-950">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-5 py-16 text-center sm:px-8">
-          <Quote size={28} strokeWidth={1.2} aria-hidden="true" />
-          <p className="max-w-2xl font-display text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
-            “I typed vegetarian, medium spice, mid budget, date night. It gave me the mushroom soup and the chocolate
-            fondant, exactly what I would have ordered after ten minutes of arguing with my friends.”
-          </p>
-          <Link to="/recommend" className="inline-flex items-center gap-2 rounded-full border border-forest-950/40 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] transition hover:bg-forest-950 hover:text-cream">
-            <UtensilsCrossed size={14} /> {t('quote.cta')}
-          </Link>
-        </div>
-      </section>
+            <div className="home-quiz-grid">
+              <ol className="home-quiz-steps">
+                {quizSteps.map(({ icon: Icon, title, body }) => (
+                  <li key={title} className="home-quiz-step tilt" {...tiltEvents}>
+                    <Icon className="home-quiz-step-icon" size={21} strokeWidth={1.6} aria-hidden="true" />
+                    <div>
+                      <h3>{t(title)}</h3>
+                      <p>{t(body)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
 
+              <div className="home-quiz-photo">
+                <img
+                  src="/images/dishes/vegetable-fajita.jpg"
+                  alt="Vegetable fajita served with rice, grilled vegetables and chapati"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+
+              <dl className="home-quiz-facts">
+                {quizFacts.map(([value, label]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="home-actions home-actions--center">
+              <Link to="/recommend" className="home-action home-action--solid tilt" {...tiltEvents}>
+                <Sparkles size={17} aria-hidden="true" /> {t('ai.cta')}
+              </Link>
+              <Link to="/how-it-works" className="home-action tilt" {...tiltEvents}>
+                {t('ai.how')} <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <StoryCarousel slides={drinkSlides} mirrored anchor="drinks" label="Drinks at Camelia" />
+
+        <section data-header-theme="dark" className="home-quote">
+          <div className="home-shell home-quote-card">
+            <div className="home-quote-copy">
+              <Quote size={28} strokeWidth={1.3} aria-hidden="true" />
+              <blockquote>
+                “I typed vegetarian, medium spice, mid budget, date night. It gave me the mushroom soup and the chocolate
+                fondant, exactly what I would have ordered after ten minutes of arguing with my friends.”
+              </blockquote>
+              <div className="home-actions">
+                <Link to="/recommend" className="home-action home-action--solid tilt" {...tiltEvents}>
+                  <UtensilsCrossed size={16} aria-hidden="true" /> {t('quote.cta')}
+                </Link>
+                <Link to="/contact" className="home-action tilt" {...tiltEvents}>
+                  {t('nav.book')} <ArrowUpRight size={16} aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+            <img src="/images/footer/footer-table.jpg" alt="" loading="lazy" decoding="async" />
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -2,25 +2,18 @@ import { Link } from 'react-router-dom';
 
 type LogoProps = {
   variant?: 'orange' | 'white';
-  /** Height utility, e.g. "h-11". Width follows the artwork's 1.85:1 ratio. */
+  /** Height utility, e.g. "h-11". Width follows the artwork. */
   className?: string;
   to?: string | null;
 };
 
-/**
- * Official Camellia logo.
- *
- * `logo-orange.png` / `logo-white.png` are the client-supplied artwork with the
- * transparent margins trimmed and downscaled (86 KB instead of 600 KB). The
- * original untrimmed files are kept as `camellia-orange.png` / `camellia-white.png`.
- * On dark backgrounds the white artwork is used; the orange mark sits on cream/amber panels.
- */
+/** Camelia coffee-cup wordmark in white for dark backgrounds or orange for light backgrounds. */
 export function Logo({ variant = 'orange', className = 'h-11', to = '/' }: LogoProps) {
-  const src = variant === 'white' ? '/images/logo-white.png' : '/images/logo-orange.png';
+  const src = `/images/camelia-logo-${variant}.png`;
   const image = (
     <img
       src={src}
-      alt="Camellia Café & Restaurant, Kigali"
+      alt="Camelia Café & Restaurant, Kigali"
       className={`logo-img w-auto ${className}`}
       width={560}
       height={variant === 'white' ? 267 : 302}
@@ -28,7 +21,7 @@ export function Logo({ variant = 'orange', className = 'h-11', to = '/' }: LogoP
   );
   if (to === null) return image;
   return (
-    <Link to={to} className="inline-flex shrink-0 items-center" aria-label="Camellia home">
+    <Link to={to} className="inline-flex shrink-0 items-center" aria-label="Camelia home">
       {image}
     </Link>
   );
