@@ -15,6 +15,8 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    func,
+    or_,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -38,6 +40,11 @@ class User(Base):
     ratings: Mapped[list["Rating"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
     favourites: Mapped[list["Favourite"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
+    @classmethod
+    def matches_email(cls, email: str):
+        normalized = email.strip().lower()
+        return or_(cls.email == normalized, func.lower(func.trim(cls.email)) == normalized)
 
     @property
     def is_admin(self) -> bool:

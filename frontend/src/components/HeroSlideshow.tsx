@@ -61,7 +61,7 @@ export function HeroSlideshow({ slides, interval = 4000, pauseOnHover = true, cl
       onFocus={() => pauseOnHover && setPaused(true)}
       onBlur={() => pauseOnHover && setPaused(false)}
       aria-roledescription="carousel"
-      aria-label="Signature Camellia dishes"
+      aria-label="Signature Camelia dishes"
     >
       {slides.map((slide, i) => {
         const active = i === index;

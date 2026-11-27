@@ -1,4 +1,4 @@
-# Test Results — Camellia AI Menu v1.0
+# Test Results — Camelia AI Menu v1.0
 
 **Date:** 11 November 2026
 **Environment:** Python 3.11.2 · Node.js 22.22.3 · SQLite (test database in the OS temp folder)
@@ -24,9 +24,9 @@ touches the developer's local `camelia.db`. Each module start seeds the full men
 |---|---|---|---|---|
 | 1 | Health | `test_health` | `status=ok`, database connected | PASS |
 | 2 | Compatibility | `test_legacy_menu_endpoint_keeps_its_shape` | old `/api/menu` still returns items with prices | PASS |
-| 3 | Seed | `test_menu_is_seeded_with_the_real_camellia_menu` | 17 sections, 136 dishes, names align | PASS |
+| 3 | Seed | `test_menu_is_seeded_with_the_real_camelia_menu` | 17 sections, expected catalog size, names align | PASS |
 | 4 | Menu | `test_dish_filters` | vegan / price / search filters correct | PASS |
-| 5 | Diet | `test_halal_filter_is_honest_while_unconfirmed` | no dish claims halal before Camellia confirms | PASS |
+| 5 | Diet | `test_halal_filter_is_honest_while_unconfirmed` | no dish claims halal before Camelia confirms | PASS |
 | 6 | Menu | `test_unknown_dish_returns_404` | 404 for missing dish | PASS |
 | 7 | Auth | `test_register_and_login` | 201 on register, 409 on duplicate, `/me` works | PASS |
 | 8 | Auth | `test_self_registration_cannot_create_an_admin` | requested `admin` role ignored | PASS |
@@ -93,7 +93,7 @@ TypeScript strict mode compiles with no errors and Vite reports no warnings.
 
 | Page | Check | Result |
 |---|---|---|
-| `/menu` | 136 dishes render, no horizontal overflow at 1440px, no broken images, no console errors | PASS |
+| `/menu` | The full demo menu rendered, with no horizontal overflow at 1440px, no broken images, no console errors | PASS |
 | `/menu` | Category chips, diet filter, price band and search all narrow the list | PASS |
 | `/` | Hero, story, signature dishes and footer photograph | PASS |
 | Quiz | Six questions, results carry reasons, choice is recorded | PASS |

@@ -2,7 +2,7 @@
 
 **Why this file exists.** The AI recommender filters on diet. If it tells a
 customer a dish is halal and it is not, that is a serious problem for them and
-for Camellia. The printed menu does not state halal status, gluten content or
+for Camelia. The printed menu does not state halal status, gluten content or
 vegan suitability for anything, so those labels were assigned conservatively
 from the listed ingredients and **must be confirmed by the restaurant before
 this site is shown to customers.**
@@ -14,19 +14,19 @@ this site is shown to customers.**
 | Label | Rule used | Set on |
 |---|---|---|
 | **Vegan** | The ingredients listed cannot contain an animal product. Practically: single-fruit and single-vegetable juices, black tea, soda, water. | 39 dishes |
-| **Vegetarian** | The listed ingredients contain no meat or fish. Eggs and dairy allowed. | 100 dishes |
+| **Vegetarian** | The listed ingredients contain no meat or fish. Eggs and dairy allowed. | 98 dishes |
 | **Halal** | **Never set. Not on any dish.** | 0 dishes, deliberately |
-| **Gluten free** | Only where nothing baked, battered, or thickened appears. | 67 dishes |
+| **Gluten free** | Only where nothing baked, battered, or thickened appears. | 64 dishes |
 
 ### Halal is deliberately empty
 
-Camellia's halal certification status is not stated anywhere on the menu, and it
+Camelia's halal certification status is not stated anywhere on the menu, and it
 is not something that can be inferred from a recipe. Until the restaurant
 confirms, every dish is marked *not halal*, which means **the halal filter will
 return nothing**. That is the safe failure: a customer who selects halal gets no
 dish rather than a wrong one.
 
-**Action:** if Camellia holds halal certification, tell us which dishes are
+**Action:** if Camelia holds halal certification, tell us which dishes are
 covered and the filter turns on properly.
 
 ---
@@ -37,12 +37,12 @@ Work down this list with the kitchen. Mark each item **yes**, **no**, or
 **unsure** for vegan, vegetarian and halal.
 
 ### Breakfast (6 dishes)
-- [ ] Spanish Omelette — has eggs and potatoes, no meat listed
+- [ ] Spanish Omelette — has eggs and is served with toasted bread
 - [ ] Chipati Omelette — chapati may contain ghee or butter
-- [ ] Special Omelette — depends on the three fillings chosen
+- [ ] Special Omelette — contains beef ham and cheese
 - [ ] Create Your Omelette — depends on fillings
-- [ ] Camellia Steak Omelette — contains beef
-- [ ] Camellia Executive Breakfast — contains sausage and bacon
+- [ ] Camelia Steak Omelette — contains beef
+- [ ] Camelia Executive Breakfast — confirm the accompaniments and allergens
 
 **Key question: are the chipatis made with butter or ghee?**
 
@@ -57,9 +57,9 @@ Work down this list with the kitchen. Mark each item **yes**, **no**, or
 
 ### Salads (4 dishes)
 - [ ] Fresh Garden Mix — has boiled egg and cheese
-- [ ] American Garden — has boiled egg, honey mustard
-- [ ] Beef Strips — contains beef, soy sauce, sesame
-- [ ] Camellia Chef Salad — contains beef ham
+- [ ] American Garden — has poached chicken, boiled egg, cheese and honey mustard
+- [ ] Beef Strips — contains beef, soy sauce, sesame and egg
+- [ ] Camelia Chef Salad — contains beef ham, egg and cheese
 
 **Key question: is the vinaigrette made with any animal product?**
 
@@ -69,7 +69,7 @@ Work down this list with the kitchen. Mark each item **yes**, **no**, or
 - [ ] Tramazzin Chicken Cheese — contains chicken
 - [ ] Croque Madame — egg and cheese
 - [ ] Croque Monsieur — contains ham (**pork — affects halal**)
-- [ ] Camellia Nice Face — contains chicken
+- [ ] Camelia Nice Face — contains chicken
 
 **Key question: does the ham in Croque Monsieur contain pork?**
 
@@ -86,7 +86,7 @@ Work down this list with the kitchen. Mark each item **yes**, **no**, or
 ### Light Dishes (7 dishes)
 - [ ] French Fries Salad — chips and salad, fries may share a fryer with meat
 - [ ] Spaghetti Bolognaise — contains minced beef
-- [ ] Camellia Chipati Wrap — depends on filling
+- [ ] Camelia Chipati Wrap — depends on filling
 - [ ] Fried Chicken Wings — contains chicken
 - [ ] Fish Fingers — contains fish, battered (**gluten**)
 - [ ] Chicken Nuggets — contains chicken, coated (**gluten**)
@@ -97,9 +97,10 @@ Work down this list with the kitchen. Mark each item **yes**, **no**, or
 ### Kingsize Meals (7 dishes)
 All contain meat or fish except none — check each sauce for alcohol or stock.
 
-### Mexican & Pilau (3 dishes)
+### Mexican & Pilau (4 dishes)
 - [ ] Quesadillas — cheese and choice of filling
 - [ ] Fajita Platter — choice of filling
+- [ ] Vegetable Fajita — confirm the bean stock, chapati and salsa
 - [ ] Pilau — choice of beef, chicken or fish
 
 ### Asian Curries (4 dishes)

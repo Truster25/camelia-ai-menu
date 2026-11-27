@@ -7,7 +7,7 @@ A question that comes up when this project is shown, in plain words.
 ## The short answer
 
 The app records **how** a guest intends to pay and **whether the restaurant has
-received** that money. It does not move money. Camellia takes payment at the
+received** that money. It does not move money. Camelia takes payment at the
 counter or on MoMo exactly as it does today; the app is the order pad, not the
 till.
 
@@ -16,11 +16,11 @@ till.
 **A real gateway is a business decision, not a coding one.** To take card or
 mobile money online, the restaurant needs a merchant account in its own name,
 a settlement bank account, and a signed agreement with the provider. Those are
-Camellia's to sign, not something to bolt on while building a menu. Wiring a
+Camelia's to sign, not something to bolt on while building a menu. Wiring a
 gateway into a demo would either be fake, and dishonest, or it would need the
 restaurant's credentials, which do not exist yet.
 
-**Money has to reach Camellia's account, not ours.** A gateway tested with
+**Money has to reach Camelia's account, not ours.** A gateway tested with
 somebody else's credentials is a liability, not a feature. Until the merchant
 account exists, any "payment" the app claimed to take would be theatre.
 
@@ -46,7 +46,7 @@ statuses and the audit trail are already in place.
 
 ## What it would take to go live with real money
 
-1. Camellia opens a merchant account with a provider such as MTN MoMo or a card
+1. Camelia opens a merchant account with a provider such as MTN MoMo or a card
    processor, in the restaurant's name.
 2. We add the provider's checkout call in place of the current "record the
    intention" step.
@@ -59,7 +59,7 @@ admin reconciliation all already work.
 ## How to say it if asked
 
 > Payment is deliberately not connected to a real gateway yet. Taking money
-> online needs a merchant account in Camellia's name, and that is the
+> online needs a merchant account in Camelia's name, and that is the
 > restaurant's decision to make. What is built is the part that has to be
 > right first: the order records how the guest means to pay and whether the
 > money has arrived, and only staff can confirm it. When the merchant account

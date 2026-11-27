@@ -1,4 +1,4 @@
-# Camellia AI Menu — Database Schema (v1.0)
+# Camelia AI Menu — Database Schema (v1.0)
 
 The implemented schema. It supersedes the earlier proposal in `DATABASE-DESIGN.md`
 (which described an eight-entity design; the built system uses the eight tables below).

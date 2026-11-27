@@ -1,4 +1,4 @@
-"""Seed the database with the real Camellia menu (16 categories, 130 dishes) and demo users.
+"""Seed the database with the Camelia menu and demo users.
 
 Run:  python seed.py          (idempotent, safe to run again)
       python seed.py --reset  (drops and recreates every table first)
@@ -9,16 +9,16 @@ import argparse
 import random
 import re
 import unicodedata
-from pathlib import Path
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.database import Base, SessionLocal, engine, init_db
 from app.models import Category, Dish, Order, OrderItem, Rating, RecommendationLog, User
 from app.security import hash_password
 
-# The menu itself lives in menu_data.py: 130 dishes transcribed from photographs
+# The menu itself lives in menu_data.py: dishes transcribed from photographs
 # of the printed menu, with the fields the menu does not print (diet, spice,
 # prep time) marked conservatively and documented in docs/DIETARY-REVIEW.md.
 from menu_data import CATEGORIES, DISHES as MENU  # noqa: E402
@@ -31,52 +31,61 @@ DEMO_USERS = [
     ("Jean Bosco Habimana", "kitchen@camelia.rw", "Kitchen123", "kitchen"),
 ]
 
-# Photography per dish. Only photos that actually exist in
-# frontend/public/images/ are listed; anything missing falls back to generated
-# art, so a missing file never breaks a card.
-#
-# These 25 photographs were made for the demo menu. They are reused here only
-# where the subject genuinely matches the real dish. Everything else has no
-# photograph yet and shows generated art until the restaurant's own photos
-# arrive, which is honest: an invented picture of a dish Camellia sells is worse
-# than a placeholder.
+
+def _add_missing_users(db: Session, accounts: list[tuple[str, str, str, str]]) -> list[User]:
+    added = []
+    for name, email, password, role in accounts:
+        if db.scalar(select(User.id).where(User.matches_email(email)).limit(1)) is None:
+            user = User(name=name, email=email, password_hash=hash_password(password), role=role)
+            db.add(user)
+            added.append(user)
+    return added
+
+
+# Matching images already used on the home page keep their original URLs.
 IMAGES = {
-    # breakfast
-    "Chipati Omelette": "/images/hero/dish-omelette.jpg",
-    "Spanish Omelette": "/images/hero/dish-breakfast.jpg",
-    "Camellia Executive Breakfast": "/images/hero/dish-granola.jpg",
-    # soups and salads
-    "Vegetable Soup": "/images/hero/dish-soup.jpg",
-    "Fresh Garden Mix Salad": "/images/hero/dish-salad.jpg",
-    "American Garden Salad": "/images/hero/dish-avocado-salad.jpg",
-    "Beef Strips Salad": "/images/hero/dish-sambaza.jpg",
-    # sandwiches, burgers
-    "Camellia Cheese Beef Burger": "/images/hero/dish-burger.jpg",
-    # kingsize and curries
-    "Beef Chicken Fish Stew": "/images/hero/dish-ugali.jpg",
-    "Beef Steak": "/images/hero-dish.jpg",
-    "Chicken Curry": "/images/hero/dish-brochette.jpg",
-    "Fish Fillet": "/images/hero/dish-tilapia.jpg",
-    "Beef Curry": "/images/hero/dish-goat-brochette.jpg",
-    "Vegetable Curry": "/images/hero/dish-isombe.jpg",
-    # drinks
-    "Latte": "/images/hero/dish-latte.jpg",
-    "Cappuccino": "/images/hero/dish-tea.jpg",
+    "Camelia Cheese Beef Burger": "/images/hero/dish-burger.jpg",
     "Iced Coffee Mocha": "/images/hero/dish-icedmocha.jpg",
-    "Camellia African Coffee": "/images/hero/dish-pourover.jpg",
+    "Camelia African Coffee": "/images/hero/dish-pourover.jpg",
     "Passion Juice": "/images/hero/dish-passionjuice.jpg",
     "Lemon Juice": "/images/hero/dish-lemonade.jpg",
-    "Mango Breeze": "/images/hero/dish-smoothie.jpg",
-    # desserts
-    "Chocolate Cake": "/images/hero/dish-fondant.jpg",
     "Banana Cake": "/images/hero/dish-banana-cake.jpg",
-    "Create Your Own Juice": "/images/hero/dish-fruitplatter.jpg",
-    "Spaghetti Bolognaise": "/images/hero/dish-pasta.jpg",
+}
+
+# The original demo's name and image pairs identify rows that can be retired
+# when refreshing an old database. Orders and ratings still reference them.
+LEGACY_DEMO_IMAGES = {
+    "Katogo": "/images/hero/dish-katogo.jpg",
+    "Camelia Big Breakfast": "/images/hero/dish-breakfast.jpg",
+    "Akabenzi Omelette": "/images/hero/dish-omelette.jpg",
+    "Granola & Yoghurt Bowl": "/images/hero/dish-granola.jpg",
+    "Camelia Garden Salad": "/images/hero/dish-salad.jpg",
+    "Sambaza Platter": "/images/hero/dish-sambaza.jpg",
+    "Avocado & Tomato Salad": "/images/hero/dish-avocado-salad.jpg",
+    "Mushroom Soup": "/images/hero/dish-soup.jpg",
+    "Ubugali & Beef Stew": "/images/hero/dish-ugali.jpg",
+    "Isombe": "/images/hero/dish-isombe.jpg",
+    "Grilled Tilapia": "/images/hero/dish-tilapia.jpg",
+    "Chicken Brochette": "/images/hero-dish.jpg",
+    "Beef Brochette": "/images/hero/dish-brochette.jpg",
+    "Goat Brochette": "/images/hero/dish-goat-brochette.jpg",
+    "Creamy Chicken Pasta": "/images/hero/dish-pasta.jpg",
+    "Beef Burger & Fries": "/images/hero/dish-burger.jpg",
+    "Camelia Signature Latte": "/images/hero/dish-latte.jpg",
+    "Rwandan Single-Origin Pour Over": "/images/hero/dish-pourover.jpg",
+    "Iced Mocha": "/images/hero/dish-icedmocha.jpg",
+    "African Spiced Tea": "/images/hero/dish-tea.jpg",
+    "Banana & Cinnamon Cake": "/images/hero/dish-banana-cake.jpg",
+    "Chocolate Fondant": "/images/hero/dish-fondant.jpg",
+    "Tropical Fruit Platter": "/images/hero/dish-fruitplatter.jpg",
+    "Passion Fruit Juice": "/images/hero/dish-passionjuice.jpg",
+    "Mango & Ginger Smoothie": "/images/hero/dish-smoothie.jpg",
+    "Ginger Lemonade": "/images/hero/dish-lemonade.jpg",
 }
 
 
 def _slug(name: str) -> str:
-    """Turn a dish name into the filename its photograph would have.
+    """Turn a dish name into its image filename.
 
     "Creamed Frappé" becomes "creamed-frappe", so a photo dropped into
     frontend/public/images/dishes/ is picked up automatically. That keeps the
@@ -86,20 +95,9 @@ def _slug(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9]+", "-", plain).strip("-").lower()
 
 
-DISH_PHOTO_DIR = (
-    Path(__file__).resolve().parent.parent / "frontend" / "public" / "images" / "dishes"
-)
-
-
-def dish_photo(name: str) -> str | None:
-    """The photograph for a dish: the curated one first, then the folder."""
-    curated = IMAGES.get(name)
-    if curated:
-        return curated
-    candidate = DISH_PHOTO_DIR / f"{_slug(name)}.jpg"
-    if candidate.exists():
-        return f"/images/dishes/{candidate.name}"
-    return None
+def dish_photo(name: str) -> str:
+    """Return a seeded dish's public image URL, including on backend-only hosts."""
+    return IMAGES.get(name, f"/images/dishes/{_slug(name)}.jpg")
 
 
 COMMENTS = [
@@ -132,17 +130,45 @@ def seed(reset: bool = False) -> None:
                 category.name: category for category in db.scalars(select(Category)).all()
             }
             corrected = 0
+            added_sections = 0
+            for name, description, order in CATEGORIES:
+                category = categories_by_name.get(name)
+                if category is None:
+                    category = Category(name=name, description=description, sort_order=order)
+                    db.add(category)
+                    categories_by_name[name] = category
+                    added_sections += 1
+                elif category.sort_order != order:
+                    category.sort_order = order
+                    corrected += 1
+            if added_sections:
+                db.flush()
+
+            retired = 0
+            known_dishes = set()
             for dish in db.scalars(select(Dish)).all():
+                known_dishes.add(dish.name)
+                row = source.get(dish.name)
+                if row is None:
+                    if (
+                        dish.is_available
+                        and dish.image_url
+                        and LEGACY_DEMO_IMAGES.get(dish.name) == dish.image_url
+                    ):
+                        dish.is_available = False
+                        retired += 1
+                    continue
+
                 wanted = dish_photo(dish.name)
-                # Backfill a missing photo, and also correct one that had to
-                # share another dish's photo before its own existed.
-                if wanted and dish.image_url != wanted:
+                # Replace old demo artwork and preserve URLs supplied by staff.
+                if dish.image_url != wanted and (
+                    not dish.image_url
+                    or dish.image_url.startswith("/images/hero/")
+                    or dish.image_url == "/images/hero-dish.jpg"
+                ):
                     dish.image_url = wanted
                     filled += 1
 
-                row = source.get(dish.name)
-                if row is None:
-                    continue
                 for field, column in (
                     ("is_vegetarian", "is_vegetarian"),
                     ("is_vegan", "is_vegan"),
@@ -151,6 +177,8 @@ def seed(reset: bool = False) -> None:
                     ("spice_level", "spice_level"),
                     ("price", "price_rwf"),
                     ("description", "description"),
+                    ("ingredients", "ingredients"),
+                    ("allergens", "allergens"),
                 ):
                     if getattr(dish, column) != row[field]:
                         setattr(dish, column, row[field])
@@ -164,40 +192,16 @@ def seed(reset: bool = False) -> None:
                     corrected += 1
             # The demo accounts are part of the promised setup, so a missing one
             # is repaired here rather than left for someone to discover on stage.
-            missing_users = 0
-            for name, email, password, role in DEMO_USERS:
-                if db.scalar(select(User).where(User.email == email)) is None:
-                    db.add(
-                        User(
-                            name=name,
-                            email=email,
-                            password_hash=hash_password(password),
-                            role=role,
-                        )
-                    )
-                    missing_users += 1
-
-            # A dish added to menu_data.py must reach a database that already
-            # exists, and a new section must exist before its dishes do.
-            added_sections = 0
-            known_sections = {c.name for c in db.scalars(select(Category)).all()}
-            for name, description, order in CATEGORIES:
-                if name not in known_sections:
-                    db.add(Category(name=name, description=description, sort_order=order))
-                    added_sections += 1
-            if added_sections:
-                db.flush()
+            missing_users = len(_add_missing_users(db, DEMO_USERS))
 
             added_dishes = 0
-            known_dishes = {d.name for d in db.scalars(select(Dish)).all()}
-            sections = {c.name: c for c in db.scalars(select(Category)).all()}
             for row in MENU:
                 if row["name"] in known_dishes:
                     continue
                 db.add(Dish(
                     name=row["name"],
                     description=row["description"],
-                    category_id=sections[row["category"]].id,
+                    category_id=categories_by_name[row["category"]].id,
                     price_rwf=row["price"],
                     cuisine=row["cuisine"],
                     occasions=row["occasions"],
@@ -218,13 +222,14 @@ def seed(reset: bool = False) -> None:
                 ))
                 added_dishes += 1
 
-            if filled or missing_users or corrected or added_dishes or added_sections:
+            if filled or missing_users or corrected or added_dishes or added_sections or retired:
                 db.commit()
-                if added_dishes:
+                if added_dishes or added_sections:
                     print(f"Added {added_dishes} dish(es) and {added_sections} section(s).")
                 print(
                     f"Database already seeded, backfilled {filled} dish image(s), "
-                    f"{missing_users} account(s) and corrected {corrected} dish field(s)."
+                    f"{missing_users} account(s), corrected {corrected} catalog field(s), "
+                    f"and retired {retired} prototype dish(es)."
                 )
             else:
                 print("Database already seeded, nothing to do. Use --reset to rebuild.")
@@ -265,25 +270,19 @@ def seed(reset: bool = False) -> None:
             dishes.append(dish)
         db.flush()
 
-        users: dict[str, User] = {}
-        for name, email, password, role in DEMO_USERS:
-            user = User(name=name, email=email, password_hash=hash_password(password), role=role)
-            db.add(user)
-            users[email] = user
-        # A few extra demo customers so the admin dashboard is not empty.
         rng = random.Random(7)
-        for index, first in enumerate(["Jean", "Claudine", "Eric", "Diane", "Patrick", "Sandrine"]):
-            user = User(
-                name=f"{first} Demo",
-                email=f"{first.lower()}@example.rw",
-                password_hash=hash_password("Demo1234"),
-                role="customer",
-            )
-            db.add(user)
-            users[user.email] = user
+        sample_customers = [
+            (f"{first} Demo", f"{first.lower()}@example.rw", "Demo1234", "customer")
+            for first in ("Jean", "Claudine", "Eric", "Diane", "Patrick", "Sandrine")
+        ]
+        users = _add_missing_users(db, DEMO_USERS + sample_customers)
         db.flush()
 
-        customer_pool = [u for u in users.values() if u.role == "customer"]
+        customer_pool = [u for u in users if u.role == "customer"]
+        if not customer_pool:
+            db.commit()
+            print(f"Seeded {len(categories)} categories and {len(dishes)} dishes. Existing accounts kept.")
+            return
         for dish in rng.sample(dishes, 12):
             for user in rng.sample(customer_pool, rng.randint(1, 3)):
                 stars, comment = rng.choice(COMMENTS)

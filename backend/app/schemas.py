@@ -28,6 +28,18 @@ class RegisterIn(BaseModel):
     # own the restaurant. Staff are promoted by an administrator, below.
     role: Literal["customer"] = "customer"
 
+    @field_validator("name", mode="before")
+    @classmethod
+    def strip_name(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("password")
+    @classmethod
+    def password_fits_bcrypt(cls, value: str) -> str:
+        if len(value.encode("utf-8")) > 72:
+            raise ValueError("Use a password no longer than 72 bytes. Some characters use more than one byte.")
+        return value
+
 
 class LoginIn(BaseModel):
     email: EmailStr

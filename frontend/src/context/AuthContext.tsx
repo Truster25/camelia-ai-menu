@@ -6,7 +6,7 @@ import type { User } from '../lib/types';
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<User>;
+  login: (email: string, password: string, remember?: boolean) => Promise<User>;
   register: (name: string, email: string, password: string) => Promise<User>;
   logout: () => void;
   isAdmin: boolean;
@@ -44,9 +44,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('camelia:unauthorized', onUnauthorized);
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string, remember = true) => {
     const data = await api.post<TokenResponse>('/auth/login', { email, password });
-    tokenStore.set(data.access_token);
+    tokenStore.set(data.access_token, remember);
     setUser(data.user);
     return data.user;
   }, []);

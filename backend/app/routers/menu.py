@@ -10,14 +10,18 @@ from sqlalchemy.orm import Session, selectinload
 from ..database import get_db
 from ..models import Category, Dish
 from ..schemas import CategoryOut, DishOut
-from ..serializers import serialise_dish
+from ..serializers import serialise_dish, slugify
 
 router = APIRouter(tags=["menu"])
 
 
 @router.get("/categories", response_model=list[CategoryOut])
 def list_categories(db: Session = Depends(get_db)) -> list[CategoryOut]:
-    rows = db.scalars(select(Category).order_by(Category.sort_order)).all()
+    rows = db.scalars(
+        select(Category)
+        .where(Category.dishes.any(Dish.is_available.is_(True)))
+        .order_by(Category.sort_order)
+    ).all()
     return [CategoryOut.model_validate(row) for row in rows]
 
 
@@ -73,7 +77,8 @@ def list_dishes(
             ]
 
     if category:
-        dishes = [d for d in dishes if d.category and d.category.name.lower().replace(" ", "-") != category.lower()]
+        category_slug = slugify(category)
+        dishes = [d for d in dishes if d.category and slugify(d.category.name) == category_slug]
 
     items = [serialise_dish(d) for d in dishes]
     if sort == "price":

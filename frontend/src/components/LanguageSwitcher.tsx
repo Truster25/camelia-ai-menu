@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, Globe } from 'lucide-react';
+import { Check, ChevronDown, Globe } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
 import { LANGUAGES } from '../lib/i18n';
 
@@ -7,25 +7,23 @@ type Props = {
   /** Dark ink for cream backgrounds, light ink for photographs and dark bands. */
   tone?: 'light' | 'dark';
   className?: string;
+  variant?: 'header' | 'footer';
 };
 
 /**
  * The language control.
  *
- * A globe with the two-letter code, because three full language names would
- * not fit in the header on a phone. The names appear in the menu, each written
- * in its own language — an English speaker looking for French finds
- * "Français", and a Kinyarwanda speaker finds "Kinyarwanda", not "RW".
- *
- * The menu closes on outside click and on Escape, and the current choice is
- * marked, so it is usable with a keyboard alone.
+ * The header uses a short language code. The footer has room for the full name.
+ * The choices use native language names, whichever language is active.
  */
-export function LanguageSwitcher({ tone = 'light', className = '' }: Props) {
-  const { lang, setLang } = useLang();
+export function LanguageSwitcher({ tone = 'light', className = '', variant = 'header' }: Props) {
+  const { lang, setLang, t } = useLang();
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const triggerButton = useRef<HTMLButtonElement>(null);
 
   const current = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
+  const footer = variant === 'footer';
 
   useEffect(() => {
     if (!open) return;
@@ -34,7 +32,10 @@ export function LanguageSwitcher({ tone = 'light', className = '' }: Props) {
       if (!wrap.current?.contains(event.target as Node)) setOpen(false);
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false);
+      if (event.key === 'Escape') {
+        setOpen(false);
+        if (wrap.current?.contains(document.activeElement)) triggerButton.current?.focus();
+      }
     };
 
     document.addEventListener('mousedown', onDown);
@@ -53,22 +54,28 @@ export function LanguageSwitcher({ tone = 'light', className = '' }: Props) {
   return (
     <div ref={wrap} className={`relative ${className}`}>
       <button
+        ref={triggerButton}
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Language: ${current.label}. Change language`}
-        className={`inline-flex items-center gap-1.5 rounded-full px-1 py-1 text-[10px] font-bold uppercase tracking-[0.14em] transition ${trigger}`}
+        aria-label={`${t('common.language')}: ${current.label}`}
+        className={`inline-flex items-center gap-1.5 rounded-full font-bold transition ${trigger} ${footer
+          ? 'min-h-11 border border-cream/20 px-3.5 text-xs hover:border-amber-soft'
+          : 'px-1 py-1 text-[10px] uppercase tracking-[0.14em]'}`}
       >
-        <Globe size={14} strokeWidth={1.7} />
-        {current.short}
+        <Globe size={14} strokeWidth={1.7} aria-hidden="true" />
+        {footer ? current.label : current.short}
+        {footer && <ChevronDown size={13} aria-hidden="true" />}
       </button>
 
       {open && (
         <ul
           role="listbox"
-          aria-label="Language"
-          className="absolute right-0 top-[calc(100%+10px)] z-[70] w-[168px] overflow-hidden rounded-[6px] border border-ink/10 bg-cream py-1.5 text-ink shadow-[0_18px_50px_-18px_rgba(0,0,0,0.55)]"
+          aria-label={t('common.language')}
+          className={`absolute z-[70] w-[168px] overflow-hidden rounded-[6px] border border-ink/10 bg-cream py-1.5 text-ink shadow-[0_18px_50px_-18px_rgba(0,0,0,0.55)] ${footer
+            ? 'bottom-[calc(100%+10px)] left-0 sm:left-1/2 sm:-translate-x-1/2'
+            : 'right-0 top-[calc(100%+10px)]'}`}
         >
           {LANGUAGES.map((option) => {
             const on = option.code === lang;
@@ -81,6 +88,7 @@ export function LanguageSwitcher({ tone = 'light', className = '' }: Props) {
                   onClick={() => {
                     setLang(option.code);
                     setOpen(false);
+                    triggerButton.current?.focus();
                   }}
                   className={`flex w-full items-center justify-between gap-2 px-3.5 py-2 text-left text-[12.5px] transition hover:bg-[#8a5a2b]/10 ${
                     on ? 'font-semibold text-[#8a5a2b]' : 'text-[#3a3d34]'
