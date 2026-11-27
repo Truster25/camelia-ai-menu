@@ -4,8 +4,10 @@ import {
   BarChart3,
   ChefHat,
   ClipboardList,
+  ImageOff,
   Pencil,
   Plus,
+  QrCode,
   RefreshCw,
   Star,
   Trash2,
@@ -13,13 +15,14 @@ import {
   Users,
   Utensils,
 } from 'lucide-react';
-import { api, ApiError, formatDate, formatRwf } from '../lib/api';
+import { api, ApiError, assetUrl, formatDate, formatRwf } from '../lib/api';
 import type { Analytics, Category, Dish, Order } from '../lib/types';
 import { EmptyState, ErrorNote, SectionHeading, Spinner, StatusPill } from '../components/ui';
 import { DishEditModal } from '../components/admin/DishEditModal';
+import { TableQrCodes } from '../components/admin/TableQrCodes';
 import { useAuth } from '../context/AuthContext';
 
-type Tab = 'overview' | 'dishes' | 'orders' | 'customers';
+type Tab = 'overview' | 'dishes' | 'orders' | 'customers' | 'qr';
 
 const statusOrder = ['pending', 'accepted', 'preparing', 'ready', 'completed', 'cancelled'];
 
@@ -130,6 +133,7 @@ export function Admin() {
           ['overview', 'Overview', <BarChart3 size={14} key="i" />],
           ['dishes', 'Menu', <Utensils size={14} key="i" />],
           ['orders', 'Orders', <ClipboardList size={14} key="i" />],
+          ['qr', 'Table QR codes', <QrCode size={14} key="i" />],
           ['customers', 'Staff & people', <Users size={14} key="i" />],
         ] as [Tab, string, JSX.Element][])
           // Kitchen sees orders and nothing else. Showing tabs that answer 403
@@ -309,6 +313,7 @@ export function Admin() {
               <table className="w-full min-w-[820px] text-left">
                 <thead className="border-b border-white/10 text-[9px] uppercase tracking-[0.16em] text-sage-400">
                   <tr>
+                    <th className="table-cell font-normal">Photo</th>
                     <th className="table-cell font-normal">Dish</th>
                     <th className="table-cell font-normal">Category</th>
                     <th className="table-cell font-normal">Price</th>
@@ -321,6 +326,15 @@ export function Admin() {
                 <tbody className="divide-y divide-white/5">
                   {dishes.map((dish) => (
                     <tr key={dish.id} className="hover:bg-white/[0.03]">
+                      <td className="table-cell">
+                        <div className="grid h-11 w-11 place-items-center overflow-hidden rounded-lg border border-white/10 bg-forest-950/60">
+                          {assetUrl(dish.image_url) ? (
+                            <img src={assetUrl(dish.image_url)!} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            <ImageOff size={14} className="text-sage-500" aria-hidden="true" />
+                          )}
+                        </div>
+                      </td>
                       <td className="table-cell">
                         <span className="text-sage-100">{dish.name}</span>
                         {dish.is_signature && <span className="ml-2 text-[9px] uppercase tracking-[0.1em] text-amber-soft">signature</span>}
@@ -419,6 +433,8 @@ export function Admin() {
           )}
         </div>
       )}
+
+      {tab === 'qr' && <TableQrCodes />}
 
       {tab === 'customers' && <CustomersTab />}
 

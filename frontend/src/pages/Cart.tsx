@@ -4,15 +4,20 @@ import { Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { api, ApiError, formatRwf } from '../lib/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useLang } from '../context/LanguageContext';
 import { DishArt } from '../components/DishCard';
 import { EmptyState, ErrorNote } from '../components/ui';
 import type { Order } from '../lib/types';
+import { getSavedTable } from '../lib/table';
 
 export function Cart() {
   const { lines, total, count, setQuantity, remove, clear } = useCart();
   const { user } = useAuth();
+  const { t } = useLang();
   const navigate = useNavigate();
-  const [table, setTable] = useState('');
+  // Pre-filled when a table's QR code brought the guest here; still a plain
+  // editable field, so a guest who prefers to type their own table can.
+  const [table, setTable] = useState(getSavedTable);
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [payment, setPayment] = useState<'cash' | 'momo' | 'card'>('cash');
@@ -43,19 +48,19 @@ export function Cart() {
 
   return (
     <div data-header-theme="dark" className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
-      <p className="kicker"><span className="kicker-line" /> Your pre-order</p>
-      <h1 className="mt-4 font-display text-[clamp(2rem,4.4vw,3.2rem)] tracking-[-0.03em]">Your table, ready when you are.</h1>
+      <p className="kicker">{t('cart.kicker')}</p>
+      <h1 className="mt-4 font-display text-[clamp(2rem,4.4vw,3.2rem)] tracking-[-0.03em]">{t('cart.heroTitle')}</h1>
       <p className="mt-3 max-w-xl text-sm text-sage-400">
-        Pre-order at regular menu prices and pay at the table. The kitchen begins as soon as you arrive.
+        {t('cart.heroBody')}
       </p>
 
       {count === 0 ? (
         <div className="mt-10">
           <EmptyState
             icon={<ShoppingBag size={22} />}
-            title="Your cart is empty"
-            body="Add a dish from the menu, or let the AI pick your top five in under a minute."
-            action={<Link to="/menu" className="btn-primary">Browse the menu</Link>}
+            title={t('cart.empty.title')}
+            body={t('cart.empty.body')}
+            action={<Link to="/menu" className="btn-primary">{t('cart.browse')}</Link>}
           />
         </div>
       ) : (
@@ -73,16 +78,16 @@ export function Cart() {
                   </p>
                   <div className="mt-3 flex items-center gap-3">
                     <div className="inline-flex items-center rounded-full border border-white/15">
-                      <button onClick={() => setQuantity(line.dish.id, line.quantity - 1)} className="grid h-8 w-8 place-items-center text-sage-300 hover:text-white" aria-label={`Fewer ${line.dish.name}`}>
+                      <button onClick={() => setQuantity(line.dish.id, line.quantity - 1)} className="grid h-8 w-8 place-items-center text-sage-300 hover:text-white" aria-label={`${t('cart.fewer')} ${line.dish.name}`}>
                         <Minus size={12} />
                       </button>
                       <span className="w-7 text-center text-xs">{line.quantity}</span>
-                      <button onClick={() => setQuantity(line.dish.id, line.quantity + 1)} className="grid h-8 w-8 place-items-center text-sage-300 hover:text-white" aria-label={`More ${line.dish.name}`}>
+                      <button onClick={() => setQuantity(line.dish.id, line.quantity + 1)} className="grid h-8 w-8 place-items-center text-sage-300 hover:text-white" aria-label={`${t('cart.more')} ${line.dish.name}`}>
                         <Plus size={12} />
                       </button>
                     </div>
                     <button onClick={() => remove(line.dish.id)} className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-sage-400 hover:text-red-300">
-                      <Trash2 size={12} /> Remove
+                      <Trash2 size={12} /> {t('cart.remove')}
                     </button>
                   </div>
                 </div>
@@ -91,42 +96,42 @@ export function Cart() {
             ))}
             <li>
               <button onClick={clear} className="text-[10px] uppercase tracking-[0.14em] text-sage-400 hover:text-red-300">
-                Clear cart
+                {t('cart.clear')}
               </button>
             </li>
           </ul>
 
           <div className="card h-fit p-6">
-            <h2 className="font-display text-2xl">Order summary</h2>
+            <h2 className="font-display text-2xl">{t('cart.summary')}</h2>
             <dl className="mt-5 space-y-3 border-b border-white/10 pb-5 text-sm">
               <div className="flex justify-between text-sage-300">
-                <dt>Items ({count})</dt>
+                <dt>{t('cart.items')} ({count})</dt>
                 <dd>{formatRwf(total)}</dd>
               </div>
               <div className="flex justify-between text-sage-400">
-                <dt>Service</dt>
-                <dd>Included</dd>
+                <dt>{t('cart.service')}</dt>
+                <dd>{t('cart.serviceIncluded')}</dd>
               </div>
             </dl>
             <div className="flex items-baseline justify-between py-4">
-              <span className="text-[10px] uppercase tracking-[0.16em] text-sage-400">Total</span>
+              <span className="text-[10px] uppercase tracking-[0.16em] text-sage-400">{t('cart.total')}</span>
               <span className="font-display text-2xl text-amber-pale">{formatRwf(total)}</span>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="label" htmlFor="table">Table number</label>
+                <label className="label" htmlFor="table">{t('cart.tableNumber')}</label>
                 <input
                   id="table"
                   value={table}
                   onChange={(event) => setTable(event.target.value)}
                   className="field"
-                  placeholder="e.g. 7 (or leave blank for takeaway)"
+                  placeholder={t('cart.tableNumber.placeholder')}
                   maxLength={20}
                 />
               </div>
               <div>
-                <label className="label" htmlFor="note">Note for the kitchen</label>
+                <label className="label" htmlFor="note">{t('cart.note')}</label>
                 <textarea
                   id="note"
                   value={note}
@@ -134,18 +139,18 @@ export function Cart() {
                   rows={3}
                   maxLength={500}
                   className="field resize-none"
-                  placeholder="Allergies, no onion, extra chilli…"
+                  placeholder={t('cart.note.placeholder')}
                 />
               </div>
             </div>
 
             <div className="mt-6">
-              <span className="label">How will you pay?</span>
+              <span className="label">{t('cart.payment.question')}</span>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 {([
-                  ['cash', 'Cash at table'],
-                  ['momo', 'Mobile money'],
-                  ['card', 'Card at table'],
+                  ['cash', t('cart.payment.cash')],
+                  ['momo', t('cart.payment.momo')],
+                  ['card', t('cart.payment.card')],
                 ] as const).map(([value, label]) => (
                   <button
                     key={value}
@@ -170,13 +175,13 @@ export function Cart() {
               {busy ? (
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-forest-950 border-t-transparent" />
               ) : user ? (
-                'Place pre-order'
+                t('cart.checkout')
               ) : (
-                'Sign in to pre-order'
+                t('cart.signInToOrder')
               )}
             </button>
             <p className="mt-3 text-center text-[11px] text-sage-400">
-              Nothing is charged here. You settle at the table by the method above, and staff mark it paid.
+              {t('cart.disclaimer')}
             </p>
           </div>
         </div>

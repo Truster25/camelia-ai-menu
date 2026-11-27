@@ -13,6 +13,9 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': { target: apiTarget, changeOrigin: true },
+      // Uploaded dish photos are served by the backend, outside the /api
+      // prefix, so they need their own proxy rule in dev.
+      '/uploads': { target: apiTarget, changeOrigin: true },
     },
   },
   preview: { host: '0.0.0.0', allowedHosts: true },

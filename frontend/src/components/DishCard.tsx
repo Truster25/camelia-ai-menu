@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, Leaf, Plus, Timer } from 'lucide-react';
-import { formatRwf } from '../lib/api';
-import { dietaryLabels, spiceLabels, toneClasses, toneGlow } from '../lib/occasions';
+import { assetUrl, formatRwf } from '../lib/api';
+import { dietaryLabels, spiceLabel, toneClasses, toneGlow } from '../lib/occasions';
 import type { Dish } from '../lib/types';
+import { useLang } from '../context/LanguageContext';
 import { Stars } from './ui';
 
 type DishCardProps = {
@@ -16,10 +17,8 @@ type DishCardProps = {
 /**
  * Dish artwork.
  *
- * Uses real photography when the dish has an `image_url`, and falls back to a
- * generated gradient tile otherwise. The fallback matters: not every dish has a
- * photograph yet, and a broken <img> would look worse than deliberate art.
- * If a photo is referenced but fails to load, the gradient stays underneath it.
+ * Shows the dish image when available and a gradient tile when the image is
+ * unset or fails to load.
  *
  * `index` and `showLabels` are still accepted so existing callers keep working,
  * but nothing is drawn over the artwork any more.
@@ -36,7 +35,7 @@ export function DishArt({
   const tone = toneClasses[dish.art_tone] ?? toneClasses.green;
   const glow = toneGlow[dish.art_tone] ?? toneGlow.green;
   const [failed, setFailed] = useState(false);
-  const photo = dish.image_url && !failed ? dish.image_url : null;
+  const photo = !failed ? assetUrl(dish.image_url) : null;
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
@@ -80,7 +79,8 @@ export function DishArt({
 }
 
 export function DishCard({ dish, onAdd, compact = false, index = 0 }: DishCardProps) {
-  const labels = dietaryLabels(dish);
+  const { t } = useLang();
+  const labels = dietaryLabels(dish, t);
   return (
     <article className="group card flex h-full flex-col overflow-hidden transition hover:border-amber-soft/40">
       <Link to={`/menu/${dish.id}`} className="block">
@@ -111,7 +111,7 @@ export function DishCard({ dish, onAdd, compact = false, index = 0 }: DishCardPr
           <span className="inline-flex items-center gap-1">
             <Timer size={11} /> {dish.prep_minutes}m
           </span>
-          <span>{spiceLabels[dish.spice_level] ?? 'Mild'}</span>
+          <span>{spiceLabel(dish.spice_level, t)}</span>
           {dish.rating_count > 0 ? (
             <Stars value={dish.rating_average} count={dish.rating_count} size={11} />
           ) : (

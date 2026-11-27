@@ -11,6 +11,11 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ScrollToTop } from './components/ScrollToTop';
+import { captureTableFromUrl } from './lib/table';
+
+// Before anything renders, so a guest landing straight on /cart?table=5 (not
+// just /menu?table=5) still gets the table carried through.
+captureTableFromUrl();
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -17,12 +17,27 @@ def _default_database_url() -> str:
     return f"sqlite:///{BASE_DIR / 'camelia.db'}"
 
 
+def _database_url() -> str:
+    url = os.getenv("DATABASE_URL", _default_database_url()).strip()
+    if url.startswith("postgres://"):
+        return "postgresql://" + url.removeprefix("postgres://")
+    return url
+
+
 class Settings:
-    PROJECT_NAME: str = "Camellia AI Menu API"
+    PROJECT_NAME: str = "Camelia AI Menu API"
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
 
-    DATABASE_URL: str = os.getenv("DATABASE_URL", _default_database_url())
+    DATABASE_URL: str = _database_url()
+
+    # Where dish photos uploaded through the admin dashboard are written.
+    # Local disk is fine for development; see README.md's deployment section
+    # for why production (an ephemeral filesystem on most free hosting) needs
+    # a persistent disk or object storage instead. Overridable so tests write
+    # to a throwaway directory instead of the developer's real uploads folder.
+    UPLOAD_DIR: Path = Path(os.getenv("UPLOAD_DIR", str(BASE_DIR / "uploads")))
+    MAX_UPLOAD_BYTES: int = 5 * 1024 * 1024  # 5 MB
 
     # A generated fallback keeps local development moving; production must set JWT_SECRET.
     JWT_SECRET: str = os.getenv("JWT_SECRET", "dev-only-insecure-secret-change-me-1234567890")
@@ -44,6 +59,7 @@ class Settings:
     def verify(self) -> None:
         if not self.JWT_SECRET or len(self.JWT_SECRET) < 16:
             self.JWT_SECRET = secrets.token_urlsafe(32)
+        (self.UPLOAD_DIR / "dishes").mkdir(parents=True, exist_ok=True)
 
 
 settings = Settings()

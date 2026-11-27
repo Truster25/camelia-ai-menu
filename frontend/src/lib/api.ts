@@ -10,9 +10,17 @@ export class ApiError extends Error {
 }
 
 export const tokenStore = {
-  get: () => localStorage.getItem(TOKEN_KEY),
-  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
-  clear: () => localStorage.removeItem(TOKEN_KEY),
+  get: () => sessionStorage.getItem(TOKEN_KEY) ?? localStorage.getItem(TOKEN_KEY),
+  set: (token: string, remember = true) => {
+    const storage = remember ? localStorage : sessionStorage;
+    const otherStorage = remember ? sessionStorage : localStorage;
+    otherStorage.removeItem(TOKEN_KEY);
+    storage.setItem(TOKEN_KEY, token);
+  },
+  clear: () => {
+    sessionStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+  },
 };
 
 function detailFrom(body: unknown): string {
@@ -38,7 +46,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   try {
     response = await fetch(`${API_BASE}/api${path}`, { ...init, headers });
   } catch {
-    throw new ApiError('Cannot reach the Camellia API. Is the backend running on port 9000?', 0);
+    throw new ApiError('Cannot reach the Camelia API. Is the backend running on port 9000?', 0);
   }
 
   if (response.status === 401) {
@@ -65,6 +73,51 @@ export const api = {
   patch: <T>(path: string, body: unknown) => request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
   delete: <T>(path: string) => request<T>(path, { method: 'DELETE' }),
 };
+
+/**
+ * Turns a path the API returned into something an <img> can load.
+ *
+ * Dish photos come from two places: the demo menu's bundled artwork
+ * (`/images/...`, shipped with the frontend) and photos uploaded through the
+ * admin dashboard (`/uploads/...`, served by the API). The first is always
+ * relative to this site. The second lives on the API origin, which is a
+ * different host once the frontend and backend are deployed separately.
+ */
+export function assetUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (!path.startsWith('/uploads/')) return path;
+  return `${API_BASE}${path}`;
+}
+
+/** Uploads a dish photo and returns the path to store as the dish's image_url. */
+export async function uploadDishImage(file: File): Promise<string> {
+  const token = tokenStore.get();
+  const body = new FormData();
+  body.append('file', file);
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE}/api/admin/uploads/dish-image`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body,
+    });
+  } catch {
+    throw new ApiError('Cannot reach the Camelia API. Is the backend running on port 9000?', 0);
+  }
+
+  if (!response.ok) {
+    let detail: unknown = null;
+    try {
+      detail = await response.json();
+    } catch {
+      /* non-JSON error page */
+    }
+    throw new ApiError(detailFrom(detail), response.status);
+  }
+  const data = (await response.json()) as { url: string };
+  return data.url;
+}
 
 export const formatRwf = (value: number) => `RWF ${value.toLocaleString('en-RW')}`;
 
