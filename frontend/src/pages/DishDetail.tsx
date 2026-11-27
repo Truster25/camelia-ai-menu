@@ -7,13 +7,15 @@ import { DishArt } from '../components/DishCard';
 import { ErrorNote, Spinner, Stars } from '../components/ui';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { dietaryLabels, spiceLabels } from '../lib/occasions';
+import { useLang } from '../context/LanguageContext';
+import { dietaryLabels, spiceLabel } from '../lib/occasions';
 
 export function DishDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { add } = useCart();
   const { user } = useAuth();
+  const { t } = useLang();
 
   const [dish, setDish] = useState<Dish | null>(null);
   const [ratings, setRatings] = useState<Rating[]>([]);
@@ -86,28 +88,28 @@ export function DishDetail() {
     }
   };
 
-  if (status === 'loading') return <Spinner label="Plating your dish…" />;
+  if (status === 'loading') return <Spinner label={t('dish.loading')} />;
   if (status === 'missing')
     return (
       <div className="mx-auto max-w-3xl px-5 py-24 text-center">
-        <h1 className="font-display text-3xl">That dish is not on the menu</h1>
-        <p className="mt-3 text-sm text-sage-400">It may have been retired by the kitchen.</p>
-        <Link to="/menu" className="btn-ghost mt-6">Back to the menu</Link>
+        <h1 className="font-display text-3xl">{t('dish.notfound')}</h1>
+        <p className="mt-3 text-sm text-sage-400">{t('dish.notfound.body')}</p>
+        <Link to="/menu" className="btn-ghost mt-6">{t('dish.back')}</Link>
       </div>
     );
   if (status === 'error' || !dish)
     return (
       <div className="mx-auto max-w-3xl px-5 py-24">
-        <ErrorNote message="We could not load this dish just now. Please refresh in a moment." />
+        <ErrorNote message={t('dish.loadError')} />
       </div>
     );
 
-  const labels = dietaryLabels(dish);
+  const labels = dietaryLabels(dish, t);
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-sage-400 hover:text-sage-100">
-        <ArrowLeft size={14} /> Back
+        <ArrowLeft size={14} /> {t('common.back')}
       </button>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_1fr]">
@@ -115,45 +117,45 @@ export function DishDetail() {
           <DishArt dish={dish} className="h-72 sm:h-96" />
           <div className="p-6">
             <p className="text-[10px] uppercase tracking-[0.16em] text-amber-soft">
-              {dish.category_name} · {dish.cuisine} cuisine
+              {dish.category_name} · {dish.cuisine} {t('dish.cuisine')}
             </p>
             <h1 className="mt-3 font-display text-[clamp(1.9rem,4vw,2.8rem)] leading-tight">{dish.name}</h1>
             <p className="mt-4 text-sm leading-relaxed text-sage-300">{dish.description}</p>
 
             <dl className="mt-7 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 text-sm sm:grid-cols-4">
               <div>
-                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Price</dt>
+                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('menu.price')}</dt>
                 <dd className="mt-1 text-amber-pale">{formatRwf(dish.price_rwf)}</dd>
               </div>
               <div>
-                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Prep time</dt>
+                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('dish.prepTime')}</dt>
                 <dd className="mt-1 inline-flex items-center gap-1.5"><Timer size={13} /> {dish.prep_minutes} min</dd>
               </div>
               <div>
-                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Spice</dt>
-                <dd className="mt-1 inline-flex items-center gap-1.5"><Flame size={13} /> {spiceLabels[dish.spice_level]}</dd>
+                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('dish.spiceLabel')}</dt>
+                <dd className="mt-1 inline-flex items-center gap-1.5"><Flame size={13} /> {spiceLabel(dish.spice_level, t)}</dd>
               </div>
               <div>
-                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Energy</dt>
+                <dt className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('dish.energy')}</dt>
                 <dd className="mt-1">{dish.calories} kcal</dd>
               </div>
             </dl>
 
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <div>
-                <p className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Ingredients</p>
+                <p className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('dish.ingredients')}</p>
                 <p className="mt-1.5 break-words text-[13px] leading-relaxed text-sage-300">
                   {dish.ingredients.split(',').join(', ')}
                 </p>
               </div>
               <div>
-                <p className="text-[9px] uppercase tracking-[0.16em] text-sage-400">Allergens</p>
+                <p className="text-[9px] uppercase tracking-[0.16em] text-sage-400">{t('dish.allergensLabel')}</p>
                 <p className="mt-1.5 break-words text-[13px] leading-relaxed text-sage-300">
                   {dish.allergens ? (
                     dish.allergens.split(',').join(', ')
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-sage-400">
-                      <Info size={12} /> None declared. Ask staff about cross-contact
+                      <Info size={12} /> {t('dish.noAllergens')}
                     </span>
                   )}
                 </p>
@@ -179,11 +181,11 @@ export function DishDetail() {
 
             <div className="mt-5 flex items-center gap-3">
               <div className="inline-flex items-center rounded-full border border-white/15">
-                <button onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="grid h-10 w-10 place-items-center text-sage-300 hover:text-white" aria-label="Decrease quantity">
+                <button onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="grid h-10 w-10 place-items-center text-sage-300 hover:text-white" aria-label={t('dish.decreaseQty')}>
                   <Minus size={14} />
                 </button>
                 <span className="w-8 text-center text-sm">{quantity}</span>
-                <button onClick={() => setQuantity((value) => Math.min(20, value + 1))} className="grid h-10 w-10 place-items-center text-sage-300 hover:text-white" aria-label="Increase quantity">
+                <button onClick={() => setQuantity((value) => Math.min(20, value + 1))} className="grid h-10 w-10 place-items-center text-sage-300 hover:text-white" aria-label={t('dish.increaseQty')}>
                   <Plus size={14} />
                 </button>
               </div>
@@ -195,7 +197,7 @@ export function DishDetail() {
                 className="btn-primary flex-1"
                 disabled={!dish.is_available}
               >
-                <ShoppingBag size={15} /> {dish.is_available ? 'Add to order' : 'Unavailable today'}
+                <ShoppingBag size={15} /> {dish.is_available ? t('dish.addToOrder') : t('dish.unavailable')}
               </button>
             </div>
 
@@ -206,16 +208,16 @@ export function DishDetail() {
               }`}
             >
               <Heart size={13} className={favourited ? 'fill-amber-logo text-amber-logo' : ''} />
-              {favourited ? 'Saved to favourites' : 'Save to favourites'}
+              {favourited ? t('dish.savedFavourite') : t('dish.saveFavourite')}
             </button>
 
             <p className="mt-4 text-[11px] leading-relaxed text-sage-400">
-              Pre-order with a table number and the kitchen starts as soon as you arrive. Pay at the table.
+              {t('dish.preorderNote')}
             </p>
           </div>
 
           <div className="card p-6">
-            <h2 className="font-display text-xl">Rate this dish</h2>
+            <h2 className="font-display text-xl">{t('dish.rate')}</h2>
             {user ? (
               <>
                 <div className="mt-4 flex items-center gap-3">
@@ -227,18 +229,17 @@ export function DishDetail() {
                   onChange={(event) => setComment(event.target.value)}
                   rows={3}
                   maxLength={500}
-                  placeholder="What did you think? (optional)"
+                  placeholder={t('dish.ratingPlaceholder')}
                   className="field mt-3 resize-none"
                 />
                 {ratingError && <div className="mt-3"><ErrorNote message={ratingError} /></div>}
                 <button onClick={submitRating} className="btn-ghost mt-3 w-full">
-                  {saved ? 'Saved. Thank you!' : 'Submit rating'}
+                  {saved ? t('dish.ratingSaved') : t('dish.submitRating')}
                 </button>
               </>
             ) : (
               <p className="mt-3 text-sm text-sage-400">
-                <Link to="/login" className="text-amber-pale underline">Sign in</Link> to rate this dish and keep your
-                favourites.
+                <Link to="/login" className="text-amber-pale underline">{t('nav.signin')}</Link> {t('dish.signInToRateBody')}
               </p>
             )}
 
@@ -262,7 +263,7 @@ export function DishDetail() {
 
       {related.length > 0 && (
         <section className="mt-14">
-          <h2 className="font-display text-2xl">More from {dish.category_name}</h2>
+          <h2 className="font-display text-2xl">{t('dish.moreFrom').replace('{category}', dish.category_name)}</h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((row) => (
               <Link key={row.id} to={`/menu/${row.id}`} className="card flex items-center gap-4 p-4 transition hover:border-amber-soft/40">

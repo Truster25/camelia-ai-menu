@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Sparkles, X } from 'lucide-react';
+import { MapPin, Search, Sparkles, X } from 'lucide-react';
 import { api, formatRwf } from '../lib/api';
 import type { Category, Dish } from '../lib/types';
 import { DishCard } from '../components/DishCard';
@@ -8,33 +8,10 @@ import { Select } from '../components/Select';
 import { EmptyState, SectionHeading, Spinner } from '../components/ui';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
+import { clearSavedTable, getSavedTable } from '../lib/table';
 
 type DietFilter = '' | 'vegetarian' | 'vegan' | 'halal' | 'gluten-free';
 type SortOrder = 'menu' | 'price' | 'rating' | 'popularity';
-
-const dietOptions: { value: DietFilter; label: string }[] = [
-  { value: '', label: 'Everything' },
-  { value: 'vegetarian', label: 'Vegetarian' },
-  { value: 'vegan', label: 'Vegan' },
-  { value: 'halal', label: 'Halal' },
-  { value: 'gluten-free', label: 'Gluten free' },
-];
-
-/* Select works on strings, so the price caps are strings here and converted
-   back to numbers where the filter runs. */
-const maxPriceOptions = [
-  { value: '0', label: 'Any price' },
-  { value: '4000', label: 'Under 4,000' },
-  { value: '7000', label: 'Under 7,000' },
-  { value: '10000', label: 'Under 10,000' },
-];
-
-const sortOptions: { value: SortOrder; label: string }[] = [
-  { value: 'menu', label: 'Menu order' },
-  { value: 'price', label: 'Price: low to high' },
-  { value: 'rating', label: 'Best rated' },
-  { value: 'popularity', label: 'Most popular' },
-];
 
 /** The section name as a URL-safe key, matching what the API returns. */
 const slug = (name: string) =>
@@ -57,6 +34,43 @@ export function Menu() {
   const { add, count } = useCart();
   const { t } = useLang();
   const [added, setAdded] = useState<string | null>(null);
+  // Set the moment a table's QR code is scanned (captured in main.tsx, before
+  // this component even mounts); confirms the table and lets a guest say it
+  // is not theirs without having to find that option again at checkout.
+  const [tableBanner, setTableBanner] = useState(getSavedTable);
+
+  const dietOptions: { value: DietFilter; label: string }[] = useMemo(
+    () => [
+      { value: '', label: t('menu.diet.everything') },
+      { value: 'vegetarian', label: t('menu.diet.vegetarian') },
+      { value: 'vegan', label: t('menu.diet.vegan') },
+      { value: 'halal', label: t('menu.diet.halal') },
+      { value: 'gluten-free', label: t('menu.diet.glutenFree') },
+    ],
+    [t],
+  );
+
+  /* Select works on strings, so the price caps are strings here and converted
+     back to numbers where the filter runs. */
+  const maxPriceOptions = useMemo(
+    () => [
+      { value: '0', label: t('menu.price.any') },
+      { value: '4000', label: t('menu.price.under4k') },
+      { value: '7000', label: t('menu.price.under7k') },
+      { value: '10000', label: t('menu.price.under10k') },
+    ],
+    [t],
+  );
+
+  const sortOptions: { value: SortOrder; label: string }[] = useMemo(
+    () => [
+      { value: 'menu', label: t('menu.sort.menuOrder') },
+      { value: 'price', label: t('menu.sort.price') },
+      { value: 'rating', label: t('menu.sort.rated') },
+      { value: 'popularity', label: t('menu.sort.popular') },
+    ],
+    [t],
+  );
 
   useEffect(() => {
     Promise.all([api.get<Category[]>('/categories'), api.get<Dish[]>('/dishes?sort=menu')])
@@ -147,10 +161,29 @@ export function Menu() {
         description={t('menu.body')}
         action={
           <Link to="/recommend" className="btn-ghost">
-            <Sparkles size={14} /> Not sure? Ask the AI
+            <Sparkles size={14} /> {t('menu.notSure')}
           </Link>
         }
       />
+      <p className="mt-3 text-xs text-sage-400">{t('menu.imageNote')}</p>
+
+      {tableBanner && (
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-soft/30 bg-amber-logo/10 px-5 py-3">
+          <p className="flex items-center gap-2 text-[12px] text-amber-pale">
+            <MapPin size={14} />
+            {t('menu.table.banner').replace('{table}', tableBanner)}
+          </p>
+          <button
+            onClick={() => {
+              clearSavedTable();
+              setTableBanner('');
+            }}
+            className="text-[10px] uppercase tracking-[0.12em] text-sage-400 hover:text-sage-200"
+          >
+            {t('menu.table.notMine')}
+          </button>
+        </div>
+      )}
 
       {/* filter bar */}
       <div className="card mt-9 p-4 sm:p-5">
@@ -161,9 +194,9 @@ export function Menu() {
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
               onKeyDown={(event) => { if (event.key === 'Enter') askAi(); }}
-              placeholder="Search dishes, ingredients…"
+              placeholder={t('menu.search.placeholder')}
               className="field pl-10"
-              aria-label="Search the menu"
+              aria-label={t('menu.search.aria')}
             />
           </label>
           <button
@@ -171,7 +204,7 @@ export function Menu() {
             onClick={askAi}
             disabled={asking || search.trim().length < 2}
             className="btn-primary !px-4 !py-3 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Describe what you feel like, in your own words"
+            title={t('menu.ask.title')}
           >
             {/* A dot spinner, not <Spinner />: that component renders a py-16
                 block with the word "Loading…", which cannot sit in a pill. */}
@@ -180,11 +213,11 @@ export function Menu() {
             ) : (
               <Sparkles size={14} />
             )}
-            <span className="hidden sm:inline">Ask</span>
+            <span className="hidden sm:inline">{t('menu.ask')}</span>
           </button>
           {activeFilters > 0 && (
             <button onClick={resetFilters} className="btn-quiet !px-4 !py-2.5 !text-[10px]">
-              <X size={12} /> Clear ({activeFilters})
+              <X size={12} /> {t('menu.clear')} ({activeFilters})
             </button>
           )}
         </div>
@@ -193,28 +226,28 @@ export function Menu() {
             which is what stops "Menu order" from stretching across the space. */}
         <div className="mt-4 grid grid-cols-2 gap-2.5 border-t border-white/5 pt-4 sm:gap-3 lg:grid-cols-4">
           <Select
-            label="Section"
+            label={t('menu.section')}
             value={category}
             onChange={setCategory}
             options={[
-              { value: '', label: 'All sections' },
+              { value: '', label: t('menu.allSections') },
               ...categories.map((row) => ({ value: slug(row.name), label: row.name })),
             ]}
           />
           <Select
-            label="Diet"
+            label={t('menu.diet')}
             value={diet}
             onChange={(next) => setDiet(next as DietFilter)}
             options={dietOptions}
           />
           <Select
-            label="Price"
+            label={t('menu.price')}
             value={String(maxPrice)}
             onChange={(next) => setMaxPrice(Number(next))}
             options={maxPriceOptions}
           />
           <Select
-            label="Sort"
+            label={t('menu.sort')}
             value={sort}
             onChange={(next) => setSort(next as SortOrder)}
             options={sortOptions}
@@ -225,8 +258,8 @@ export function Menu() {
           <div className="mt-4 rounded-2xl border border-amber-logo/25 bg-amber-logo/[0.06] p-4">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-pale">
               {aiAnswer.understood.length
-                ? `Read as ${aiAnswer.understood.join(' · ')}`
-                : 'Closest matches on the menu'}
+                ? `${t('menu.ai.readAs')} ${aiAnswer.understood.join(' · ')}`
+                : t('menu.ai.closest')}
             </p>
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {aiAnswer.results.map((row) => (
@@ -248,18 +281,18 @@ export function Menu() {
               onClick={() => setAiAnswer(null)}
               className="mt-3 text-[10px] uppercase tracking-[0.14em] text-sage-400 hover:text-sage-200"
             >
-              Show the whole menu
+              {t('menu.ai.showAll')}
             </button>
           </div>
         )}
       </div>
 
-      {status === 'loading' && <Spinner label="Loading the menu…" />}
+      {status === 'loading' && <Spinner label={t('menu.loadingMenu')} />}
       {status === 'error' && (
         <div className="mt-8">
           <EmptyState
-            title="The menu could not load"
-            body="We could not load the menu just now. Please refresh the page in a moment."
+            title={t('menu.error.title')}
+            body={t('dishes.empty.body')}
           />
         </div>
       )}
@@ -271,24 +304,24 @@ export function Menu() {
         <>
           <div className="mt-8 flex items-baseline justify-between gap-4">
             <p className="text-[11px] uppercase tracking-[0.16em] text-sage-400">
-              {filtered.length} dish{filtered.length === 1 ? '' : 'es'}
-              {category && ` in ${categoryLabel}`}
+              {t(filtered.length === 1 ? 'menu.results.one' : 'menu.results.many').replace('{n}', String(filtered.length))}
+              {category && ` ${t('menu.in')} ${categoryLabel}`}
             </p>
             {category && (
               <button
                 onClick={() => setCategory('')}
                 className="shrink-0 text-[11px] uppercase tracking-[0.16em] text-amber-pale underline decoration-amber-soft/40 underline-offset-4 transition hover:text-cream hover:decoration-amber-soft"
               >
-                All dishes
+                {t('dishes.all')}
               </button>
             )}
           </div>
           {filtered.length === 0 ? (
             <div className="mt-4">
               <EmptyState
-                title="Nothing matches that combination"
-                body="Try widening the budget, clearing the diet filter, or letting the AI quiz suggest something close to what you want."
-                action={<button onClick={resetFilters} className="btn-ghost">Reset filters</button>}
+                title={t('menu.noMatch.title')}
+                body={t('menu.noMatch.body')}
+                action={<button onClick={resetFilters} className="btn-ghost">{t('menu.noMatch.reset')}</button>}
               />
             </div>
           ) : (
@@ -304,9 +337,9 @@ export function Menu() {
       {added && (
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-rise">
           <div className="flex items-center gap-4 rounded-full border border-amber-soft/40 bg-forest-850 px-5 py-3 text-sm shadow-2xl">
-            <span className="text-sage-100">{added} added</span>
+            <span className="text-sage-100">{t('menu.toast.added').replace('{name}', added)}</span>
             <Link to="/cart" className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-pale">
-              View cart ({count})
+              {t('menu.toast.viewCart')} ({count})
             </Link>
           </div>
         </div>
@@ -314,13 +347,13 @@ export function Menu() {
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-amber-soft/25 bg-amber-logo/10 px-6 py-6">
         <div>
-          <p className="font-display text-xl text-sage-100">Still deciding?</p>
+          <p className="font-display text-xl text-sage-100">{t('menu.cta.title')}</p>
           <p className="mt-1 text-sm text-sage-400">
-            The quiz narrows {dishes.length} dishes to your top 5 · from {formatRwf(2500)}.
+            {t('menu.cta.body').replace('{n}', String(dishes.length)).replace('{price}', formatRwf(2500))}
           </p>
         </div>
         <Link to="/recommend" className="btn-primary">
-          <Sparkles size={14} /> Take the quiz
+          <Sparkles size={14} /> {t('menu.cta.button')}
         </Link>
       </div>
     </div>

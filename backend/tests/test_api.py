@@ -7,7 +7,9 @@ from __future__ import annotations
 
 import os
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from threading import Barrier
 
 import pytest
 
@@ -18,11 +20,18 @@ if TMP_DB.exists():
     TMP_DB.unlink()
 os.environ["DATABASE_URL"] = f"sqlite:///{TMP_DB}"
 os.environ["AUTO_SEED"] = "1"
+# A throwaway uploads folder, so running the suite never writes into the
+# developer's real backend/uploads directory.
+os.environ["UPLOAD_DIR"] = str(Path(tempfile.gettempdir()) / "camelia_test_uploads")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from app.database import SessionLocal  # noqa: E402
 from app.main import app  # noqa: E402
+from app.models import User  # noqa: E402
 from app.recommender import is_eligible, recommend  # noqa: E402
+from app.routers import auth  # noqa: E402
+from app.security import hash_password  # noqa: E402
 
 ADMIN = {"email": "admin@camelia.rw", "password": "Admin123"}
 CUSTOMER = {"email": "customer@camelia.rw", "password": "Customer123"}
@@ -61,13 +70,27 @@ def test_legacy_menu_endpoint_keeps_its_shape(client):
     assert all(item["price_rwf"] > 0 for item in body["items"])
 
 
-def test_menu_is_seeded_with_the_real_camellia_menu(client):
+def test_menu_is_seeded_with_the_real_camelia_menu(client):
     categories = client.get("/api/categories").json()
     dishes = client.get("/api/dishes").json()
-    # 16 sections, transcribed from the printed menu.
     assert len(categories) == 17
-    assert len(dishes) == 136
+    assert len(dishes) == 137
     assert {d["category_name"] for d in dishes} == {c["name"] for c in categories}
+
+
+def test_seeded_menu_uses_distinct_existing_dish_images(client):
+    public = Path(__file__).resolve().parents[2] / "frontend" / "public"
+    dishes = client.get("/api/dishes").json()
+    by_name = {dish["name"]: dish for dish in dishes}
+    assert by_name["Vegetable Fajita"]["image_url"] == "/images/dishes/vegetable-fajita.jpg"
+    assert by_name["Beef Strips Salad"]["image_url"] == "/images/dishes/beef-strips-salad.jpg"
+    urls = set()
+    for dish in dishes:
+        url = dish["image_url"]
+        assert url and url.startswith("/images/"), dish["name"]
+        assert (public / url.lstrip("/")).is_file(), (dish["name"], url)
+        assert url not in urls, (dish["name"], url)
+        urls.add(url)
 
 
 def test_dish_filters(client):
@@ -79,6 +102,9 @@ def test_dish_filters(client):
 
     found = client.get("/api/dishes?search=steak").json()
     assert any("Steak" in d["name"] for d in found)
+
+    mexican = client.get("/api/dishes?category=mexican-pilau").json()
+    assert {d["name"] for d in mexican} == {"Quesadillas", "Fajita Platter", "Vegetable Fajita", "Pilau"}
 
 
 @pytest.mark.parametrize(
@@ -109,7 +135,7 @@ def test_each_diet_filter_returns_the_dishes_that_carry_it(client, diet, flag):
 
 
 def test_halal_filter_is_honest_while_unconfirmed(client):
-    """Until Camellia confirms certification, the halal filter returns nothing.
+    """Until Camelia confirms certification, the halal filter returns nothing.
 
     That is the safe failure and it is deliberate. This test exists so nobody
     "fixes" it by marking dishes halal to make the demo look fuller: a wrong
@@ -143,6 +169,59 @@ def test_register_and_login(client):
     token = created.json()["access_token"]
     me = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert me.json()["email"] == payload["email"]
+
+
+def test_legacy_email_can_sign_in_and_cannot_register_twice(client):
+    password = "LegacyGuest123"
+    with SessionLocal.begin() as db:
+        user = User(
+            name="Legacy Guest",
+            email="Legacy.Guest@example.rw",
+            password_hash=hash_password(password),
+            role="customer",
+        )
+        db.add(user)
+        db.flush()
+        user_id = user.id
+
+    credentials = {"email": "legacy.guest@example.rw", "password": password}
+    signed_in = client.post("/api/auth/login", json=credentials)
+    assert signed_in.status_code == 200
+    assert signed_in.json()["user"]["id"] == user_id
+    assert client.post("/api/auth/register", json={"name": "Duplicate", **credentials}).status_code == 409
+
+
+def test_concurrent_signup_keeps_one_account(client, monkeypatch):
+    both_started = Barrier(2)
+
+    def hash_after_both_lookups(password):
+        both_started.wait(timeout=10)
+        return hash_password(password)
+
+    monkeypatch.setattr(auth, "hash_password", hash_after_both_lookups)
+    payload = {"name": "Concurrent Guest", "email": "concurrent@example.rw", "password": "Concurrent123"}
+
+    def signup():
+        return client.post("/api/auth/register", json=payload).status_code
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        requests = [pool.submit(signup) for _ in range(2)]
+        assert sorted(request.result() for request in requests) == [201, 409]
+
+    assert client.post("/api/auth/login", json={
+        "email": payload["email"], "password": payload["password"],
+    }).status_code == 200
+
+
+@pytest.mark.parametrize(
+    "name,password",
+    [("   ", "ValidPassword123"), ("Valid Guest", "é" * 37)],
+)
+def test_registration_rejects_blank_names_and_overlong_passwords(client, name, password):
+    result = client.post("/api/auth/register", json={
+        "name": name, "email": "invalid-signup@example.rw", "password": password,
+    })
+    assert result.status_code == 422
 
 
 def test_self_registration_cannot_create_an_admin(client):
@@ -392,6 +471,64 @@ def test_customer_cannot_modify_the_menu(client, customer_headers):
         headers=customer_headers,
     )
     assert response.status_code == 403
+
+
+# --------------------------------------------------------------------- uploads
+
+PNG_HEADER = b"\x89PNG\r\n\x1a\n"
+
+
+def test_admin_can_upload_a_dish_image(client, admin_headers):
+    response = client.post(
+        "/api/admin/uploads/dish-image",
+        files={"file": ("photo.png", PNG_HEADER + b"0" * 100, "image/png")},
+        headers=admin_headers,
+    )
+    assert response.status_code == 201
+    url = response.json()["url"]
+    assert url.startswith("/uploads/dishes/")
+    assert url.endswith(".png")
+
+    # Served back from the static mount, under the same URL a dish's image_url would hold.
+    fetched = client.get(url)
+    assert fetched.status_code == 200
+    assert fetched.content == PNG_HEADER + b"0" * 100
+
+
+def test_customer_cannot_upload_dish_images(client, customer_headers):
+    response = client.post(
+        "/api/admin/uploads/dish-image",
+        files={"file": ("photo.png", PNG_HEADER, "image/png")},
+        headers=customer_headers,
+    )
+    assert response.status_code == 403
+
+
+def test_upload_requires_authentication(client):
+    response = client.post("/api/admin/uploads/dish-image", files={"file": ("photo.png", PNG_HEADER, "image/png")})
+    assert response.status_code == 401
+
+
+def test_upload_rejects_a_file_that_is_not_actually_an_image(client, admin_headers):
+    """The Content-Type header is a client claim, not a fact: the bytes are what matter."""
+    response = client.post(
+        "/api/admin/uploads/dish-image",
+        files={"file": ("photo.png", b"not an image, whatever the header says", "image/png")},
+        headers=admin_headers,
+    )
+    assert response.status_code == 415
+
+
+def test_upload_rejects_an_oversized_image(client, admin_headers):
+    from app.config import settings
+
+    oversized = PNG_HEADER + b"0" * (settings.MAX_UPLOAD_BYTES + 1)
+    response = client.post(
+        "/api/admin/uploads/dish-image",
+        files={"file": ("photo.png", oversized, "image/png")},
+        headers=admin_headers,
+    )
+    assert response.status_code == 413
 
 
 # ------------------------------------------------------------------- analytics
@@ -713,7 +850,7 @@ def test_a_dish_sits_in_the_section_its_price_belongs_to(client):
 # Prices, as printed
 # ---------------------------------------------------------------------------
 
-# Read off photographs of the printed Camellia menu. This is the contract: if a
+# Read off photographs of the printed Camelia menu. This is the contract: if a
 # price changes here without changing on the printed menu, or the other way
 # round, the menu is lying to a customer at the table.
 PRINTED_PRICES = printed_prices.PRINTED_PRICES

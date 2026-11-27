@@ -3,20 +3,22 @@ import { Link, useLocation } from 'react-router-dom';
 import { CheckCircle2, ClipboardList, Clock, XCircle } from 'lucide-react';
 import { api, ApiError, formatDate, formatRwf } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useLang } from '../context/LanguageContext';
 import { EmptyState, ErrorNote, Spinner, StatusPill } from '../components/ui';
 import type { Dish, Order } from '../lib/types';
 
 const flow = ['pending', 'accepted', 'preparing', 'ready', 'completed'];
-const stepLabel: Record<string, string> = {
-  pending: 'Received',
-  accepted: 'Accepted',
-  preparing: 'In the kitchen',
-  ready: 'Ready',
-  completed: 'Served',
-};
 
 export function Orders() {
   const { user } = useAuth();
+  const { t } = useLang();
+  const stepLabel: Record<string, string> = {
+    pending: t('orders.step.pending'),
+    accepted: t('orders.step.accepted'),
+    preparing: t('orders.step.preparing'),
+    ready: t('orders.step.ready'),
+    completed: t('orders.step.completed'),
+  };
   const location = useLocation();
   const justPlaced = (location.state as { justPlaced?: number } | null)?.justPlaced;
   const [orders, setOrders] = useState<Order[]>([]);
@@ -53,9 +55,9 @@ export function Orders() {
       <div className="mx-auto max-w-3xl px-5 py-20 sm:px-8">
         <EmptyState
           icon={<ClipboardList size={22} />}
-          title="Sign in to see your orders"
-          body="Your pre-orders, ratings and favourites live with your account. Sign in and everything you have ordered is waiting here."
-          action={<Link to="/login" state={{ from: '/orders' }} className="btn-primary">Sign in</Link>}
+          title={t('orders.signInTitle')}
+          body={t('orders.signInBody')}
+          action={<Link to="/login" state={{ from: '/orders' }} className="btn-primary">{t('nav.signin')}</Link>}
         />
       </div>
     );
@@ -63,23 +65,23 @@ export function Orders() {
 
   return (
     <div className="mx-auto max-w-5xl px-5 py-12 sm:px-8">
-      <p className="kicker"><span className="kicker-line" /> My orders</p>
+      <p className="kicker">{t('orders.title')}</p>
       <h1 className="mt-4 font-display text-[clamp(2rem,4.4vw,3.2rem)] tracking-[-0.03em]">
-        Hello, {user.name.split(' ')[0]}.
+        {t('orders.hello').replace('{name}', user.name.split(' ')[0])}
       </h1>
-      <p className="mt-3 text-sm text-sage-400">Track your pre-orders, reorder a favourite, or check what the kitchen is doing.</p>
+      <p className="mt-3 text-sm text-sage-400">{t('orders.subtitle')}</p>
 
-      {status === 'loading' && <Spinner label="Fetching your orders…" />}
-      {status === 'error' && <div className="mt-6"><ErrorNote message="We could not load your orders just now. Please refresh in a moment." /></div>}
+      {status === 'loading' && <Spinner label={t('orders.fetching')} />}
+      {status === 'error' && <div className="mt-6"><ErrorNote message={t('orders.loadError')} /></div>}
       {error && <div className="mt-6"><ErrorNote message={error} /></div>}
 
       {status === 'ready' && orders.length === 0 && (
         <div className="mt-8">
           <EmptyState
             icon={<Clock size={22} />}
-            title="No orders yet"
-            body="When you pre-order from the menu it will appear here with live kitchen status."
-            action={<Link to="/menu" className="btn-primary">Order something</Link>}
+            title={t('orders.empty.title')}
+            body={t('orders.empty')}
+            action={<Link to="/menu" className="btn-primary">{t('orders.orderSomething')}</Link>}
           />
         </div>
       )}
@@ -93,10 +95,10 @@ export function Orders() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.16em] text-sage-400">
-                      Order #{order.id} · {formatDate(order.created_at)}
-                      {order.table_number && ` · table ${order.table_number}`}
+                      {t('orders.order')} #{order.id} · {formatDate(order.created_at)}
+                      {order.table_number && ` · ${t('orders.table')} ${order.table_number}`}
                       {justPlaced === order.id && (
-                        <span className="ml-2 rounded-full bg-amber-logo px-2 py-0.5 text-[9px] font-bold text-forest-950">NEW</span>
+                        <span className="ml-2 rounded-full bg-amber-logo px-2 py-0.5 text-[9px] font-bold text-forest-950">{t('orders.new')}</span>
                       )}
                     </p>
                     <p className="mt-2 font-display text-xl text-amber-pale">{formatRwf(order.total_rwf)}</p>
@@ -105,7 +107,7 @@ export function Orders() {
                     <StatusPill status={order.status} />
                     {(order.status === 'pending' || order.status === 'accepted') && (
                       <button onClick={() => cancel(order.id)} className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-sage-400 hover:text-red-300">
-                        <XCircle size={12} /> Cancel
+                        <XCircle size={12} /> {t('orders.cancel')}
                       </button>
                     )}
                   </div>
@@ -124,7 +126,7 @@ export function Orders() {
                     ))}
                   </ol>
                 ) : (
-                  <p className="mt-4 text-[12px] text-red-200/80">This order was cancelled.</p>
+                  <p className="mt-4 text-[12px] text-red-200/80">{t('orders.cancelled')}</p>
                 )}
 
                 <ul className="mt-5 divide-y divide-white/5 border-t border-white/5 pt-3">
@@ -137,7 +139,7 @@ export function Orders() {
                     </li>
                   ))}
                 </ul>
-                {order.note && <p className="mt-3 text-[11px] text-sage-400">Note: {order.note}</p>}
+                {order.note && <p className="mt-3 text-[11px] text-sage-400">{t('orders.note')}: {order.note}</p>}
               </li>
             );
           })}
@@ -146,7 +148,7 @@ export function Orders() {
 
       {status === 'ready' && favourites.length > 0 && (
         <section className="mt-14">
-          <h2 className="font-display text-2xl">Saved favourites</h2>
+          <h2 className="font-display text-2xl">{t('orders.favourites')}</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             {favourites.map((dish) => (
               <Link key={dish.id} to={`/menu/${dish.id}`} className="chip !text-[11px] !normal-case !tracking-normal">
