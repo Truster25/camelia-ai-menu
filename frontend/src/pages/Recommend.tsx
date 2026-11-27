@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, RotateCcw, Sparkles, Wand2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, QrCode, RotateCcw, Sparkles, Wand2, X } from 'lucide-react';
 import { api, ApiError, formatRwf } from '../lib/api';
 import { DishArt } from '../components/DishCard';
 import { ErrorNote, ScoreBar, Spinner, Stars } from '../components/ui';
 import { useCart } from '../context/CartContext';
 import { useLang } from '../context/LanguageContext';
+import { getSavedTable } from '../lib/table';
 import type { QuizAnswers, RecommendMeta, RecommendResponse, Recommendation } from '../lib/types';
 
 /**
@@ -89,6 +90,11 @@ export function Recommend() {
   const [error, setError] = useState('');
   const { add } = useCart();
   const [addedId, setAddedId] = useState<number | null>(null);
+  // Anyone can take the quiz — this is a nudge, not a gate. A guest who
+  // scanned their table's QR code already has it, so there is nothing to
+  // remind them about.
+  const [hasTable] = useState(() => Boolean(getSavedTable()));
+  const [showQrNudge, setShowQrNudge] = useState(true);
 
   const steps: { key: keyof QuizAnswers; title: string; question: string; help: string }[] = useMemo(
     () => [
@@ -190,6 +196,22 @@ export function Recommend() {
       <div className="mt-8 h-1 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-amber-logo transition-all duration-500" style={{ width: `${progress}%` }} />
       </div>
+
+      {!result && !hasTable && showQrNudge && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-soft/25 bg-amber-logo/10 px-5 py-3">
+          <p className="flex items-center gap-2 text-[12px] text-amber-pale">
+            <QrCode size={14} />
+            {t('recommend.qrNudge')}
+          </p>
+          <button
+            onClick={() => setShowQrNudge(false)}
+            className="shrink-0 text-sage-400 hover:text-sage-200"
+            aria-label={t('common.close')}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {error && <div className="mt-6"><ErrorNote message={error} /></div>}
 

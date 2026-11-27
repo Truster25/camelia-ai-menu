@@ -340,6 +340,7 @@ const en: Dict = {
   'recommend.evalNote': 'Your quiz answers are logged (anonymously for guests) so the project can report how often the top recommendation is actually ordered. That is the evaluation metric in the write-up.',
   'recommend.unavailable': 'The recommender is unavailable right now.',
   'recommend.loadError': 'We could not load the quiz just now. Please refresh in a moment.',
+  'recommend.qrNudge': 'Dining in? Scan your table’s QR code first — it carries your table number through, so you can order the AI’s picks without typing it in later.',
 
   // how it works page
   'howitworks.kicker': 'Under the hood',
@@ -845,6 +846,7 @@ const rw: Dict = {
     'Ibisubizo byawe by’ibibazo bibikwa (nta mazina niba uri umushyitsi) kugira ngo iki gishushanyo mbonera gishobore kwerekana kenshi uko ikiryo cya mbere cyasabwe aricyo gitumizwa. Ni ryo pimo rikoreshwa mu isesengura.',
   'recommend.unavailable': 'Umujyanama wa AI ntabwo aboneka ubu.',
   'recommend.loadError': 'Ntitwabashije gufungura ibibazo ubu. Ongera ugerageze.',
+  'recommend.qrNudge': 'Uri kurya hano? Banza ukoreshe QR code iri ku meza yawe — izagumana nimero y’ameza yawe, kugira ngo utumize ibyo AI yakwifurije nta kuyandika ubwa kabiri.',
 
   // how it works page
   'howitworks.kicker': 'Uko bikorwa imbere',
@@ -1335,6 +1337,7 @@ const fr: Dict = {
     'Vos réponses au test sont enregistrées (anonymement pour les invités) afin que le projet puisse mesurer à quelle fréquence la première recommandation est réellement commandée. C’est l’indicateur d’évaluation du mémoire.',
   'recommend.unavailable': 'Le système de recommandation est indisponible pour le moment.',
   'recommend.loadError': 'Nous n’avons pas pu charger le test. Veuillez réessayer dans un instant.',
+  'recommend.qrNudge': 'Vous êtes sur place ? Scannez d’abord le QR code de votre table — il retient votre numéro de table, pour commander les suggestions de l’IA sans avoir à le retaper.',
 
   // how it works page
   'howitworks.kicker': 'Sous le capot',
