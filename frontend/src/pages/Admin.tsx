@@ -500,46 +500,48 @@ function CustomersTab() {
       {error && <ErrorNote message={error} />}
 
       <div className="card overflow-hidden">
-        <table className="w-full min-w-[560px] text-left">
-          <thead className="border-b border-white/10 text-[9px] uppercase tracking-[0.16em] text-sage-400">
-            <tr>
-              <th className="table-cell font-normal">Name</th>
-              <th className="table-cell font-normal">Email</th>
-              <th className="table-cell font-normal">Joined</th>
-              <th className="table-cell font-normal">Role</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <td className="table-cell text-sage-100">{row.name}</td>
-                <td className="table-cell text-sage-400">{row.email}</td>
-                <td className="table-cell text-sage-400">
-                  {new Date(row.created_at).toLocaleDateString('en-GB')}
-                </td>
-                <td className="table-cell">
-                  <div className="flex flex-wrap gap-1">
-                    {(['customer', 'kitchen', 'admin'] as const).map((role) => (
-                      <button
-                        key={role}
-                        type="button"
-                        disabled={row.role === role || busyId === row.id}
-                        onClick={() => setRole(row, role)}
-                        className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] transition disabled:cursor-default ${
-                          row.role === role
-                            ? 'bg-amber-logo/20 text-amber-pale'
-                            : 'border border-white/10 text-sage-400 hover:border-amber-soft hover:text-amber-pale'
-                        }`}
-                      >
-                        {role}
-                      </button>
-                    ))}
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-left">
+            <thead className="border-b border-white/10 text-[9px] uppercase tracking-[0.16em] text-sage-400">
+              <tr>
+                <th className="table-cell font-normal">Name</th>
+                <th className="table-cell font-normal">Email</th>
+                <th className="table-cell font-normal">Joined</th>
+                <th className="table-cell font-normal">Role</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {rows.map((row) => (
+                <tr key={row.id}>
+                  <td className="table-cell text-sage-100">{row.name}</td>
+                  <td className="table-cell text-sage-400">{row.email}</td>
+                  <td className="table-cell text-sage-400">
+                    {new Date(row.created_at).toLocaleDateString('en-GB')}
+                  </td>
+                  <td className="table-cell">
+                    <div className="flex flex-wrap gap-1">
+                      {(['customer', 'kitchen', 'admin'] as const).map((role) => (
+                        <button
+                          key={role}
+                          type="button"
+                          disabled={row.role === role || busyId === row.id}
+                          onClick={() => setRole(row, role)}
+                          className={`rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] transition disabled:cursor-default ${
+                            row.role === role
+                              ? 'bg-amber-logo/20 text-amber-pale'
+                              : 'border border-white/10 text-sage-400 hover:border-amber-soft hover:text-amber-pale'
+                          }`}
+                        >
+                          {role}
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
